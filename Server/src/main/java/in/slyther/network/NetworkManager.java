@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -23,6 +25,8 @@ public class NetworkManager {
     private final ByteBuffer buf = ByteBuffer.allocate(MAX_PACKET);
 
     private final Deque<ClientMessage> messageQueue = new ArrayDeque<>(MAX_PACKETS_PER_TICK);
+
+    private final Map<SocketAddress, Integer> socketAddressPlayerIdMap = new HashMap<>();
 
 
     /**
@@ -62,6 +66,8 @@ public class NetworkManager {
     private void readMessagesToQueue() {
         int packetsRead = 0;
         while (packetsRead < MAX_PACKETS_PER_TICK) {
+            buf.clear();
+
             try {
                 final SocketAddress socketAddress = channel.receive(buf);
                 if (socketAddress == null) {
@@ -69,9 +75,14 @@ public class NetworkManager {
                     break;
                 }
 
+                buf.flip();
+
                 // Deserialize message and add to queue
                 ClientMessage msg = ClientMessage.getRootAsClientMessage(buf);
                 messageQueue.add(msg);
+
+                System.out.println("Received packet from " + socketAddress.toString());
+                System.out.println("Message type = " + msg.msgType());
 
                 packetsRead++;
             } catch (IOException e) {
@@ -89,6 +100,8 @@ public class NetworkManager {
         while (!messageQueue.isEmpty()) {
             final ClientMessage msg = messageQueue.remove();
             final int msgType = msg.msgType();
+
+            System.out.println("Processing message of type: " + msgType);
 
             switch (msgType) {
                 case ClientMessageType.ClientHello:

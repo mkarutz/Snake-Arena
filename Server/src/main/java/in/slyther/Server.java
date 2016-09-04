@@ -1,8 +1,14 @@
 package in.slyther;
 
+import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.network.NetworkManager;
+import slyther.flatbuffers.ClientHello;
+import slyther.flatbuffers.ClientMessage;
+import slyther.flatbuffers.ClientMessageType;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 
 /**
@@ -106,5 +112,24 @@ public class Server extends Thread {
     public static void main(String[] args) {
         final Server server = new Builder().build();
         server.start();
+//
+//        FlatBufferBuilder builder = new FlatBufferBuilder (1);
+//
+//        int offsetName = builder.createString("foobar");
+//
+//        ClientHello.startClientHello(builder);
+//        ClientHello.addPlayerName(builder, offsetName);
+//        int offsetClientHello = ClientHello.endClientHello (builder);
+//
+//        ClientMessage.startClientMessage (builder);
+//        ClientMessage.addMsgType (builder, ClientMessageType.ClientHello);
+//        ClientMessage.addMsg (builder, offsetClientHello);
+//        int offsetClientMessage = ClientMessage.endClientMessage(builder);
+//
+//        ClientMessage.finishClientMessageBuffer (builder, offsetClientMessage);
+//
+//        byte[] bytes = builder.sizedByteArray();
+//
+//        System.out.println(Arrays.toString(bytes));
     }
 }
