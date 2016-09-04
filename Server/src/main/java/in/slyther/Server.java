@@ -1,10 +1,9 @@
 package in.slyther;
 
+import in.slyther.network.NetworkManager;
+
 import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.SocketException;
-import java.nio.channels.DatagramChannel;
+
 
 /**
  *
@@ -13,8 +12,9 @@ public class Server extends Thread {
     private static final int DEFAULT_PORT = 3000;
     private static final int DEFAULT_TICK_RATE = 20;
 
-    private final int udpPort;
     private final int timeStep;
+    private final NetworkManager networkManager;
+    private final World world;
 
 
     /**
@@ -22,8 +22,9 @@ public class Server extends Thread {
      * @param builder Builder Pattern for configuring server.
      */
     private Server(Builder builder) {
-        this.udpPort = builder.udpPort;
         this.timeStep = 1000 / builder.tickRate;
+        this.networkManager = new NetworkManager(builder.udpPort);
+        this.world = new World(this);
     }
 
 
@@ -49,25 +50,40 @@ public class Server extends Thread {
         }
     }
 
+    /**
+     * Get the time-step of each tick.
+     * @return the time-step
+     */
+    public int getTimeStep() {
+        return timeStep;
+    }
+
 
     /**
      * Main Server Thread.
      */
     @Override
     public void run() {
+        world.initWorld();
+
+        try {
+            networkManager.bind();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
+
         // Main tick loop
         long lastTickTime = 0;
         while (true) {
             long startTime = System.currentTimeMillis();
 
             // Read client messages
-            networkManager.readPackets();
-
-            // Simulate Tick
-            world.tick();
+            networkManager.handleIncomingPackets();
 
             // Send snapshots
-            networkManager.sendUpdates();
+            networkManager.sendOutgoingPackets();
 
             // Sleep tick time
             long deltaTime = System.currentTimeMillis() - startTime;

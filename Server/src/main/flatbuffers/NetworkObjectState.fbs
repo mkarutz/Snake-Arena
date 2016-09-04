@@ -18,6 +18,7 @@ table SnakeState {
     skin:string;
     score:uint;
     isDead:bool;
+    isTurbo:bool;
     parts:[SnakePartState];
     head:ubyte;
     tail:ubyte;

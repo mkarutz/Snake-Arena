@@ -2,37 +2,54 @@ package in.slyther.gameobjects;
 
 import in.slyther.math.Vector2;
 
+
+/**
+ *
+ */
 public class Snake {
     private static final int MAX_PARTS = 100;
 
     private int pid;
     private String name;
     private int score;
+    private boolean isTurbo;
+    private boolean isDead;
     private final SnakePart[] parts = new SnakePart[MAX_PARTS];
     private int head;
     private int tail;
 
+
+    /**
+     *
+     * @param pid
+     * @param name
+     * @param score
+     */
     public Snake(int pid, String name, int score) {
         this.pid = pid;
         this.name = name;
         this.score = score;
     }
 
-    public boolean collides(Vector2 pos) {
-        for (int i = tail; i < head; i++) {
-            if (distanceToLine(pos, parts[i].getPosition(), parts[(i + 1) % MAX_PARTS].getPosition()) < getRadius()) {
-                return true;
-            }
+
+    /**
+     *
+     */
+    private void initSnakeParts() {
+        for (int i = 0; i < MAX_PARTS; i++) {
+            parts[i] = new SnakePart(Vector2.zero(), Vector2.zero());
         }
-        return false;
     }
 
-    private float a(Vector2 p1, Vector2 p2) {
-        // ax + by + c = 0
-        // a = -(by_0 + c) / x_0
-        // b = -(ax + c) / y
-        // a = ax - c / x
+
+    /**
+     *
+     * @param desiredMove
+     */
+    public void move(Vector2 desiredMove) {
+
     }
+
 
     public int getPid() {
         return pid;
@@ -58,7 +75,39 @@ public class Snake {
         this.score = score;
     }
 
+    public boolean isTurbo() {
+        return isTurbo;
+    }
+
+    public void setTurbo(boolean turbo) {
+        isTurbo = turbo;
+    }
+
+    public boolean isDead() {
+        return isDead;
+    }
+
+    public void setDead(boolean dead) {
+        isDead = dead;
+    }
+
     public SnakePart[] getParts() {
         return parts;
+    }
+
+    public int getHead() {
+        return head;
+    }
+
+    public void setHead(int head) {
+        this.head = head;
+    }
+
+    public int getTail() {
+        return tail;
+    }
+
+    public void setTail(int tail) {
+        this.tail = tail;
     }
 }
