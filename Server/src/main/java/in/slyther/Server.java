@@ -64,6 +64,8 @@ public class Server extends Thread {
      */
     @Override
     public void run() {
+        System.out.println("Starting server.");
+
         world.initWorld();
 
         try {

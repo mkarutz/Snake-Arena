@@ -2,6 +2,9 @@ group 'au.com.perpetualmotionsquad'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "in.slyther.Server"
 
 sourceCompatibility = 1.8
 

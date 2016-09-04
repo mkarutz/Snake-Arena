@@ -1,6 +1,6 @@
 package in.slyther.network;
 
-import in.slyther.flatbuffers.ClientMessage;
+import in.slyther.flatbuffers.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -42,6 +42,8 @@ public class NetworkManager {
         channel = DatagramChannel.open();
         channel.socket().bind(new InetSocketAddress(udpPort));
         channel.configureBlocking(false);
+
+        System.out.println("Binding to port " + udpPort);
     }
 
 
@@ -69,7 +71,7 @@ public class NetworkManager {
 
                 // Deserialize message and add to queue
                 ClientMessage msg = ClientMessage.getRootAsClientMessage(buf);
-
+                messageQueue.add(msg);
 
                 packetsRead++;
             } catch (IOException e) {
@@ -84,7 +86,52 @@ public class NetworkManager {
      *
      */
     private void processQueuedMessages() {
+        while (!messageQueue.isEmpty()) {
+            final ClientMessage msg = messageQueue.remove();
+            final int msgType = msg.msgType();
 
+            switch (msgType) {
+                case ClientMessageType.ClientHello:
+                    ClientHello hello = (ClientHello) msg.msg(new ClientHello());
+                    processHelloMessage(hello);
+                    break;
+                case ClientMessageType.ClientInputState:
+                    ClientInputState inputState = (ClientInputState) msg.msg(new ClientInputState());
+                    processInputStateMessage(msg.clientId(), inputState);
+                    break;
+                case ClientMessageType.ClientGoodbye:
+                    ClientGoodbye goodbye = (ClientGoodbye) msg.msg(new ClientGoodbye());
+                    processGoodbyeMessage(msg.clientId(), goodbye);
+                    break;
+            }
+        }
+    }
+
+
+    /**
+     *
+     * @param hello
+     */
+    private void processHelloMessage(ClientHello hello) {
+        System.out.println("Received hello from " + hello.playerName());
+    }
+
+
+    /**
+     *
+     * @param inputState
+     */
+    private void processInputStateMessage(int clientId, ClientInputState inputState) {
+        System.out.println("Received input from " + clientId);
+    }
+
+
+    /**
+     *
+     * @param goodbye
+     */
+    private void processGoodbyeMessage(int clientId, ClientGoodbye goodbye) {
+        System.out.println("Received goodbye from " + clientId);
     }
 
 
