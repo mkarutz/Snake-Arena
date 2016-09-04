@@ -1,0 +1,7 @@
+namespace in.slyther.flatbuffers;
+
+table TickAck {
+    tick:uint;
+}
+
+root_type TickAck;

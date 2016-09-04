@@ -1,0 +1,13 @@
+namespace in.slyther.flatbuffers;
+
+include "ClientMessage.fbs";
+include "ServerMessage.fbs";
+
+union NetworkMessageType { ClientMessage, ServerMessage }
+
+table NetworkMessage {
+    id:uint;
+    msg:NetworkMessageType;
+}
+
+root_type NetworkMessage;

@@ -1,0 +1,30 @@
+namespace in.slyther.flatbuffers;
+
+table NetworkObjectState {
+    networkId:int;
+    state:NetworkObjectStateType;
+}
+
+union NetworkObjectStateType { FoodState, SnakeState }
+
+table FoodState {
+    position:Vector2;
+    weight:ubyte;
+    isActive:bool;
+}
+
+table SnakeState {
+    name:string;
+    skin:string;
+    score:uint;
+    isDead:bool;
+    parts:[SnakePartState];
+    head:ubyte;
+    tail:ubyte;
+}
+
+table SnakePartState {
+    index:ubyte;
+    position:Vector2;
+    direction:Vector2;
+}

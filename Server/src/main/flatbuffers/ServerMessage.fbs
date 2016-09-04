@@ -1,0 +1,29 @@
+namespace in.slyther.flatbuffers;
+
+include "Vector2.fbs";
+include "TickAck.fbs";
+include "NetworkObjectState.fbs";
+
+union ServerMessageType { ServerHello, ServerWorldState, ServerGoodbye, TickAck }
+
+table ServerMessage {
+    msg:ServerMessageType;
+}
+
+table ServerHello {
+    clientId:ubyte;
+    config:ServerConfig;
+}
+
+table ServerConfig {
+    tickRate:ubyte;
+}
+
+table ServerWorldState {
+    tick:uint;
+    objectStates:[NetworkObjectState];
+}
+
+table ServerGoodbye {}
+
+root_type ServerMessage;
