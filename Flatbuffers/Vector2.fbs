@@ -1,4 +1,4 @@
-namespace in.slyther.flatbuffers;
+namespace slyther.flatbuffers;
 
 struct Vector2 {
     x:float;

@@ -1,6 +1,6 @@
 package in.slyther.network;
 
-import in.slyther.flatbuffers.*;
+import slyther.flatbuffers.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

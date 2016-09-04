@@ -1,7 +1,7 @@
 include "ClientMessage.fbs";
 include "ServerMessage.fbs";
 
-namespace in.slyther.flatbuffers;
+namespace slyther.flatbuffers;
 
 union NetworkMessageType { ClientMessage, ServerMessage }
 

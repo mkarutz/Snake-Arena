@@ -2,7 +2,7 @@ include "Vector2.fbs";
 include "TickAck.fbs";
 include "NetworkObjectState.fbs";
 
-namespace in.slyther.flatbuffers;
+namespace slyther.flatbuffers;
 
 union ServerMessageType { ServerHello, ServerWorldState, ServerGoodbye, TickAck }
 

@@ -1,6 +1,6 @@
 include "Vector2.fbs";
 
-namespace in.slyther.flatbuffers;
+namespace slyther.flatbuffers;
 
 union NetworkObjectStateType { FoodState, SnakeState }
 

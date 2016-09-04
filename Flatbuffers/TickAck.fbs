@@ -1,4 +1,4 @@
-namespace in.slyther.flatbuffers;
+namespace slyther.flatbuffers;
 
 table TickAck {
     tick:uint;
