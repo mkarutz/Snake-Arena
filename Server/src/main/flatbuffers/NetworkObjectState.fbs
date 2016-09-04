@@ -1,11 +1,13 @@
+include "Vector2.fbs";
+
 namespace in.slyther.flatbuffers;
+
+union NetworkObjectStateType { FoodState, SnakeState }
 
 table NetworkObjectState {
     networkId:int;
     state:NetworkObjectStateType;
 }
-
-union NetworkObjectStateType { FoodState, SnakeState }
 
 table FoodState {
     position:Vector2;

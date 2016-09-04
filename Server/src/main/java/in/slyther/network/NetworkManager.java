@@ -1,10 +1,14 @@
 package in.slyther.network;
 
+import in.slyther.flatbuffers.ClientMessage;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 
 /**
@@ -16,7 +20,9 @@ public class NetworkManager {
 
     private final int udpPort;
     private DatagramChannel channel;
-    private ByteBuffer buf = ByteBuffer.allocate(MAX_PACKET);
+    private final ByteBuffer buf = ByteBuffer.allocate(MAX_PACKET);
+
+    private final Deque<ClientMessage> messageQueue = new ArrayDeque<>(MAX_PACKETS_PER_TICK);
 
 
     /**
@@ -62,7 +68,8 @@ public class NetworkManager {
                 }
 
                 // Deserialize message and add to queue
-                // TODO
+                ClientMessage msg = ClientMessage.getRootAsClientMessage(buf);
+
 
                 packetsRead++;
             } catch (IOException e) {

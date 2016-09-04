@@ -1,7 +1,7 @@
-namespace in.slyther.flatbuffers;
-
 include "Vector2.fbs";
-include "TickAck.fbc";
+include "TickAck.fbs";
+
+namespace in.slyther.flatbuffers;
 
 union ClientMessageType { ClientHello, ClientInputState, ClientGoodbye, TickAck }
 
