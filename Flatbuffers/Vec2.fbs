@@ -1,6 +1,6 @@
 namespace slyther.flatbuffers;
 
-struct Vector2 {
+struct Vec2 {
     x:float;
     y:float;
 }

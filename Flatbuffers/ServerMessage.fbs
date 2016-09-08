@@ -1,4 +1,3 @@
-include "Vector2.fbs";
 include "TickAck.fbs";
 include "NetworkObjectState.fbs";
 

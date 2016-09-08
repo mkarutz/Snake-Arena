@@ -1,8 +1,14 @@
 package in.slyther;
 
+import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.network.NetworkManager;
+import slyther.flatbuffers.ClientHello;
+import slyther.flatbuffers.ClientMessage;
+import slyther.flatbuffers.ClientMessageType;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 
 /**
@@ -23,8 +29,8 @@ public class Server extends Thread {
      */
     private Server(Builder builder) {
         this.timeStep = 1000 / builder.tickRate;
-        this.networkManager = new NetworkManager(builder.udpPort);
         this.world = new World(this);
+        this.networkManager = new NetworkManager(world, builder.udpPort);
     }
 
 
@@ -75,19 +81,17 @@ public class Server extends Thread {
             System.exit(-1);
         }
 
-
-        // Main tick loop
+        int tick = 0;
         long lastTickTime = 0;
         while (true) {
             long startTime = System.currentTimeMillis();
 
-            // Read client messages
-            networkManager.handleIncomingPackets();
+            networkManager.handleIncomingPackets(tick);
 
-            // Send snapshots
-            networkManager.sendOutgoingPackets();
+            world.simulate(tick);
 
-            // Sleep tick time
+            networkManager.sendOutgoingPackets(tick);
+
             long deltaTime = System.currentTimeMillis() - startTime;
             try {
                 Thread.sleep(timeStep - deltaTime);
@@ -95,6 +99,8 @@ public class Server extends Thread {
                 e.printStackTrace();
                 System.exit(-1);
             }
+
+            tick++;
         }
     }
 

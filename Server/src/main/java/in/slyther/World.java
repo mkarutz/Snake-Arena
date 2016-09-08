@@ -46,6 +46,30 @@ public class World {
     }
 
 
+    public void simulate(int tick) {
+    }
+
+
+    /**
+     *
+     */
+    public Snake spawnSnake() {
+        final int id = freeSnakeIdsPool.remove();
+        respawnSnake(snakes[id]);
+        return snakes[id];
+    }
+
+
+    /**
+     * Respawn Snake.
+     * @param snake The snake to respawn.
+     */
+    private void respawnSnake(Snake snake) {
+        snake.setScore(STARTING_SCORE);
+        snake.respawn(Vector2.randomUniform(WORLD_RADIUS), STARTING_SCORE);
+    }
+
+
     /**
      *
      */
