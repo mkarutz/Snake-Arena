@@ -1,14 +1,8 @@
 package in.slyther;
 
-import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.network.NetworkManager;
-import slyther.flatbuffers.ClientHello;
-import slyther.flatbuffers.ClientMessage;
-import slyther.flatbuffers.ClientMessageType;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 
 /**

@@ -1,8 +1,10 @@
 package in.slyther;
 
+import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.gameobjects.Food;
 import in.slyther.gameobjects.Snake;
 import in.slyther.math.Vector2;
+import slyther.flatbuffers.ServerWorldState;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -47,6 +49,28 @@ public class World {
 
 
     public void simulate(int tick) {
+    }
+
+
+    public int serializeObjectStates(FlatBufferBuilder builder, int tick) {
+        int[] objectOffsets = new int[MAX_PLAYERS + MAX_FOOD];
+        int n = 0;
+
+        for (int i = 0; i < MAX_PLAYERS; i++) {
+            objectOffsets[n++] = snakes[i].serialize(builder);
+        }
+
+        for (int i = 0; i < MAX_FOOD; i++) {
+            objectOffsets[n++] = food[i].serialize(builder, i);
+        }
+
+        assert(n == MAX_PLAYERS + MAX_FOOD);
+
+        ServerWorldState.startServerWorldState(builder);
+        ServerWorldState.createObjectStatesVector(builder, objectOffsets);
+        ServerWorldState.addTick(builder, tick);
+
+        return ServerWorldState.endServerWorldState(builder);
     }
 
 
