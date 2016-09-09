@@ -1,4 +1,4 @@
-include "Vector2.fbs";
+include "Vec2.fbs";
 include "TickAck.fbs";
 
 namespace slyther.flatbuffers;
@@ -16,7 +16,7 @@ table ClientHello {
 
 table ClientInputState {
     tick:uint;
-    desiredMove:Vector2;
+    desiredMove:Vec2;
     isTurbo:bool;
 }
 

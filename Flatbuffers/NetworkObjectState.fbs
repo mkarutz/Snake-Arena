@@ -1,21 +1,22 @@
-include "Vector2.fbs";
+include "Vec2.fbs";
 
 namespace slyther.flatbuffers;
 
 union NetworkObjectStateType { FoodState, SnakeState }
 
 table NetworkObjectState {
-    networkId:int;
     state:NetworkObjectStateType;
 }
 
 table FoodState {
-    position:Vector2;
+    foodId:int;
+    position:Vec2;
     weight:ubyte;
     isActive:bool;
 }
 
 table SnakeState {
+    playerId:int;
     name:string;
     skin:string;
     score:uint;
@@ -28,6 +29,5 @@ table SnakeState {
 
 table SnakePartState {
     index:ubyte;
-    position:Vector2;
-    direction:Vector2;
+    position:Vec2;
 }
