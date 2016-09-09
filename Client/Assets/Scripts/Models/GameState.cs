@@ -21,7 +21,7 @@ public class GameState : MonoBehaviour {
 	    
 	}
 
-    void InitState(int maxSnakes, int maxFoods, float worldRadius)
+    public void InitState(int maxSnakes, int maxFoods, float worldRadius)
     {
         this.maxSnakes = maxSnakes;
         this.maxFoods = maxFoods;
@@ -30,17 +30,52 @@ public class GameState : MonoBehaviour {
         this.snakePool = new SnakeState[this.maxSnakes];
         for (int i = 0; i < this.maxSnakes; i++)
         {
-            GameObject newSnake = Instantiate<GameObject>(snakeTemplate);
-            snakePool[i] = newSnake.GetComponent<SnakeState>();
+            GameObject newSnake = new GameObject();
+            GameObject newSnakeHead = new GameObject();
+            snakePool[i] = newSnake.AddComponent<SnakeState>();
+            newSnake.AddComponent<SnakeMeshGenerator>();
+            newSnakeHead.gameObject.transform.parent = newSnake.transform;
+            snakePool[i].head = newSnakeHead;
+            snakePool[i].enabled = false;
         }
 
         this.foodPool = new FoodState[this.maxFoods];
         for (int i = 0; i < this.maxFoods; i++)
         {
-            GameObject newFood = Instantiate<GameObject>(foodTemplate);
-            snakePool[i] = newFood.GetComponent<SnakeState>();
+            GameObject newFood = new GameObject();
+            foodPool[i] = newFood.AddComponent<FoodState>();
         }
     }
 	
-	
+    public GameObject ActivateSnake<T>(int snakeID, string name, int score, Vector2 position, int skinID)
+    {
+        if (snakePool[snakeID].enabled == true)
+            this.DeactivateSnake(snakeID);
+
+        snakePool[snakeID].enabled = true;
+        snakePool[snakeID].name = name;
+        snakePool[snakeID].head.transform.position = position;
+        snakePool[snakeID].snakeSkinID = skinID;
+
+        SnakeMeshGenerator view = snakePool[snakeID].GetComponent<SnakeMeshGenerator>();
+        view.enabled = true;
+        snakePool[snakeID].GetComponent<MeshRenderer>().enabled = true;
+        snakePool[snakeID].score = score;
+        snakePool[snakeID].gameObject.AddComponent(typeof(T));
+        return snakePool[snakeID].gameObject;
+    }
+
+    public GameObject GetSnake(int snakeID)
+    {
+        return snakePool[snakeID].gameObject;
+    }
+
+    public void DeactivateSnake(int snakeID)
+    {
+        snakePool[snakeID].enabled = false;
+        SnakeMeshGenerator view = snakePool[snakeID].GetComponent<SnakeMeshGenerator>();
+        view.enabled = false;
+        snakePool[snakeID].GetComponent<MeshRenderer>().enabled = false;
+        Destroy(snakePool[snakeID].GetComponent<IController>().getControllerComponent());
+    }
 }
