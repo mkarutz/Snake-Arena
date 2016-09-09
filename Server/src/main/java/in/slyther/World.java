@@ -17,8 +17,8 @@ import java.util.Random;
 public class World {
     private static final float WORLD_RADIUS = 500;
     private static final int STARTING_SCORE = 200;
-    private static final int MAX_PLAYERS = 100;
-    private static final int MAX_FOOD = 10000;
+    private static final int MAX_PLAYERS = 10;
+    private static final int MAX_FOOD = 10;
     private static final int FOOD_MAX_WEIGHT = 50;
 
     private final Random random = new Random();
@@ -66,8 +66,10 @@ public class World {
 
         assert(n == MAX_PLAYERS + MAX_FOOD);
 
+        int objectsVectorOffset = ServerWorldState.createObjectStatesVector(builder, objectOffsets);
+
         ServerWorldState.startServerWorldState(builder);
-        ServerWorldState.createObjectStatesVector(builder, objectOffsets);
+        ServerWorldState.addObjectStates(builder, objectsVectorOffset);
         ServerWorldState.addTick(builder, tick);
 
         return ServerWorldState.endServerWorldState(builder);

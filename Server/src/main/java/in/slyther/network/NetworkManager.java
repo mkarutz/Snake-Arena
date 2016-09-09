@@ -90,20 +90,21 @@ public class NetworkManager {
     private void readPacketsToQueue() {
         int packetsRead = 0;
         while (packetsRead < MAX_PACKETS_PER_TICK) {
-            ByteBuffer buf = byteBufferPool.remove();
+            ByteBuffer buf = ByteBuffer.allocate(MAX_PACKET);//byteBufferPool.remove();
             buf.clear();
 
             try {
                 final SocketAddress socketAddress = channel.receive(buf);
                 if (socketAddress == null) {
+                    //byteBufferPool.add(buf);
                     break;
                 }
 
                 buf.flip();
 
-                final ReceivedPacket packet = packetPool.remove();
-                packet.setFromAddress(socketAddress);
-                packet.setByteBuffer(buf);
+                final ReceivedPacket packet = new ReceivedPacket(socketAddress, buf);//packetPool.remove();
+//                packet.setFromAddress(socketAddress);
+//                packet.setByteBuffer(buf);
                 packetQueue.add(packet);
 
                 System.out.println("Received packet from " + socketAddress.toString());
@@ -133,8 +134,7 @@ public class NetworkManager {
                 processPacketFromPlayer(clientProxy, packet);
             }
 
-            packetQueue.add(packet);
-            byteBufferPool.add(packet.getByteBuffer());
+            //byteBufferPool.add(packet.getByteBuffer());
         }
     }
 
@@ -205,6 +205,7 @@ public class NetworkManager {
         try {
             channel.send(buf, clientProxy.getSocketAddress());
         } catch (IOException e) {
+            System.out.println("ERROR: Failed to send Server Hello.");
             System.exit(-1);
         }
     }
@@ -291,6 +292,8 @@ public class NetworkManager {
         try {
             channel.send(buf, clientProxy.getSocketAddress());
         } catch (IOException e) {
+            System.out.println("ERROR: Failed to send World State.");
+            e.printStackTrace();
             System.exit(-1);
         }
     }

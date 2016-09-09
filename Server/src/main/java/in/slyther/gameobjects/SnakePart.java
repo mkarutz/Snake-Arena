@@ -3,7 +3,6 @@ package in.slyther.gameobjects;
 import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.math.Vector2;
 import slyther.flatbuffers.SnakePartState;
-import slyther.flatbuffers.SnakeState;
 import slyther.flatbuffers.Vec2;
 
 public class SnakePart {
@@ -15,11 +14,9 @@ public class SnakePart {
 
 
     public int serialize(FlatBufferBuilder builder, int index) {
-        int positionOffset = Vec2.createVec2(builder, position.getX(), position.getY());
-
         SnakePartState.startSnakePartState(builder);
+        SnakePartState.addPosition(builder, Vec2.createVec2(builder, position.getX(), position.getY()));
         SnakePartState.addIndex(builder, index);
-        SnakePartState.addPosition(builder, positionOffset);
 
         return SnakePartState.endSnakePartState(builder);
     }
