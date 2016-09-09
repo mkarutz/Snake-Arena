@@ -2,6 +2,8 @@ package in.slyther.gameobjects;
 
 import in.slyther.math.Vector2;
 
+import java.util.Vector;
+
 
 /**
  *
@@ -9,7 +11,7 @@ import in.slyther.math.Vector2;
 public class Snake {
     private static final int MAX_PARTS = 100;
 
-    private int pid;
+    private final int pid;
     private String name;
     private int score;
     private boolean isTurbo;
@@ -29,6 +31,8 @@ public class Snake {
         this.pid = pid;
         this.name = name;
         this.score = score;
+
+        initSnakeParts();
     }
 
 
@@ -44,6 +48,26 @@ public class Snake {
 
     /**
      *
+     * @param position Starting position.
+     * @param startingScore Starting starting score.
+     */
+    public void respawn(Vector2 position, int startingScore) {
+        score = startingScore;
+        tail = 0;
+        head = 1;
+        isDead = false;
+        isTurbo = false;
+
+        parts[tail].getPosition().setX(0);
+        parts[tail].getPosition().setY(0);
+
+        parts[head].getPosition().setX(position.getX());
+        parts[head].getPosition().setY(position.getY());
+    }
+
+
+    /**
+     *
      * @param desiredMove
      */
     public void move(Vector2 desiredMove) {
@@ -53,10 +77,6 @@ public class Snake {
 
     public int getPid() {
         return pid;
-    }
-
-    public void setPid(int pid) {
-        this.pid = pid;
     }
 
     public String getName() {

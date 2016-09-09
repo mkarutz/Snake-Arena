@@ -24,8 +24,9 @@ public class Vector2 {
      * @return Vector2 with magnitude less than bound.
      */
     public static Vector2 randomUniform(float bound) {
-        final float x = random.nextFloat() * bound;
-        final float y = random.nextFloat() * (float) Math.sqrt(bound * bound - x * x);
+        final float x = random.nextFloat() * 2 * bound - bound;
+        final float yBound = (float) Math.sqrt(bound * bound - x * x);
+        final float y = random.nextFloat() * 2 * yBound - yBound;
         return new Vector2(x, y);
     }
 

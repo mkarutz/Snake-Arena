@@ -29,8 +29,8 @@ public class Server extends Thread {
      */
     private Server(Builder builder) {
         this.timeStep = 1000 / builder.tickRate;
-        this.networkManager = new NetworkManager(builder.udpPort);
         this.world = new World(this);
+        this.networkManager = new NetworkManager(world, builder.udpPort);
     }
 
 
@@ -81,19 +81,17 @@ public class Server extends Thread {
             System.exit(-1);
         }
 
-
-        // Main tick loop
+        int tick = 0;
         long lastTickTime = 0;
         while (true) {
             long startTime = System.currentTimeMillis();
 
-            // Read client messages
-            networkManager.handleIncomingPackets();
+            networkManager.handleIncomingPackets(tick);
 
-            // Send snapshots
-            networkManager.sendOutgoingPackets();
+            world.simulate(tick);
 
-            // Sleep tick time
+            networkManager.sendOutgoingPackets(tick);
+
             long deltaTime = System.currentTimeMillis() - startTime;
             try {
                 Thread.sleep(timeStep - deltaTime);
@@ -101,6 +99,8 @@ public class Server extends Thread {
                 e.printStackTrace();
                 System.exit(-1);
             }
+
+            tick++;
         }
     }
 
@@ -112,24 +112,5 @@ public class Server extends Thread {
     public static void main(String[] args) {
         final Server server = new Builder().build();
         server.start();
-//
-//        FlatBufferBuilder builder = new FlatBufferBuilder (1);
-//
-//        int offsetName = builder.createString("foobar");
-//
-//        ClientHello.startClientHello(builder);
-//        ClientHello.addPlayerName(builder, offsetName);
-//        int offsetClientHello = ClientHello.endClientHello (builder);
-//
-//        ClientMessage.startClientMessage (builder);
-//        ClientMessage.addMsgType (builder, ClientMessageType.ClientHello);
-//        ClientMessage.addMsg (builder, offsetClientHello);
-//        int offsetClientMessage = ClientMessage.endClientMessage(builder);
-//
-//        ClientMessage.finishClientMessageBuffer (builder, offsetClientMessage);
-//
-//        byte[] bytes = builder.sizedByteArray();
-//
-//        System.out.println(Arrays.toString(bytes));
     }
 }
