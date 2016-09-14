@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using slyther.flatbuffers;
 
 public class GameState : MonoBehaviour {
 
@@ -20,6 +21,23 @@ public class GameState : MonoBehaviour {
     void Start () {
 	    
 	}
+
+    public void ReplicateState(ServerWorldState state)
+    {
+        Debug.Log("States length = " + state.ObjectStatesLength);
+
+        for (int i = 0; i < state.ObjectStatesLength; i++)
+        {
+            NetworkObjectState objectState = state.GetObjectStates(i);
+            NetworkObjectStateType objectType = objectState.StateType;
+            Debug.Log(objectType.ToString());
+            if (objectType == NetworkObjectStateType.FoodState)
+            {
+                slyther.flatbuffers.FoodState foodState = objectState.GetState<slyther.flatbuffers.FoodState>(new slyther.flatbuffers.FoodState());
+                ActivateFood(foodState.FoodId,new Vector2 (foodState.Position.X,foodState.Position.Y),Color.red,foodState.Weight);
+            }
+        }
+    }
 
     public void InitState(int maxSnakes, int maxFoods, float worldRadius)
     {
@@ -42,11 +60,37 @@ public class GameState : MonoBehaviour {
         this.foodPool = new FoodState[this.maxFoods];
         for (int i = 0; i < this.maxFoods; i++)
         {
-            GameObject newFood = new GameObject();
-            foodPool[i] = newFood.AddComponent<FoodState>();
+            foodPool[i] = GameObject.Instantiate(foodTemplate).GetComponent<FoodState>();
+            foodPool[i].enabled = false;
+            foodPool[i].GetComponent<MeshRenderer>().enabled = false;
+            foodPool[i].GetComponent<FoodView>().enabled = false;
         }
     }
 	
+    public GameObject ActivateFood(int foodID, Vector2 position,Color color, int weight)
+    {
+        if(foodPool[foodID].enabled == true)
+        {
+            DeactivateFood(foodID);
+        }
+        foodPool[foodID].enabled = true;
+        foodPool[foodID].position = position;
+        foodPool[foodID].color = color;
+        foodPool[foodID].weight = weight;
+
+        foodPool[foodID].GetComponent<FoodView>().enabled = true;
+        foodPool[foodID].GetComponent<MeshRenderer>().enabled = true;
+
+        return foodPool[foodID].gameObject;
+    }
+
+    public void DeactivateFood(int foodID)
+    {
+        foodPool[foodID].enabled = false;
+        foodPool[foodID].GetComponent<FoodView>().enabled = false;
+        foodPool[foodID].GetComponent<MeshRenderer>().enabled = false;
+
+    }
     public GameObject ActivateSnake<T>(int snakeID, string name, int score, Vector2 position, int skinID)
     {
         if (snakePool[snakeID].enabled == true)

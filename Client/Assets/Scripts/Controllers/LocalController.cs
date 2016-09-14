@@ -21,6 +21,9 @@ public class LocalController : MonoBehaviour {
 
         this.camera.snakeToTrack = this.playerSnake.GetComponent<SnakeState>();
 
+        state.ActivateFood(1, Vector2.zero, Color.red, 2);
+        state.ActivateFood(2, Vector2.one, Color.blue, 2);
+        state.ActivateFood(3, Vector2.right, Color.cyan, 2);
 
         state.ActivateSnake<LocalSnakeControllerAI>(1, "Enemy", 100, Vector2.zero, 1).GetComponent<SnakeState>();
         state.ActivateSnake<LocalSnakeControllerAI>(2, "Enemy", 2000, Vector2.zero, 2).GetComponent<SnakeState>();
