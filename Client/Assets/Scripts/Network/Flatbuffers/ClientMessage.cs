@@ -75,13 +75,13 @@ public sealed class ClientInputState : Table {
   public ClientInputState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
   public uint Tick { get { int o = __offset(4); return o != 0 ? bb.GetUint(o + bb_pos) : (uint)0; } }
-  public slyther.flatbuffers.Vector2 DesiredMove { get { return GetDesiredMove(new slyther.flatbuffers.Vector2()); } }
-  public slyther.flatbuffers.Vector2 GetDesiredMove(slyther.flatbuffers.Vector2 obj) { int o = __offset(6); return o != 0 ? obj.__init(o + bb_pos, bb) : null; }
+  public slyther.flatbuffers.Vec2 DesiredMove { get { return GetDesiredMove(new slyther.flatbuffers.Vec2()); } }
+  public slyther.flatbuffers.Vec2 GetDesiredMove(slyther.flatbuffers.Vec2 obj) { int o = __offset(6); return o != 0 ? obj.__init(o + bb_pos, bb) : null; }
   public bool IsTurbo { get { int o = __offset(8); return o != 0 ? 0!=bb.Get(o + bb_pos) : (bool)false; } }
 
   public static void StartClientInputState(FlatBufferBuilder builder) { builder.StartObject(3); }
   public static void AddTick(FlatBufferBuilder builder, uint tick) { builder.AddUint(0, tick, 0); }
-  public static void AddDesiredMove(FlatBufferBuilder builder, Offset<slyther.flatbuffers.Vector2> desiredMoveOffset) { builder.AddStruct(1, desiredMoveOffset.Value, 0); }
+  public static void AddDesiredMove(FlatBufferBuilder builder, Offset<slyther.flatbuffers.Vec2> desiredMoveOffset) { builder.AddStruct(1, desiredMoveOffset.Value, 0); }
   public static void AddIsTurbo(FlatBufferBuilder builder, bool isTurbo) { builder.AddBool(2, isTurbo, false); }
   public static Offset<ClientInputState> EndClientInputState(FlatBufferBuilder builder) {
     int o = builder.EndObject();

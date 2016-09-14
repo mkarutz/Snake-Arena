@@ -88,7 +88,11 @@ public class Server extends Thread {
 
             long deltaTime = System.currentTimeMillis() - startTime;
             try {
-                Thread.sleep(timeStep - deltaTime);
+                if (deltaTime < timeStep) {
+                    Thread.sleep(timeStep - deltaTime);
+                } else {
+                    System.out.println("Time step exceeded.");
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 System.exit(-1);

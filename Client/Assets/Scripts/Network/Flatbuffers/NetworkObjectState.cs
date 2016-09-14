@@ -18,25 +18,21 @@ public sealed class NetworkObjectState : Table {
   public static NetworkObjectState GetRootAsNetworkObjectState(ByteBuffer _bb, NetworkObjectState obj) { return (obj.__init(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
   public NetworkObjectState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
-  public int NetworkId { get { int o = __offset(4); return o != 0 ? bb.GetInt(o + bb_pos) : (int)0; } }
-  public NetworkObjectStateType StateType { get { int o = __offset(6); return o != 0 ? (NetworkObjectStateType)bb.Get(o + bb_pos) : NetworkObjectStateType.NONE; } }
-  public TTable GetState<TTable>(TTable obj) where TTable : Table { int o = __offset(8); return o != 0 ? __union(obj, o) : null; }
+  public NetworkObjectStateType StateType { get { int o = __offset(4); return o != 0 ? (NetworkObjectStateType)bb.Get(o + bb_pos) : NetworkObjectStateType.NONE; } }
+  public TTable GetState<TTable>(TTable obj) where TTable : Table { int o = __offset(6); return o != 0 ? __union(obj, o) : null; }
 
   public static Offset<NetworkObjectState> CreateNetworkObjectState(FlatBufferBuilder builder,
-      int networkId = 0,
       NetworkObjectStateType state_type = NetworkObjectStateType.NONE,
       int stateOffset = 0) {
-    builder.StartObject(3);
+    builder.StartObject(2);
     NetworkObjectState.AddState(builder, stateOffset);
-    NetworkObjectState.AddNetworkId(builder, networkId);
     NetworkObjectState.AddStateType(builder, state_type);
     return NetworkObjectState.EndNetworkObjectState(builder);
   }
 
-  public static void StartNetworkObjectState(FlatBufferBuilder builder) { builder.StartObject(3); }
-  public static void AddNetworkId(FlatBufferBuilder builder, int networkId) { builder.AddInt(0, networkId, 0); }
-  public static void AddStateType(FlatBufferBuilder builder, NetworkObjectStateType stateType) { builder.AddByte(1, (byte)stateType, 0); }
-  public static void AddState(FlatBufferBuilder builder, int stateOffset) { builder.AddOffset(2, stateOffset, 0); }
+  public static void StartNetworkObjectState(FlatBufferBuilder builder) { builder.StartObject(2); }
+  public static void AddStateType(FlatBufferBuilder builder, NetworkObjectStateType stateType) { builder.AddByte(0, (byte)stateType, 0); }
+  public static void AddState(FlatBufferBuilder builder, int stateOffset) { builder.AddOffset(1, stateOffset, 0); }
   public static Offset<NetworkObjectState> EndNetworkObjectState(FlatBufferBuilder builder) {
     int o = builder.EndObject();
     return new Offset<NetworkObjectState>(o);
@@ -48,15 +44,17 @@ public sealed class FoodState : Table {
   public static FoodState GetRootAsFoodState(ByteBuffer _bb, FoodState obj) { return (obj.__init(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
   public FoodState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
-  public slyther.flatbuffers.Vector2 Position { get { return GetPosition(new slyther.flatbuffers.Vector2()); } }
-  public slyther.flatbuffers.Vector2 GetPosition(slyther.flatbuffers.Vector2 obj) { int o = __offset(4); return o != 0 ? obj.__init(o + bb_pos, bb) : null; }
-  public byte Weight { get { int o = __offset(6); return o != 0 ? bb.Get(o + bb_pos) : (byte)0; } }
-  public bool IsActive { get { int o = __offset(8); return o != 0 ? 0!=bb.Get(o + bb_pos) : (bool)false; } }
+  public int FoodId { get { int o = __offset(4); return o != 0 ? bb.GetInt(o + bb_pos) : (int)0; } }
+  public slyther.flatbuffers.Vec2 Position { get { return GetPosition(new slyther.flatbuffers.Vec2()); } }
+  public slyther.flatbuffers.Vec2 GetPosition(slyther.flatbuffers.Vec2 obj) { int o = __offset(6); return o != 0 ? obj.__init(o + bb_pos, bb) : null; }
+  public byte Weight { get { int o = __offset(8); return o != 0 ? bb.Get(o + bb_pos) : (byte)0; } }
+  public bool IsActive { get { int o = __offset(10); return o != 0 ? 0!=bb.Get(o + bb_pos) : (bool)false; } }
 
-  public static void StartFoodState(FlatBufferBuilder builder) { builder.StartObject(3); }
-  public static void AddPosition(FlatBufferBuilder builder, Offset<slyther.flatbuffers.Vector2> positionOffset) { builder.AddStruct(0, positionOffset.Value, 0); }
-  public static void AddWeight(FlatBufferBuilder builder, byte weight) { builder.AddByte(1, weight, 0); }
-  public static void AddIsActive(FlatBufferBuilder builder, bool isActive) { builder.AddBool(2, isActive, false); }
+  public static void StartFoodState(FlatBufferBuilder builder) { builder.StartObject(4); }
+  public static void AddFoodId(FlatBufferBuilder builder, int foodId) { builder.AddInt(0, foodId, 0); }
+  public static void AddPosition(FlatBufferBuilder builder, Offset<slyther.flatbuffers.Vec2> positionOffset) { builder.AddStruct(1, positionOffset.Value, 0); }
+  public static void AddWeight(FlatBufferBuilder builder, byte weight) { builder.AddByte(2, weight, 0); }
+  public static void AddIsActive(FlatBufferBuilder builder, bool isActive) { builder.AddBool(3, isActive, false); }
   public static Offset<FoodState> EndFoodState(FlatBufferBuilder builder) {
     int o = builder.EndObject();
     return new Offset<FoodState>(o);
@@ -68,20 +66,22 @@ public sealed class SnakeState : Table {
   public static SnakeState GetRootAsSnakeState(ByteBuffer _bb, SnakeState obj) { return (obj.__init(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
   public SnakeState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
-  public string Name { get { int o = __offset(4); return o != 0 ? __string(o + bb_pos) : null; } }
-  public ArraySegment<byte>? GetNameBytes() { return __vector_as_arraysegment(4); }
-  public string Skin { get { int o = __offset(6); return o != 0 ? __string(o + bb_pos) : null; } }
-  public ArraySegment<byte>? GetSkinBytes() { return __vector_as_arraysegment(6); }
-  public uint Score { get { int o = __offset(8); return o != 0 ? bb.GetUint(o + bb_pos) : (uint)0; } }
-  public bool IsDead { get { int o = __offset(10); return o != 0 ? 0!=bb.Get(o + bb_pos) : (bool)false; } }
-  public bool IsTurbo { get { int o = __offset(12); return o != 0 ? 0!=bb.Get(o + bb_pos) : (bool)false; } }
+  public int PlayerId { get { int o = __offset(4); return o != 0 ? bb.GetInt(o + bb_pos) : (int)0; } }
+  public string Name { get { int o = __offset(6); return o != 0 ? __string(o + bb_pos) : null; } }
+  public ArraySegment<byte>? GetNameBytes() { return __vector_as_arraysegment(6); }
+  public string Skin { get { int o = __offset(8); return o != 0 ? __string(o + bb_pos) : null; } }
+  public ArraySegment<byte>? GetSkinBytes() { return __vector_as_arraysegment(8); }
+  public uint Score { get { int o = __offset(10); return o != 0 ? bb.GetUint(o + bb_pos) : (uint)0; } }
+  public bool IsDead { get { int o = __offset(12); return o != 0 ? 0!=bb.Get(o + bb_pos) : (bool)false; } }
+  public bool IsTurbo { get { int o = __offset(14); return o != 0 ? 0!=bb.Get(o + bb_pos) : (bool)false; } }
   public SnakePartState GetParts(int j) { return GetParts(new SnakePartState(), j); }
-  public SnakePartState GetParts(SnakePartState obj, int j) { int o = __offset(14); return o != 0 ? obj.__init(__indirect(__vector(o) + j * 4), bb) : null; }
-  public int PartsLength { get { int o = __offset(14); return o != 0 ? __vector_len(o) : 0; } }
-  public byte Head { get { int o = __offset(16); return o != 0 ? bb.Get(o + bb_pos) : (byte)0; } }
-  public byte Tail { get { int o = __offset(18); return o != 0 ? bb.Get(o + bb_pos) : (byte)0; } }
+  public SnakePartState GetParts(SnakePartState obj, int j) { int o = __offset(16); return o != 0 ? obj.__init(__indirect(__vector(o) + j * 4), bb) : null; }
+  public int PartsLength { get { int o = __offset(16); return o != 0 ? __vector_len(o) : 0; } }
+  public byte Head { get { int o = __offset(18); return o != 0 ? bb.Get(o + bb_pos) : (byte)0; } }
+  public byte Tail { get { int o = __offset(20); return o != 0 ? bb.Get(o + bb_pos) : (byte)0; } }
 
   public static Offset<SnakeState> CreateSnakeState(FlatBufferBuilder builder,
+      int playerId = 0,
       StringOffset nameOffset = default(StringOffset),
       StringOffset skinOffset = default(StringOffset),
       uint score = 0,
@@ -90,11 +90,12 @@ public sealed class SnakeState : Table {
       VectorOffset partsOffset = default(VectorOffset),
       byte head = 0,
       byte tail = 0) {
-    builder.StartObject(8);
+    builder.StartObject(9);
     SnakeState.AddParts(builder, partsOffset);
     SnakeState.AddScore(builder, score);
     SnakeState.AddSkin(builder, skinOffset);
     SnakeState.AddName(builder, nameOffset);
+    SnakeState.AddPlayerId(builder, playerId);
     SnakeState.AddTail(builder, tail);
     SnakeState.AddHead(builder, head);
     SnakeState.AddIsTurbo(builder, isTurbo);
@@ -102,17 +103,18 @@ public sealed class SnakeState : Table {
     return SnakeState.EndSnakeState(builder);
   }
 
-  public static void StartSnakeState(FlatBufferBuilder builder) { builder.StartObject(8); }
-  public static void AddName(FlatBufferBuilder builder, StringOffset nameOffset) { builder.AddOffset(0, nameOffset.Value, 0); }
-  public static void AddSkin(FlatBufferBuilder builder, StringOffset skinOffset) { builder.AddOffset(1, skinOffset.Value, 0); }
-  public static void AddScore(FlatBufferBuilder builder, uint score) { builder.AddUint(2, score, 0); }
-  public static void AddIsDead(FlatBufferBuilder builder, bool isDead) { builder.AddBool(3, isDead, false); }
-  public static void AddIsTurbo(FlatBufferBuilder builder, bool isTurbo) { builder.AddBool(4, isTurbo, false); }
-  public static void AddParts(FlatBufferBuilder builder, VectorOffset partsOffset) { builder.AddOffset(5, partsOffset.Value, 0); }
+  public static void StartSnakeState(FlatBufferBuilder builder) { builder.StartObject(9); }
+  public static void AddPlayerId(FlatBufferBuilder builder, int playerId) { builder.AddInt(0, playerId, 0); }
+  public static void AddName(FlatBufferBuilder builder, StringOffset nameOffset) { builder.AddOffset(1, nameOffset.Value, 0); }
+  public static void AddSkin(FlatBufferBuilder builder, StringOffset skinOffset) { builder.AddOffset(2, skinOffset.Value, 0); }
+  public static void AddScore(FlatBufferBuilder builder, uint score) { builder.AddUint(3, score, 0); }
+  public static void AddIsDead(FlatBufferBuilder builder, bool isDead) { builder.AddBool(4, isDead, false); }
+  public static void AddIsTurbo(FlatBufferBuilder builder, bool isTurbo) { builder.AddBool(5, isTurbo, false); }
+  public static void AddParts(FlatBufferBuilder builder, VectorOffset partsOffset) { builder.AddOffset(6, partsOffset.Value, 0); }
   public static VectorOffset CreatePartsVector(FlatBufferBuilder builder, Offset<SnakePartState>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
   public static void StartPartsVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
-  public static void AddHead(FlatBufferBuilder builder, byte head) { builder.AddByte(6, head, 0); }
-  public static void AddTail(FlatBufferBuilder builder, byte tail) { builder.AddByte(7, tail, 0); }
+  public static void AddHead(FlatBufferBuilder builder, byte head) { builder.AddByte(7, head, 0); }
+  public static void AddTail(FlatBufferBuilder builder, byte tail) { builder.AddByte(8, tail, 0); }
   public static Offset<SnakeState> EndSnakeState(FlatBufferBuilder builder) {
     int o = builder.EndObject();
     return new Offset<SnakeState>(o);
@@ -125,15 +127,12 @@ public sealed class SnakePartState : Table {
   public SnakePartState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
   public byte Index { get { int o = __offset(4); return o != 0 ? bb.Get(o + bb_pos) : (byte)0; } }
-  public slyther.flatbuffers.Vector2 Position { get { return GetPosition(new slyther.flatbuffers.Vector2()); } }
-  public slyther.flatbuffers.Vector2 GetPosition(slyther.flatbuffers.Vector2 obj) { int o = __offset(6); return o != 0 ? obj.__init(o + bb_pos, bb) : null; }
-  public slyther.flatbuffers.Vector2 Direction { get { return GetDirection(new slyther.flatbuffers.Vector2()); } }
-  public slyther.flatbuffers.Vector2 GetDirection(slyther.flatbuffers.Vector2 obj) { int o = __offset(8); return o != 0 ? obj.__init(o + bb_pos, bb) : null; }
+  public slyther.flatbuffers.Vec2 Position { get { return GetPosition(new slyther.flatbuffers.Vec2()); } }
+  public slyther.flatbuffers.Vec2 GetPosition(slyther.flatbuffers.Vec2 obj) { int o = __offset(6); return o != 0 ? obj.__init(o + bb_pos, bb) : null; }
 
-  public static void StartSnakePartState(FlatBufferBuilder builder) { builder.StartObject(3); }
+  public static void StartSnakePartState(FlatBufferBuilder builder) { builder.StartObject(2); }
   public static void AddIndex(FlatBufferBuilder builder, byte index) { builder.AddByte(0, index, 0); }
-  public static void AddPosition(FlatBufferBuilder builder, Offset<slyther.flatbuffers.Vector2> positionOffset) { builder.AddStruct(1, positionOffset.Value, 0); }
-  public static void AddDirection(FlatBufferBuilder builder, Offset<slyther.flatbuffers.Vector2> directionOffset) { builder.AddStruct(2, directionOffset.Value, 0); }
+  public static void AddPosition(FlatBufferBuilder builder, Offset<slyther.flatbuffers.Vec2> positionOffset) { builder.AddStruct(1, positionOffset.Value, 0); }
   public static Offset<SnakePartState> EndSnakePartState(FlatBufferBuilder builder) {
     int o = builder.EndObject();
     return new Offset<SnakePartState>(o);

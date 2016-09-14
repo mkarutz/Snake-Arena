@@ -90,21 +90,18 @@ public class NetworkManager {
     private void readPacketsToQueue() {
         int packetsRead = 0;
         while (packetsRead < MAX_PACKETS_PER_TICK) {
-            ByteBuffer buf = ByteBuffer.allocate(MAX_PACKET);//byteBufferPool.remove();
+            ByteBuffer buf = ByteBuffer.allocate(MAX_PACKET);
             buf.clear();
 
             try {
                 final SocketAddress socketAddress = channel.receive(buf);
                 if (socketAddress == null) {
-                    //byteBufferPool.add(buf);
                     break;
                 }
 
                 buf.flip();
 
-                final ReceivedPacket packet = new ReceivedPacket(socketAddress, buf);//packetPool.remove();
-//                packet.setFromAddress(socketAddress);
-//                packet.setByteBuffer(buf);
+                final ReceivedPacket packet = new ReceivedPacket(socketAddress, buf);
                 packetQueue.add(packet);
 
                 System.out.println("Received packet from " + socketAddress.toString());
@@ -133,8 +130,6 @@ public class NetworkManager {
                 final ClientProxy clientProxy = socketAddressClientProxyMap.get(fromAddress);
                 processPacketFromPlayer(clientProxy, packet);
             }
-
-            //byteBufferPool.add(packet.getByteBuffer());
         }
     }
 
@@ -164,6 +159,9 @@ public class NetworkManager {
      */
     private void connectNewPlayer(SocketAddress socketAddress, String playerName) {
         final ClientProxy clientProxy = getClientProxy(socketAddress, playerName);
+
+        System.out.println("New player: " + playerName + " (" + socketAddress + ")");
+
         socketAddressClientProxyMap.put(socketAddress, clientProxy);
         sendServerHello(clientProxy);
     }
