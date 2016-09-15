@@ -47,7 +47,7 @@ public class GameState : MonoBehaviour {
         }
     }
 	
-    public GameObject ActivateSnake<T>(int snakeID, string name, int score, Vector2 position, int skinID)
+    public SnakeState ActivateSnake<T>(int snakeID, string name, int score, Vector2 position, int skinID)
     {
         if (snakePool[snakeID].enabled == true)
             this.DeactivateSnake(snakeID);
@@ -62,12 +62,12 @@ public class GameState : MonoBehaviour {
         snakePool[snakeID].GetComponent<MeshRenderer>().enabled = true;
         snakePool[snakeID].score = score;
         snakePool[snakeID].gameObject.AddComponent(typeof(T));
-        return snakePool[snakeID].gameObject;
+        return snakePool[snakeID];
     }
 
-    public GameObject GetSnake(int snakeID)
+    public SnakeState GetSnake(int snakeID)
     {
-        return snakePool[snakeID].gameObject;
+        return snakePool[snakeID];
     }
 
     public void DeactivateSnake(int snakeID)

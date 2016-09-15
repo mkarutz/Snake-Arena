@@ -9,9 +9,9 @@ public class LocalController : MonoBehaviour {
 
     public GameState state;
 
-    public CameraController camera;
+    public new CameraController camera;
 
-    private GameObject playerSnake;
+    private SnakeState playerSnake;
 
 	// Use this for initialization
 	void Start () {
@@ -24,7 +24,7 @@ public class LocalController : MonoBehaviour {
 
         state.ActivateSnake<LocalSnakeControllerAI>(1, "Enemy", 100, Vector2.zero, 1).GetComponent<SnakeState>();
         state.ActivateSnake<LocalSnakeControllerAI>(2, "Enemy", 2000, Vector2.zero, 2).GetComponent<SnakeState>();
-        state.ActivateSnake<LocalSnakeControllerAI>(3, "Enemy", 40000, Vector2.zero, 2).GetComponent<SnakeState>();
+        state.ActivateSnake<LocalSnakeControllerAI>(3, "Enemy", 300, Vector2.zero, 2).GetComponent<SnakeState>();
 
     }
 	
