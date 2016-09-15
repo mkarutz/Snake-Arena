@@ -21,8 +21,19 @@ public class SnakeMeshGenerator : MonoBehaviour {
         this.meshFilter = this.gameObject.AddComponent<MeshFilter>();
         this.meshFilter.mesh = new Mesh();
         this.meshRenderer = this.gameObject.AddComponent<MeshRenderer>();
+        this.meshRenderer.enabled = false;
         
         this.meshRenderer.material.shader = Shader.Find("Unlit/TexShader");
+    }
+
+    void OnEnable()
+    {
+        this.meshRenderer.enabled = true;
+    }
+
+    void OnDisable()
+    {
+        this.meshRenderer.enabled = false;
     }
 
     void Update ()

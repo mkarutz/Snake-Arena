@@ -6,8 +6,8 @@ using slyther.flatbuffers;
 public class GameState : MonoBehaviour {
 
     // Public/exposed attributes
-    public GameObject snakeTemplate;
-    public GameObject foodTemplate;
+    //public GameObject snakeTemplate;
+    //public GameObject foodTemplate;
 
     // Private attributes
     private SnakeState[] snakePool;
@@ -60,10 +60,10 @@ public class GameState : MonoBehaviour {
         this.foodPool = new FoodState[this.maxFoods];
         for (int i = 0; i < this.maxFoods; i++)
         {
-            foodPool[i] = GameObject.Instantiate(foodTemplate).GetComponent<FoodState>();
+            GameObject newFood = new GameObject();
+            foodPool[i] = newFood.AddComponent<FoodState>();
             foodPool[i].enabled = false;
-            foodPool[i].GetComponent<MeshRenderer>().enabled = false;
-            foodPool[i].GetComponent<FoodView>().enabled = false;
+            foodPool[i].gameObject.AddComponent<FoodView>().enabled = false;
         }
     }
 
@@ -79,7 +79,6 @@ public class GameState : MonoBehaviour {
 
         SnakeMeshGenerator view = snakePool[snakeID].GetComponent<SnakeMeshGenerator>();
         view.enabled = true;
-        snakePool[snakeID].GetComponent<MeshRenderer>().enabled = true;
         snakePool[snakeID].score = score;
         snakePool[snakeID].gameObject.AddComponent(typeof(T));
         return snakePool[snakeID];
@@ -95,7 +94,6 @@ public class GameState : MonoBehaviour {
         snakePool[snakeID].enabled = false;
         SnakeMeshGenerator view = snakePool[snakeID].GetComponent<SnakeMeshGenerator>();
         view.enabled = false;
-        snakePool[snakeID].GetComponent<MeshRenderer>().enabled = false;
         Destroy(snakePool[snakeID].GetComponent<IController>().getControllerComponent());
     }
 
@@ -111,7 +109,7 @@ public class GameState : MonoBehaviour {
         foodPool[foodID].weight = weight;
 
         foodPool[foodID].GetComponent<FoodView>().enabled = true;
-        foodPool[foodID].GetComponent<MeshRenderer>().enabled = true;
+        foodPool[foodID].GetComponent<SpriteRenderer>().enabled = true;
 
         return foodPool[foodID].gameObject;
     }
