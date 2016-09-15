@@ -66,36 +66,8 @@ public class GameState : MonoBehaviour {
             foodPool[i].GetComponent<FoodView>().enabled = false;
         }
     }
-	
-<<<<<<< HEAD
+
     public SnakeState ActivateSnake<T>(int snakeID, string name, int score, Vector2 position, int skinID)
-=======
-    public GameObject ActivateFood(int foodID, Vector2 position,Color color, int weight)
-    {
-        if(foodPool[foodID].enabled == true)
-        {
-            DeactivateFood(foodID);
-        }
-        foodPool[foodID].enabled = true;
-        foodPool[foodID].position = position;
-        foodPool[foodID].color = color;
-        foodPool[foodID].weight = weight;
-
-        foodPool[foodID].GetComponent<FoodView>().enabled = true;
-        foodPool[foodID].GetComponent<MeshRenderer>().enabled = true;
-
-        return foodPool[foodID].gameObject;
-    }
-
-    public void DeactivateFood(int foodID)
-    {
-        foodPool[foodID].enabled = false;
-        foodPool[foodID].GetComponent<FoodView>().enabled = false;
-        foodPool[foodID].GetComponent<MeshRenderer>().enabled = false;
-
-    }
-    public GameObject ActivateSnake<T>(int snakeID, string name, int score, Vector2 position, int skinID)
->>>>>>> 9c447b7547d49a85b570acb81e1d7f3a98f44ecc
     {
         if (snakePool[snakeID].enabled == true)
             this.DeactivateSnake(snakeID);
@@ -125,5 +97,30 @@ public class GameState : MonoBehaviour {
         view.enabled = false;
         snakePool[snakeID].GetComponent<MeshRenderer>().enabled = false;
         Destroy(snakePool[snakeID].GetComponent<IController>().getControllerComponent());
+    }
+
+    public GameObject ActivateFood(int foodID, Vector2 position, Color color, int weight)
+    {
+        if (foodPool[foodID].enabled == true)
+        {
+            DeactivateFood(foodID);
+        }
+        foodPool[foodID].enabled = true;
+        foodPool[foodID].position = position;
+        foodPool[foodID].color = color;
+        foodPool[foodID].weight = weight;
+
+        foodPool[foodID].GetComponent<FoodView>().enabled = true;
+        foodPool[foodID].GetComponent<MeshRenderer>().enabled = true;
+
+        return foodPool[foodID].gameObject;
+    }
+
+    public void DeactivateFood(int foodID)
+    {
+        foodPool[foodID].enabled = false;
+        foodPool[foodID].GetComponent<FoodView>().enabled = false;
+        foodPool[foodID].GetComponent<MeshRenderer>().enabled = false;
+
     }
 }

@@ -71,56 +71,14 @@ public class NetworkController : MonoBehaviour {
 
     private void InitConnection()
     {
-<<<<<<< HEAD
-        this.udpc = new UdpClient("10.12.32.220", 3000);
-        this.udpc.Client.ReceiveTimeout = 5000;
-        fbBuilder.Clear();
-
-        StringOffset playerNameOffset = fbBuilder.CreateString("foo");
-        Offset<ClientHello> helloMessageOffset = ClientHello.CreateClientHello(fbBuilder, playerNameOffset);
-
-        ClientMessage.StartClientMessage(fbBuilder);
-        ClientMessage.AddMsgType(fbBuilder, ClientMessageType.ClientHello);
-        ClientMessage.AddMsg(fbBuilder, helloMessageOffset.Value);
-        var clientMessageOffset = ClientMessage.EndClientMessage(fbBuilder);
-
-        ClientMessage.FinishClientMessageBuffer(fbBuilder, clientMessageOffset);
-        
-        byte[] message = fbBuilder.SizedByteArray();
-=======
         this.udpc = new UdpClient("10.12.38.43", 3000);
         var message = clientMessageConstructor.ConstructClientHello(ClientMessageType.ClientHello,0,"foo");
->>>>>>> 9c447b7547d49a85b570acb81e1d7f3a98f44ecc
 
         Debug.Log("Message sending");
         Debug.Log(message.Length);
         this.udpc.Send(message, message.Length);
-
-<<<<<<< HEAD
-        ReceiveHello();
-    }
-
-    private void ReceiveHello()
-    {
-        var ep = new IPEndPoint(IPAddress.Any, 3000);
-        byte[] buf = this.udpc.Receive(ref ep);
-        var byteBuffer = new ByteBuffer(buf);
-
-        var msg = ServerMessage.GetRootAsServerMessage(byteBuffer);
-
-        var type = msg.MsgType;
-
-        Debug.Log("Received");
-        Debug.Log(type);
-
-        if (ServerMessageType.ServerHello.Equals(type))
-        {
-            var helloMsg = msg.GetMsg<ServerHello>(new ServerHello());
-            Debug.Log("Received Hello from server. Client ID = " + helloMsg.ClientId);
-        }
-=======
+        
         ReceiveMsg();
->>>>>>> 9c447b7547d49a85b570acb81e1d7f3a98f44ecc
     }
 
     public void ReceiveMsg()
@@ -134,13 +92,9 @@ public class NetworkController : MonoBehaviour {
         }
     }
 
-
-<<<<<<< HEAD
-
-=======
+    
     private void PollConnection()
     {
         
->>>>>>> 9c447b7547d49a85b570acb81e1d7f3a98f44ecc
     }
 }
