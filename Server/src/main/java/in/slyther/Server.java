@@ -1,14 +1,8 @@
 package in.slyther;
 
-import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.network.NetworkManager;
-import slyther.flatbuffers.ClientHello;
-import slyther.flatbuffers.ClientMessage;
-import slyther.flatbuffers.ClientMessageType;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 
 /**
@@ -94,7 +88,11 @@ public class Server extends Thread {
 
             long deltaTime = System.currentTimeMillis() - startTime;
             try {
-                Thread.sleep(timeStep - deltaTime);
+                if (deltaTime < timeStep) {
+                    Thread.sleep(timeStep - deltaTime);
+                } else {
+                    System.out.println("Time step exceeded.");
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 System.exit(-1);

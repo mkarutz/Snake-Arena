@@ -21,6 +21,15 @@ public class ClientProxy {
 
 
     /**
+     * Get the client ID.
+     * @return The client ID.
+     */
+    public int getClientId() {
+        return snake.getPid();
+    }
+
+
+    /**
      *
      * @return
      */

@@ -1,8 +1,10 @@
 package in.slyther;
 
+import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.gameobjects.Food;
 import in.slyther.gameobjects.Snake;
 import in.slyther.math.Vector2;
+import slyther.flatbuffers.ServerWorldState;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -15,8 +17,8 @@ import java.util.Random;
 public class World {
     private static final float WORLD_RADIUS = 500;
     private static final int STARTING_SCORE = 200;
-    private static final int MAX_PLAYERS = 100;
-    private static final int MAX_FOOD = 10000;
+    private static final int MAX_PLAYERS = 10;
+    private static final int MAX_FOOD = 10;
     private static final int FOOD_MAX_WEIGHT = 50;
 
     private final Random random = new Random();
@@ -47,6 +49,30 @@ public class World {
 
 
     public void simulate(int tick) {
+    }
+
+
+    public int serializeObjectStates(FlatBufferBuilder builder, int tick) {
+        int[] objectOffsets = new int[MAX_PLAYERS + MAX_FOOD];
+        int n = 0;
+
+        for (int i = 0; i < MAX_PLAYERS; i++) {
+            objectOffsets[n++] = snakes[i].serialize(builder);
+        }
+
+        for (int i = 0; i < MAX_FOOD; i++) {
+            objectOffsets[n++] = food[i].serialize(builder, i);
+        }
+
+        assert(n == MAX_PLAYERS + MAX_FOOD);
+
+        int objectsVectorOffset = ServerWorldState.createObjectStatesVector(builder, objectOffsets);
+
+        ServerWorldState.startServerWorldState(builder);
+        ServerWorldState.addObjectStates(builder, objectsVectorOffset);
+        ServerWorldState.addTick(builder, tick);
+
+        return ServerWorldState.endServerWorldState(builder);
     }
 
 

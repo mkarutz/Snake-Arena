@@ -46,7 +46,7 @@ public class NetworkManager {
 
 
     /**
-     *
+     * NetworkManager constructor.
      * @param world The game world.
      * @param udpPort The port for UDP communication with game clients.
      */
@@ -57,7 +57,7 @@ public class NetworkManager {
 
 
     /**
-     *
+     * Bind to the network socket and setup buffers from reading.
      * @throws IOException
      */
     public void bind() throws IOException {
@@ -74,8 +74,8 @@ public class NetworkManager {
 
 
     /**
-     *
-     * @param tick
+     * Handle all the incoming packets for this tick.
+     * @param tick The current tick.
      */
     public void handleIncomingPackets(int tick) {
         readPacketsToQueue();
@@ -90,7 +90,7 @@ public class NetworkManager {
     private void readPacketsToQueue() {
         int packetsRead = 0;
         while (packetsRead < MAX_PACKETS_PER_TICK) {
-            ByteBuffer buf = byteBufferPool.remove();
+            ByteBuffer buf = ByteBuffer.allocate(MAX_PACKET);
             buf.clear();
 
             try {
@@ -101,9 +101,7 @@ public class NetworkManager {
 
                 buf.flip();
 
-                final ReceivedPacket packet = packetPool.remove();
-                packet.setFromAddress(socketAddress);
-                packet.setByteBuffer(buf);
+                final ReceivedPacket packet = new ReceivedPacket(socketAddress, buf);
                 packetQueue.add(packet);
 
                 System.out.println("Received packet from " + socketAddress.toString());
@@ -118,8 +116,8 @@ public class NetworkManager {
 
 
     /**
-     *
-     * @param tick
+     * Process all the packets read this tick.
+     * @param tick The current tick.
      */
     private void processQueuedPackets(int tick) {
         while (!packetQueue.isEmpty()) {
@@ -129,18 +127,16 @@ public class NetworkManager {
             if (!socketAddressClientProxyMap.containsKey(fromAddress)) {
                 processPacketFromNewClient(packet);
             } else {
-                processPacketFromPlayer(packet);
+                final ClientProxy clientProxy = socketAddressClientProxyMap.get(fromAddress);
+                processPacketFromPlayer(clientProxy, packet);
             }
-
-            packetQueue.add(packet);
-            byteBufferPool.add(packet.getByteBuffer());
         }
     }
 
 
     /**
-     *
-     * @param packet
+     * Process a packet from an unknown address.
+     * @param packet The received packet.
      */
     private void processPacketFromNewClient(ReceivedPacket packet) {
         final ClientMessage msg = ClientMessage.getRootAsClientMessage(packet.getByteBuffer(), clientMessage);
@@ -157,19 +153,22 @@ public class NetworkManager {
 
 
     /**
-     *
-     * @param socketAddress
-     * @param playerName
+     * Handle a new client connection.
+     * @param socketAddress The socket address of the new client.
+     * @param playerName The client's player name.
      */
     private void connectNewPlayer(SocketAddress socketAddress, String playerName) {
         final ClientProxy clientProxy = getClientProxy(socketAddress, playerName);
+
+        System.out.println("New player: " + playerName + " (" + socketAddress + ")");
+
         socketAddressClientProxyMap.put(socketAddress, clientProxy);
         sendServerHello(clientProxy);
     }
 
 
     /**
-     * Get a new ClientProxy for a new client.
+     * Get a ClientProxy for a new client.
      * @param socketAddress The address of the new client.
      * @param playerName The name of the new client.
      * @return The ClientProxy.
@@ -204,20 +203,26 @@ public class NetworkManager {
         try {
             channel.send(buf, clientProxy.getSocketAddress());
         } catch (IOException e) {
+            System.out.println("ERROR: Failed to send Server Hello.");
             System.exit(-1);
         }
     }
 
 
     /**
-     *
-     * @param packet
+     * Process a packet from a connected player client.
+     * @param clientProxy The proxy for the client.
+     * @param packet The received packet.
      */
-    private void processPacketFromPlayer(ReceivedPacket packet) {
+    private void processPacketFromPlayer(ClientProxy clientProxy, ReceivedPacket packet) {
         final ClientMessage msg = ClientMessage.getRootAsClientMessage(packet.getByteBuffer(), clientMessage);
         final int msgType = msg.msgType();
 
         System.out.println("Processing message of type: " + msgType);
+
+        if (msg.clientId() != clientProxy.getClientId()) {
+            return;
+        }
 
         switch (msgType) {
             case ClientMessageType.ClientInputState:
@@ -233,17 +238,8 @@ public class NetworkManager {
 
 
     /**
-     *
-     * @param hello
-     */
-    private void processHelloMessage(ClientHello hello) {
-        System.out.println("Received hello from " + hello.playerName());
-    }
-
-
-    /**
-     *
-     * @param inputState
+     * Process new input from from a client.
+     * @param inputState The input state received.
      */
     private void processInputStateMessage(int clientId, ClientInputState inputState) {
         System.out.println("Received input from " + clientId);
@@ -251,8 +247,8 @@ public class NetworkManager {
 
 
     /**
-     *
-     * @param goodbye
+     * Process Goodbye message form client.
+     * @param goodbye The Goodbye message.
      */
     private void processGoodbyeMessage(int clientId, ClientGoodbye goodbye) {
         System.out.println("Received goodbye from " + clientId);
@@ -263,6 +259,40 @@ public class NetworkManager {
      *
      */
     public void sendOutgoingPackets(int tick) {
+        for (ClientProxy clientProxy : socketAddressClientProxyMap.values()) {
+            sendWorldState(tick, clientProxy);
+        }
+    }
 
+
+    /**
+     * Send the current world snapshot to a client.
+     * @param clientProxy The client proxy.
+     */
+    private void sendWorldState(int tick, ClientProxy clientProxy) {
+        FlatBufferBuilder builder = new FlatBufferBuilder(1);
+
+        int offsetObjectStates = world.serializeObjectStates(builder, tick);
+
+        ServerWorldState.startServerWorldState(builder);
+        ServerWorldState.addTick(builder, tick);
+        ServerWorldState.addObjectStates(builder, offsetObjectStates);
+        int offsetServerWorldState = ServerWorldState.endServerWorldState(builder);
+
+        ServerMessage.startServerMessage(builder);
+        ServerMessage.addMsgType(builder, ServerMessageType.ServerWorldState);
+        ServerMessage.addMsg(builder, offsetServerWorldState);
+        int offsetServerMessage = ServerMessage.endServerMessage(builder);
+
+        ServerMessage.finishServerMessageBuffer(builder, offsetServerMessage);
+        ByteBuffer buf = builder.dataBuffer();
+
+        try {
+            channel.send(buf, clientProxy.getSocketAddress());
+        } catch (IOException e) {
+            System.out.println("ERROR: Failed to send World State.");
+            e.printStackTrace();
+            System.exit(-1);
+        }
     }
 }

@@ -1,8 +1,8 @@
 package in.slyther.gameobjects;
 
+import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.math.Vector2;
-
-import java.util.Vector;
+import slyther.flatbuffers.SnakeState;
 
 
 /**
@@ -13,6 +13,7 @@ public class Snake {
 
     private final int pid;
     private String name;
+    private int skin;
     private int score;
     private boolean isTurbo;
     private boolean isDead;
@@ -41,7 +42,7 @@ public class Snake {
      */
     private void initSnakeParts() {
         for (int i = 0; i < MAX_PARTS; i++) {
-            parts[i] = new SnakePart(Vector2.zero(), Vector2.zero());
+            parts[i] = new SnakePart(Vector2.zero());
         }
     }
 
@@ -63,6 +64,30 @@ public class Snake {
 
         parts[head].getPosition().setX(position.getX());
         parts[head].getPosition().setY(position.getY());
+    }
+
+
+    public int serialize(FlatBufferBuilder builder) {
+        int[] partsOffsets = new int[MAX_PARTS];
+
+        for (int i = 0; i < MAX_PARTS; i++) {
+            partsOffsets[i] = parts[i].serialize(builder, i);
+        }
+
+        int vectorOffset = SnakeState.createPartsVector(builder, partsOffsets);
+        int nameOffset = builder.createString(name);
+
+        SnakeState.startSnakeState(builder);
+        SnakeState.addParts(builder, vectorOffset);
+        SnakeState.addHead(builder, head);
+        SnakeState.addIsDead(builder, isDead);
+        SnakeState.addIsTurbo(builder, isTurbo);
+        SnakeState.addName(builder, nameOffset);
+        SnakeState.addScore(builder, score);
+        SnakeState.addTail(builder, tail);
+        SnakeState.addSkin(builder, skin);
+
+        return SnakeState.endSnakeState(builder);
     }
 
 
