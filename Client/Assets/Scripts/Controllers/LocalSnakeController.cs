@@ -12,9 +12,15 @@ public abstract class LocalSnakeController : MonoBehaviour, IController {
     protected SnakeState snakeState;
 
     // Use this for initialization
-    void Start () {
+    void Awake () {
         this.snakeState = this.GetComponent<SnakeState>();
-	}
+        this.snakeState.head.AddComponent<LocalSnakeHeadController>().snakeState = this.snakeState;
+    }
+
+    void OnDestroy()
+    {
+        Destroy(this.snakeState.head.GetComponent<LocalSnakeHeadController>());
+    }
 
     abstract protected void MovementControl();
 

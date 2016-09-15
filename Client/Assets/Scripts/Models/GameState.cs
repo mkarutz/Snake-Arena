@@ -34,7 +34,7 @@ public class GameState : MonoBehaviour {
             if (objectType == NetworkObjectStateType.FoodState)
             {
                 slyther.flatbuffers.FoodState foodState = objectState.GetState<slyther.flatbuffers.FoodState>(new slyther.flatbuffers.FoodState());
-                ActivateFood(foodState.FoodId,new Vector2 (foodState.Position.X,foodState.Position.Y),Color.red,foodState.Weight);
+                ActivateFood<NetworkFoodController>(foodState.FoodId,new Vector2 (foodState.Position.X,foodState.Position.Y),Color.red,foodState.Weight);
             }
         }
     }
@@ -68,6 +68,7 @@ public class GameState : MonoBehaviour {
     }
 
     public SnakeState ActivateSnake<T>(int snakeID, string name, int score, Vector2 position, int skinID)
+        where T : IController
     {
         if (snakePool[snakeID].enabled == true)
             this.DeactivateSnake(snakeID);
@@ -97,28 +98,40 @@ public class GameState : MonoBehaviour {
         Destroy(snakePool[snakeID].GetComponent<IController>().getControllerComponent());
     }
 
-    public GameObject ActivateFood(int foodID, Vector2 position, Color color, int weight)
+    public FoodState ActivateFood<T>(int foodID, Vector2 position, Color color, int weight)
+        where T : IController
     {
         if (foodPool[foodID].enabled == true)
-        {
             DeactivateFood(foodID);
-        }
+        
         foodPool[foodID].enabled = true;
         foodPool[foodID].position = position;
         foodPool[foodID].color = color;
         foodPool[foodID].weight = weight;
+        foodPool[foodID].collected = false;
+
+        foodPool[foodID].gameObject.AddComponent(typeof(T));
 
         foodPool[foodID].GetComponent<FoodView>().enabled = true;
-        foodPool[foodID].GetComponent<SpriteRenderer>().enabled = true;
 
-        return foodPool[foodID].gameObject;
+        return foodPool[foodID];
+    }
+
+    public FoodState GetFood(int foodID)
+    {
+        return foodPool[foodID];
+    }
+
+    public bool IsFoodActive(int foodID)
+    {
+        return foodPool[foodID].enabled;
     }
 
     public void DeactivateFood(int foodID)
     {
         foodPool[foodID].enabled = false;
         foodPool[foodID].GetComponent<FoodView>().enabled = false;
-        foodPool[foodID].GetComponent<MeshRenderer>().enabled = false;
 
+        Destroy(foodPool[foodID].GetComponent<IController>().getControllerComponent());
     }
 }

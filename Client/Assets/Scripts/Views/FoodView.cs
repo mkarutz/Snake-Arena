@@ -2,7 +2,9 @@
 using System.Collections;
 
 public class FoodView : MonoBehaviour {
-    
+
+    public float scaleFactor;
+
     private FoodState foodState;
     private SpriteRenderer spriteRenderer;
 
@@ -27,7 +29,7 @@ public class FoodView : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        this.transform.localScale = Vector3.one * 0.05f * this.foodState.weight;
+        this.transform.localScale = Vector3.one * 0.05f * this.foodState.weight * this.scaleFactor;
 
         foodState.color.a = 0.6f;
         spriteRenderer.material.SetColor("_TintColor", foodState.color);

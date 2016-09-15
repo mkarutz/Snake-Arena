@@ -4,7 +4,7 @@ using System.Collections;
 public class CameraController : MonoBehaviour {
 
     public SnakeState snakeToTrack;
-    public Camera camera;
+    public new Camera camera;
 
 	// Use this for initialization
 	void Start () {
