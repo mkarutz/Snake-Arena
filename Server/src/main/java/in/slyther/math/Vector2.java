@@ -12,6 +12,23 @@ public class Vector2 {
         this.y = y;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Vector2 vector2 = (Vector2) o;
+
+        return Float.compare(vector2.x, x) == 0 && Float.compare(vector2.y, y) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (x != +0.0f ? Float.floatToIntBits(x) : 0);
+        result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
+        return result;
+    }
+
     public static Vector2 zero() {
         return new Vector2(0, 0);
     }
@@ -24,10 +41,23 @@ public class Vector2 {
      * @return Vector2 with magnitude less than bound.
      */
     public static Vector2 randomUniform(float bound) {
-        final float x = random.nextFloat() * 2 * bound - bound;
+        final Vector2 result = Vector2.zero();
+        result.setRandomUniform(bound);
+        return result;
+    }
+
+
+    /**
+     * Sets this Vector2 to a uniformly random position in a circle of
+     * radius bound.
+     * x^2 + y^2 < bound^2
+     * y < sqrt(bound^2 - x^2)
+     * @param bound Upper bound (exclusive) for magnitude of Vector.
+     */
+    public void setRandomUniform(float bound) {
+        x = random.nextFloat() * 2 * bound - bound;
         final float yBound = (float) Math.sqrt(bound * bound - x * x);
-        final float y = random.nextFloat() * 2 * yBound - yBound;
-        return new Vector2(x, y);
+        y = random.nextFloat() * 2 * yBound - yBound;
     }
 
 

@@ -40,4 +40,12 @@ public class Food {
     public void setWeight(int weight) {
         this.weight = weight;
     }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
 }

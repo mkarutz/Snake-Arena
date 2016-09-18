@@ -1,6 +1,7 @@
 package in.slyther.gameobjects;
 
 import com.google.flatbuffers.FlatBufferBuilder;
+import in.slyther.math.Rect;
 import in.slyther.math.Vector2;
 import slyther.flatbuffers.SnakeState;
 
@@ -9,7 +10,7 @@ import slyther.flatbuffers.SnakeState;
  *
  */
 public class Snake {
-    private static final int MAX_PARTS = 100;
+    public static final int MAX_PARTS = 100;
 
     private final int pid;
     private String name;
@@ -20,6 +21,8 @@ public class Snake {
     private final SnakePart[] parts = new SnakePart[MAX_PARTS];
     private int head;
     private int tail;
+
+    private Rect boundingBox = Rect.unit();
 
 
     /**
@@ -34,6 +37,7 @@ public class Snake {
         this.score = score;
 
         initSnakeParts();
+        updateBoundingBox();
     }
 
 
@@ -44,6 +48,26 @@ public class Snake {
         for (int i = 0; i < MAX_PARTS; i++) {
             parts[i] = new SnakePart(Vector2.zero());
         }
+    }
+
+
+    public void updateBoundingBox() {
+        float x0 = Float.MAX_VALUE;
+        float x1 = Float.MIN_VALUE;
+        float y0 = Float.MAX_VALUE;
+        float y1 = Float.MIN_NORMAL;
+
+        for (int i = 0; i < MAX_PARTS; i++) {
+            x0 = Math.min(x0, parts[i].getPosition().getX());
+            x1 = Math.max(x1, parts[i].getPosition().getX());
+            y0 = Math.min(y0, parts[i].getPosition().getY());
+            y1 = Math.max(y1, parts[i].getPosition().getY());
+        }
+
+        boundingBox.setMinX(x0);
+        boundingBox.setMinY(y0);
+        boundingBox.setMaxX(x1);
+        boundingBox.setMaxY(y1);
     }
 
 
@@ -78,6 +102,7 @@ public class Snake {
         int nameOffset = builder.createString(name);
 
         SnakeState.startSnakeState(builder);
+        SnakeState.addPlayerId(builder, pid);
         SnakeState.addParts(builder, vectorOffset);
         SnakeState.addHead(builder, head);
         SnakeState.addIsDead(builder, isDead);

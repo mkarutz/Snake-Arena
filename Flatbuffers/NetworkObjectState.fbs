@@ -31,3 +31,5 @@ table SnakePartState {
     index:ubyte;
     position:Vec2;
 }
+
+root_type NetworkObjectState;

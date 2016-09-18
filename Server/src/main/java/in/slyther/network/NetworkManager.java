@@ -1,6 +1,7 @@
 package in.slyther.network;
 
 import com.google.flatbuffers.FlatBufferBuilder;
+import in.slyther.Server;
 import in.slyther.World;
 import in.slyther.gameobjects.Snake;
 import slyther.flatbuffers.*;
@@ -28,11 +29,7 @@ public class NetworkManager {
     private final int udpPort;
     private DatagramChannel channel;
 
-    private final Deque<ByteBuffer> byteBufferPool = new ArrayDeque<>(MAX_PACKETS_PER_TICK);
-    private final Deque<ReceivedPacket> packetPool = new ArrayDeque<>(MAX_PACKETS_PER_TICK);
-
     private final Deque<ReceivedPacket> packetQueue = new ArrayDeque<>(MAX_PACKETS_PER_TICK);
-
     private final Map<SocketAddress, ClientProxy> socketAddressClientProxyMap = new HashMap<>();
 
     private final ClientMessage clientMessage = new ClientMessage();
@@ -64,10 +61,6 @@ public class NetworkManager {
         channel = DatagramChannel.open();
         channel.socket().bind(new InetSocketAddress(udpPort));
         channel.configureBlocking(false);
-
-        for (int i = 0; i < MAX_PACKETS_PER_TICK; i++) {
-            byteBufferPool.add(ByteBuffer.allocate(MAX_PACKET));
-        }
 
         System.out.println("Binding to port " + udpPort);
     }
@@ -272,12 +265,7 @@ public class NetworkManager {
     private void sendWorldState(int tick, ClientProxy clientProxy) {
         FlatBufferBuilder builder = new FlatBufferBuilder(1);
 
-        int offsetObjectStates = world.serializeObjectStates(builder, tick);
-
-        ServerWorldState.startServerWorldState(builder);
-        ServerWorldState.addTick(builder, tick);
-        ServerWorldState.addObjectStates(builder, offsetObjectStates);
-        int offsetServerWorldState = ServerWorldState.endServerWorldState(builder);
+        int offsetServerWorldState = world.serializeObjectStates(builder, tick);
 
         ServerMessage.startServerMessage(builder);
         ServerMessage.addMsgType(builder, ServerMessageType.ServerWorldState);

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Net;
 using System.Net.Sockets;
@@ -24,13 +24,13 @@ public class NetworkController : MonoBehaviour {
     void Start () {
         gameState.InitState(maxSnakes, maxFoods, worldRadius);
         InitConnection();
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    }
+
+    // Update is called once per frame
+    void Update () {
         ReadPacketsToQueue();
         ProcessQueuedMessages();
-	}
+    }
 
 
     void ReadPacketsToQueue()
@@ -70,7 +70,7 @@ public class NetworkController : MonoBehaviour {
 
     private void InitConnection()
     {
-        this.udpc = new UdpClient("10.12.38.43", 3000);
+        this.udpc = new UdpClient("localhost", 3000);
         var message = clientMessageConstructor.ConstructClientHello(ClientMessageType.ClientHello,0,"foo");
 
         Debug.Log("Message sending");
@@ -94,6 +94,6 @@ public class NetworkController : MonoBehaviour {
     
     private void PollConnection()
     {
-        
+
     }
 }

@@ -32,5 +32,6 @@ public final class NetworkObjectState extends Table {
     int o = builder.endObject();
     return o;
   }
+  public static void finishNetworkObjectStateBuffer(FlatBufferBuilder builder, int offset) { builder.finish(offset); }
 }
 

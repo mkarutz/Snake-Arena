@@ -14,4 +14,6 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile group: 'org.dyn4j', name: 'dyn4j', version: '3.2.3'
+    compile 'com.google.guava:guava:19.0'
 }
