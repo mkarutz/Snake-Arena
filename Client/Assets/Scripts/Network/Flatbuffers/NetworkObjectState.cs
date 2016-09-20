@@ -37,6 +37,7 @@ public sealed class NetworkObjectState : Table {
     int o = builder.EndObject();
     return new Offset<NetworkObjectState>(o);
   }
+  public static void FinishNetworkObjectStateBuffer(FlatBufferBuilder builder, Offset<NetworkObjectState> offset) { builder.Finish(offset.Value); }
 };
 
 public sealed class FoodState : Table {
@@ -47,14 +48,17 @@ public sealed class FoodState : Table {
   public int FoodId { get { int o = __offset(4); return o != 0 ? bb.GetInt(o + bb_pos) : (int)0; } }
   public slyther.flatbuffers.Vec2 Position { get { return GetPosition(new slyther.flatbuffers.Vec2()); } }
   public slyther.flatbuffers.Vec2 GetPosition(slyther.flatbuffers.Vec2 obj) { int o = __offset(6); return o != 0 ? obj.__init(o + bb_pos, bb) : null; }
-  public byte Weight { get { int o = __offset(8); return o != 0 ? bb.Get(o + bb_pos) : (byte)0; } }
-  public bool IsActive { get { int o = __offset(10); return o != 0 ? 0!=bb.Get(o + bb_pos) : (bool)false; } }
+  public slyther.flatbuffers.FColor Color { get { return GetColor(new slyther.flatbuffers.FColor()); } }
+  public slyther.flatbuffers.FColor GetColor(slyther.flatbuffers.FColor obj) { int o = __offset(8); return o != 0 ? obj.__init(o + bb_pos, bb) : null; }
+  public byte Weight { get { int o = __offset(10); return o != 0 ? bb.Get(o + bb_pos) : (byte)0; } }
+  public bool IsActive { get { int o = __offset(12); return o != 0 ? 0!=bb.Get(o + bb_pos) : (bool)false; } }
 
-  public static void StartFoodState(FlatBufferBuilder builder) { builder.StartObject(4); }
+  public static void StartFoodState(FlatBufferBuilder builder) { builder.StartObject(5); }
   public static void AddFoodId(FlatBufferBuilder builder, int foodId) { builder.AddInt(0, foodId, 0); }
   public static void AddPosition(FlatBufferBuilder builder, Offset<slyther.flatbuffers.Vec2> positionOffset) { builder.AddStruct(1, positionOffset.Value, 0); }
-  public static void AddWeight(FlatBufferBuilder builder, byte weight) { builder.AddByte(2, weight, 0); }
-  public static void AddIsActive(FlatBufferBuilder builder, bool isActive) { builder.AddBool(3, isActive, false); }
+  public static void AddColor(FlatBufferBuilder builder, Offset<slyther.flatbuffers.FColor> colorOffset) { builder.AddStruct(2, colorOffset.Value, 0); }
+  public static void AddWeight(FlatBufferBuilder builder, byte weight) { builder.AddByte(3, weight, 0); }
+  public static void AddIsActive(FlatBufferBuilder builder, bool isActive) { builder.AddBool(4, isActive, false); }
   public static Offset<FoodState> EndFoodState(FlatBufferBuilder builder) {
     int o = builder.EndObject();
     return new Offset<FoodState>(o);

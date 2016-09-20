@@ -10,12 +10,13 @@ import com.google.flatbuffers.*;
 @SuppressWarnings("unused")
 public final class ServerWorldState extends Table {
   public static ServerWorldState getRootAsServerWorldState(ByteBuffer _bb) { return getRootAsServerWorldState(_bb, new ServerWorldState()); }
-  public static ServerWorldState getRootAsServerWorldState(ByteBuffer _bb, ServerWorldState obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__init(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
-  public ServerWorldState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
+  public static ServerWorldState getRootAsServerWorldState(ByteBuffer _bb, ServerWorldState obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
+  public void __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; }
+  public ServerWorldState __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
   public long tick() { int o = __offset(4); return o != 0 ? (long)bb.getInt(o + bb_pos) & 0xFFFFFFFFL : 0; }
   public slyther.flatbuffers.NetworkObjectState objectStates(int j) { return objectStates(new slyther.flatbuffers.NetworkObjectState(), j); }
-  public slyther.flatbuffers.NetworkObjectState objectStates(slyther.flatbuffers.NetworkObjectState obj, int j) { int o = __offset(6); return o != 0 ? obj.__init(__indirect(__vector(o) + j * 4), bb) : null; }
+  public slyther.flatbuffers.NetworkObjectState objectStates(slyther.flatbuffers.NetworkObjectState obj, int j) { int o = __offset(6); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
   public int objectStatesLength() { int o = __offset(6); return o != 0 ? __vector_len(o) : 0; }
 
   public static int createServerWorldState(FlatBufferBuilder builder,

@@ -10,8 +10,9 @@ import com.google.flatbuffers.*;
 @SuppressWarnings("unused")
 public final class ClientGoodbye extends Table {
   public static ClientGoodbye getRootAsClientGoodbye(ByteBuffer _bb) { return getRootAsClientGoodbye(_bb, new ClientGoodbye()); }
-  public static ClientGoodbye getRootAsClientGoodbye(ByteBuffer _bb, ClientGoodbye obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__init(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
-  public ClientGoodbye __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
+  public static ClientGoodbye getRootAsClientGoodbye(ByteBuffer _bb, ClientGoodbye obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
+  public void __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; }
+  public ClientGoodbye __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
 
   public static void startClientGoodbye(FlatBufferBuilder builder) { builder.startObject(0); }

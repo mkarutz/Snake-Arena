@@ -10,6 +10,7 @@ import slyther.flatbuffers.NetworkObjectStateType;
 import slyther.flatbuffers.SnakeState;
 
 import java.nio.ByteBuffer;
+import java.awt.Color;
 
 import static org.junit.Assert.*;
 
@@ -20,12 +21,13 @@ public class FoodTest {
     private static final Vector2 pos = new Vector2(0, 1);
     private static final int weight = 255;
     private static final int foodId = 123;
+    private static final Color color = Color.RED;
 
     private Food food;
 
     @Before
     public void buildSnake() {
-        food = new Food(pos, weight);
+        food = new Food(pos, weight, color);
     }
 
     @Test
@@ -55,6 +57,10 @@ public class FoodTest {
         System.out.println(foodState.weight());
 
         assertEquals(foodState.weight(), weight);
+
         assertEquals(foodState.foodId(), foodId);
+        assertEquals(foodState.color().r(),color.getRed());
+        assertEquals(foodState.color().g(),color.getGreen());
+        assertEquals(foodState.color().b(),color.getBlue());
     }
 }

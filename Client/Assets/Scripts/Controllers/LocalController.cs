@@ -1,16 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 public class LocalController : MonoBehaviour {
 
     private class MockFoodState
     {
+        public int id;
         public Vector2 position;
         public Color color;
         public int weight;
     }
 
-    private float garbageRadius;
+    private float cellSize = 25.0f; 
 
     public int maxSnakes = 100;
     public int maxFoods = 10000;
@@ -21,21 +24,28 @@ public class LocalController : MonoBehaviour {
     public new CameraController camera;
 
     private SnakeState playerSnake;
-    private MockFoodState[] worldFoods;
+
+    private SpatialHashMap<MockFoodState> worldFoodsX;
+    
+    // keeps account of the previous body of objects that were activated, so we can deactivate if necessary
+    private IEnumerable<MockFoodState> prevResult = new HashSet<MockFoodState>();
 
 	// Use this for initialization
 	void Start () {
         state.InitState(maxSnakes, maxFoods, worldRadius);
 
-        this.worldFoods = new MockFoodState[maxFoods];
+        this.worldFoodsX = new SpatialHashMap<MockFoodState>(new Vector2(-(worldRadius),-(worldRadius)), new Vector2(worldRadius, worldRadius),cellSize);
         for (int i = 0; i < maxFoods; i++)
         {
             float angle = Random.Range(0.0f, 360.0f);
             float dist = Random.Range(0.0f, worldRadius);
-            this.worldFoods[i] = new MockFoodState();
-            this.worldFoods[i].position = Quaternion.AngleAxis(angle, Vector3.back) * (Vector3.right * dist);
-            this.worldFoods[i].color = Random.ColorHSV(0.0f, 1.0f);
-            this.worldFoods[i].weight = (int)Random.Range(2.0f, 8.0f);
+            //change
+            MockFoodState mFood = new MockFoodState();
+            mFood.id = i;
+            mFood.position = Quaternion.AngleAxis(angle, Vector3.back) * (Vector3.right * dist);
+            mFood.color = Random.ColorHSV(0.0f, 1.0f);
+            mFood.weight = (int)Random.Range(2.0f, 8.0f);
+            this.worldFoodsX.put(mFood,mFood.position);
         }
 
         this.playerSnake = state.ActivateSnake<LocalSnakeControllerInput>(0, "Player", 20, Vector2.zero, 0);
@@ -49,27 +59,34 @@ public class LocalController : MonoBehaviour {
 
     private void ManageFoodActivation()
     {
-        this.garbageRadius = this.camera.GetComponent<Camera>().orthographicSize * 4.0f;
-        for (int i = 0; i < maxFoods; i++)
-        {
-            Vector2 dv = (Vector2)this.playerSnake.head.transform.position - this.worldFoods[i].position;
-            
-            if (dv.sqrMagnitude < garbageRadius * garbageRadius)
-            {
+        //minX and maxY to set upper left corner of Rect 
+        // documemntation says upper left but seems to create rect from lower left
+        float cameraOrthSize = this.camera.GetComponent<Camera>().orthographicSize;
 
-                if (!this.state.IsFoodActive(i))
-                {
-                    //Debug.Log(this.worldFoods[i].position);
-                    this.state.ActivateFood<LocalFoodController>(i, this.worldFoods[i].position,
-                        this.worldFoods[i].color, this.worldFoods[i].weight);
-                }
-            }
-            else
+        // the Rect size needs to be optimized
+        float minX = this.playerSnake.head.transform.position.x - cameraOrthSize*2;
+        float minY = this.playerSnake.head.transform.position.y - cameraOrthSize*2;
+        Rect playerNear = new Rect(minX,minY,(cellSize/2),(cellSize/2));
+
+        IEnumerable<MockFoodState> result = this.worldFoodsX.getNear(playerNear);
+        foreach (MockFoodState mFS in result)
+        {
+            if (!this.state.IsFoodActive(mFS.id))
             {
-                if (this.state.IsFoodActive(i))
-                    this.state.DeactivateFood(i);
+                //Debug.Log(this.worldFoods[i].position);
+                this.state.ActivateFood<LocalFoodController>(mFS.id, mFS.position,
+                    mFS.color, mFS.weight);
             }
         }
+
+        foreach (MockFoodState mFS in prevResult.Except(result))
+        {    
+            if (this.state.IsFoodActive(mFS.id))
+            {
+                this.state.DeactivateFood(mFS.id);
+            }
+        }
+        prevResult = result;
     }
 
     private void CollectFoodGarbage()
@@ -78,13 +95,8 @@ public class LocalController : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {
-
-        
-
-        ManageFoodActivation();
-        //state.ActivateFood<LocalFoodController>(i, new Vector3(Random.Range(-5.0f, 5.0f), Random.Range(-5.0f, 5.0f)), Random.ColorHSV(0.0f, 1.0f), (int)Random.Range(1.0f, 10.0f));
-        
+	void Update () {        
+        ManageFoodActivation();        
 
         if (Input.GetKeyDown(KeyCode.A))
             this.state.DeactivateSnake(0);

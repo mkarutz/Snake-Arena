@@ -10,12 +10,13 @@ import com.google.flatbuffers.*;
 @SuppressWarnings("unused")
 public final class ServerHello extends Table {
   public static ServerHello getRootAsServerHello(ByteBuffer _bb) { return getRootAsServerHello(_bb, new ServerHello()); }
-  public static ServerHello getRootAsServerHello(ByteBuffer _bb, ServerHello obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__init(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
-  public ServerHello __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
+  public static ServerHello getRootAsServerHello(ByteBuffer _bb, ServerHello obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
+  public void __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; }
+  public ServerHello __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
   public int clientId() { int o = __offset(4); return o != 0 ? bb.get(o + bb_pos) & 0xFF : 0; }
   public ServerConfig config() { return config(new ServerConfig()); }
-  public ServerConfig config(ServerConfig obj) { int o = __offset(6); return o != 0 ? obj.__init(__indirect(o + bb_pos), bb) : null; }
+  public ServerConfig config(ServerConfig obj) { int o = __offset(6); return o != 0 ? obj.__assign(__indirect(o + bb_pos), bb) : null; }
 
   public static int createServerHello(FlatBufferBuilder builder,
       int clientId,

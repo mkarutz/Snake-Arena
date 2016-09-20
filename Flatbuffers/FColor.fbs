@@ -1,0 +1,7 @@
+namespace slyther.flatbuffers;
+
+struct FColor {
+    r:uint;
+    g:uint;
+	b:uint;
+}

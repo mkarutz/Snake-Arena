@@ -38,7 +38,6 @@ public class NetworkController : MonoBehaviour {
         while (udpc.Available > 0)
         {
             byte[] buf = udpc.Receive(ref serverEndPoint);
-            Debug.Log("Received " + buf.Length + " bytes.");
 
             ByteBuffer byteBuf = new ByteBuffer(buf);
             ServerMessage sm = ServerMessage.GetRootAsServerMessage(byteBuf);
@@ -73,8 +72,6 @@ public class NetworkController : MonoBehaviour {
         this.udpc = new UdpClient("localhost", 3000);
         var message = clientMessageConstructor.ConstructClientHello(ClientMessageType.ClientHello,0,"foo");
 
-        Debug.Log("Message sending");
-        Debug.Log(message.Length);
         this.udpc.Send(message, message.Length);
         
         ReceiveMsg();
@@ -87,7 +84,6 @@ public class NetworkController : MonoBehaviour {
             byte[] buf = udpc.Receive(ref serverEndPoint);
             ByteBuffer byteBuf = new ByteBuffer(buf);
             ServerMessage sm = ServerMessage.GetRootAsServerMessage(byteBuf);
-            Debug.Log(sm.MsgType);
         }
     }
 

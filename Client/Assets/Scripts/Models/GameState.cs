@@ -24,17 +24,18 @@ public class GameState : MonoBehaviour {
 
     public void ReplicateState(ServerWorldState state)
     {
-        Debug.Log("States length = " + state.ObjectStatesLength);
-
         for (int i = 0; i < state.ObjectStatesLength; i++)
         {
             NetworkObjectState objectState = state.GetObjectStates(i);
             NetworkObjectStateType objectType = objectState.StateType;
-            Debug.Log(objectType.ToString());
+
             if (objectType == NetworkObjectStateType.FoodState)
             {
                 slyther.flatbuffers.FoodState foodState = objectState.GetState<slyther.flatbuffers.FoodState>(new slyther.flatbuffers.FoodState());
-                ActivateFood<NetworkFoodController>(foodState.FoodId,new Vector2 (foodState.Position.X,foodState.Position.Y),Color.red,foodState.Weight);
+                Debug.Log(foodState.Color.R + " " + foodState.Color.G + " " + foodState.Color.B);
+                if (!IsFoodActive(foodState.FoodId))
+                    //should be NetworkFoodController .. changed to Local for testing
+                    ActivateFood<LocalFoodController>(foodState.FoodId,new Vector2 (foodState.Position.X,foodState.Position.Y),new Color(foodState.Color.R, foodState.Color.G, foodState.Color.B),foodState.Weight);
             }
         }
     }
@@ -125,6 +126,11 @@ public class GameState : MonoBehaviour {
     public bool IsFoodActive(int foodID)
     {
         return foodPool[foodID].enabled;
+    }
+
+    public bool IsSnakeActive(int snakeID)
+    {
+        return snakePool[snakeID].enabled;
     }
 
     public void DeactivateFood(int foodID)
