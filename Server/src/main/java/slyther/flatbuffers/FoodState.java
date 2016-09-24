@@ -10,24 +10,20 @@ import com.google.flatbuffers.*;
 @SuppressWarnings("unused")
 public final class FoodState extends Table {
   public static FoodState getRootAsFoodState(ByteBuffer _bb) { return getRootAsFoodState(_bb, new FoodState()); }
-  public static FoodState getRootAsFoodState(ByteBuffer _bb, FoodState obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
-  public void __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; }
-  public FoodState __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
+  public static FoodState getRootAsFoodState(ByteBuffer _bb, FoodState obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__init(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
+  public FoodState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
   public int foodId() { int o = __offset(4); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
   public slyther.flatbuffers.Vec2 position() { return position(new slyther.flatbuffers.Vec2()); }
-  public slyther.flatbuffers.Vec2 position(slyther.flatbuffers.Vec2 obj) { int o = __offset(6); return o != 0 ? obj.__assign(o + bb_pos, bb) : null; }
-  public slyther.flatbuffers.FColor color() { return color(new slyther.flatbuffers.FColor()); }
-  public slyther.flatbuffers.FColor color(slyther.flatbuffers.FColor obj) { int o = __offset(8); return o != 0 ? obj.__assign(o + bb_pos, bb) : null; }
-  public int weight() { int o = __offset(10); return o != 0 ? bb.get(o + bb_pos) & 0xFF : 0; }
-  public boolean isActive() { int o = __offset(12); return o != 0 ? 0!=bb.get(o + bb_pos) : false; }
+  public slyther.flatbuffers.Vec2 position(slyther.flatbuffers.Vec2 obj) { int o = __offset(6); return o != 0 ? obj.__init(o + bb_pos, bb) : null; }
+  public int weight() { int o = __offset(8); return o != 0 ? bb.get(o + bb_pos) & 0xFF : 0; }
+  public boolean isActive() { int o = __offset(10); return o != 0 ? 0!=bb.get(o + bb_pos) : false; }
 
-  public static void startFoodState(FlatBufferBuilder builder) { builder.startObject(5); }
+  public static void startFoodState(FlatBufferBuilder builder) { builder.startObject(4); }
   public static void addFoodId(FlatBufferBuilder builder, int foodId) { builder.addInt(0, foodId, 0); }
   public static void addPosition(FlatBufferBuilder builder, int positionOffset) { builder.addStruct(1, positionOffset, 0); }
-  public static void addColor(FlatBufferBuilder builder, int colorOffset) { builder.addStruct(2, colorOffset, 0); }
-  public static void addWeight(FlatBufferBuilder builder, int weight) { builder.addByte(3, (byte)weight, 0); }
-  public static void addIsActive(FlatBufferBuilder builder, boolean isActive) { builder.addBoolean(4, isActive, false); }
+  public static void addWeight(FlatBufferBuilder builder, int weight) { builder.addByte(2, (byte)weight, 0); }
+  public static void addIsActive(FlatBufferBuilder builder, boolean isActive) { builder.addBoolean(3, isActive, false); }
   public static int endFoodState(FlatBufferBuilder builder) {
     int o = builder.endObject();
     return o;

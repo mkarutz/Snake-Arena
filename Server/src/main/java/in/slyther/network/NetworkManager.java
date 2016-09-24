@@ -4,6 +4,7 @@ import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.Server;
 import in.slyther.World;
 import in.slyther.gameobjects.Snake;
+import in.slyther.math.Vector2;
 import slyther.flatbuffers.*;
 
 import java.io.IOException;
@@ -230,12 +231,21 @@ public class NetworkManager {
     }
 
 
+    Vec2 input = new Vec2();
+    Vector2 desiredMove = Vector2.zero();
+
     /**
      * Process new input from from a client.
      * @param inputState The input state received.
      */
     private void processInputStateMessage(int clientId, ClientInputState inputState) {
         System.out.println("Received input from " + clientId);
+
+        input = inputState.desiredMove(input);
+        desiredMove.setX(input.x());
+        desiredMove.setY(input.y());
+
+        world.handleInput(clientId, inputState.isTurbo(), desiredMove);
     }
 
 
@@ -265,7 +275,7 @@ public class NetworkManager {
     private void sendWorldState(int tick, ClientProxy clientProxy) {
         FlatBufferBuilder builder = new FlatBufferBuilder(1);
 
-        int offsetServerWorldState = world.serializeObjectStates(builder, tick);
+        int offsetServerWorldState = world.serializeObjectStates(builder, tick, clientProxy);
 
         ServerMessage.startServerMessage(builder);
         ServerMessage.addMsgType(builder, ServerMessageType.ServerWorldState);

@@ -9,8 +9,7 @@ import com.google.flatbuffers.*;
 
 @SuppressWarnings("unused")
 public final class Vec2 extends Struct {
-  public void __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; }
-  public Vec2 __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
+  public Vec2 __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
   public float x() { return bb.getFloat(bb_pos + 0); }
   public float y() { return bb.getFloat(bb_pos + 4); }

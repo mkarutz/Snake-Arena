@@ -21,6 +21,40 @@ public class Rect {
     }
 
 
+    public Rect() {
+        this(Vector2.zero(), new Vector2(1.0f, 1.0f));
+    }
+
+
+    public void setWidth(float w) {
+        getMax().setX(getMin().getX() + w);
+    }
+
+
+    public void setHeight(float h) {
+        getMax().setY(getMin().getY() + h);
+    }
+
+
+    public void center(float x, float y) {
+        float dx = -(getWidth() / 2.0f - (x - getMin().getX()));
+        float dy = -(getHeight() / 2.0f - (y - getMin().getY()));
+        translate(dx, dy);
+    }
+
+    public void translate(float x, float y) {
+        getMin().translate(x, y);
+        getMax().translate(x, y);
+    }
+
+    public float getWidth() {
+        return getMax().getX() - getMin().getX();
+    }
+
+    public float getHeight() {
+        return getMax().getY() - getMin().getY();
+    }
+
     public void setMaxX(float x) {
         max.setX(x);
 

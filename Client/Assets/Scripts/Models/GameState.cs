@@ -32,10 +32,9 @@ public class GameState : MonoBehaviour {
             if (objectType == NetworkObjectStateType.FoodState)
             {
                 slyther.flatbuffers.FoodState foodState = objectState.GetState<slyther.flatbuffers.FoodState>(new slyther.flatbuffers.FoodState());
-                Debug.Log(foodState.Color.R + " " + foodState.Color.G + " " + foodState.Color.B);
                 if (!IsFoodActive(foodState.FoodId))
                     //should be NetworkFoodController .. changed to Local for testing
-                    ActivateFood<LocalFoodController>(foodState.FoodId,new Vector2 (foodState.Position.X,foodState.Position.Y),new Color(foodState.Color.R, foodState.Color.G, foodState.Color.B),foodState.Weight);
+                    ActivateFood<LocalFoodController>(foodState.FoodId,new Vector2 (foodState.Position.X,foodState.Position.Y),Color.red, foodState.Weight);
             }
         }
     }
