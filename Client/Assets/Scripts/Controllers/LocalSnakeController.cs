@@ -11,12 +11,23 @@ public abstract class LocalSnakeController : MonoBehaviour, IController {
 
     protected SnakeState snakeState;
 
+    protected BoxCollider boundingBox;
+
     // Use this for initialization
     void Awake () {
         this.snakeState = this.GetComponent<SnakeState>();
         this.snakeState.head.AddComponent<LocalSnakeHeadController>().snakeState = this.snakeState;
+
+        //boundingBox = this.gameObject.GetComponent<BoxCollider>();
+        //if (boundingBox == null)
+        //{
+        //    this.boundingBox = this.gameObject.AddComponent<BoxCollider>();
+        //    updateBoundingBox();         
+       // }
+       // this.boundingBox.isTrigger = true;
     }
 
+    
     void OnDestroy()
     {
         Destroy(this.snakeState.head.GetComponent<LocalSnakeHeadController>());
@@ -59,11 +70,98 @@ public abstract class LocalSnakeController : MonoBehaviour, IController {
                 this.snakeState.getBackbone().Add(this.snakeState.head.transform.position);
         }
 
+        updateBoundingBox();
+
         this.snakeState.head.transform.Translate(Vector3.forward * MOVE_SPEED * Time.deltaTime);
     }
 
     public Component getControllerComponent()
     {
         return this;
+    }
+
+    public Rect getBoundingBox()
+    {
+        float snakeLength = this.snakeState.GetSnakeLength();
+        float snakeRadius = this.snakeState.GetSnakeThickness() / 2.0f;
+        float snakeVertexDensity = 3.0f / snakeRadius;
+        //IList<Vector3> backBone = snakeState.getBackbone();
+
+        int backboneLength = (int)(snakeLength * snakeVertexDensity);
+        if (backboneLength <= 0)
+            return new Rect(0,0,0,0);
+        Vector3[] backbone = new Vector3[backboneLength];
+
+        float distance = 0.0f;
+        for (int i = 0; i < backboneLength; i++)
+        {
+            distance = ((float)i / backboneLength) * snakeLength;
+            backbone[i] = this.snakeState.CalcBackboneParametizedPosition(distance);
+        }
+
+        float minX = 0;
+        float minY = 0;
+        float maxX = 0;
+        float maxY = 0;
+        int flag = 0;
+
+        foreach (Vector3 vec in backbone)
+        {
+            if (flag == 0)
+            {
+                minX = vec.x;
+                minY = vec.y;
+                maxX = vec.x;
+                maxY = vec.y;
+                flag = 1;
+            }
+            else
+            {
+                if (vec.x < minX)
+                {
+                    minX = vec.x;
+                }
+                if (vec.x > maxX)
+                {
+                    maxX = vec.x;
+                }
+
+                if (vec.y < minY)
+                {
+                    minY = vec.y;
+                }
+                if (vec.y > maxY)
+                {
+                    maxY = vec.y;
+                }
+            }
+        }
+
+        Rect box = new Rect(minX, minY, (maxX - minX), (maxX - maxY));
+        return box;
+    }
+
+    void updateBoundingBox()
+    {
+        Rect bound = getBoundingBox();
+
+        LineRenderer lr = this.gameObject.GetComponent<LineRenderer>();
+        if(lr == null)
+        {
+            lr = this.gameObject.AddComponent<LineRenderer>();
+        }
+        Vector3[] positions = new Vector3[4];
+        positions[0] = new Vector3(bound.xMin, bound.yMin);
+        positions[1] = new Vector3(bound.xMin, bound.yMax);
+        positions[2] = new Vector3(bound.xMax, bound.yMin);
+        positions[3] = new Vector3(bound.xMax, bound.yMax);
+        lr.SetPositions(positions);
+        
+        // Vector3 centre = new Vector3(bound.xMin + ((bound.xMax - bound.xMin) / 2), bound.yMin + ((bound.yMax - bound.yMin) / 2), 0.0f);
+       // Vector3 size = new Vector3(Mathf.Abs(bound.xMax) - Mathf.Abs(bound.xMin), Mathf.Abs(bound.yMax) - Mathf.Abs(bound.yMin), 0.0f);
+
+      
+       // this.boundingBox.center = centre;
+       // this.boundingBox.size = Vector3.one;// size;
     }
 }

@@ -66,7 +66,7 @@ public class LocalController : MonoBehaviour {
         // the Rect size needs to be optimized
         float minX = this.playerSnake.head.transform.position.x - cameraOrthSize*2;
         float minY = this.playerSnake.head.transform.position.y - cameraOrthSize*2;
-        Rect playerNear = new Rect(minX,minY,(cellSize/2),(cellSize/2));
+        Rect playerNear = new Rect(minX,minY, cameraOrthSize * 4, cameraOrthSize * 4);
 
         IEnumerable<MockFoodState> result = this.worldFoodsX.getNear(playerNear);
         foreach (MockFoodState mFS in result)

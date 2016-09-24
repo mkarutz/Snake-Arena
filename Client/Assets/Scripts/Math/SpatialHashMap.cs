@@ -64,6 +64,27 @@ public class SpatialHashMap<T> : SpatialMap<T>
     public IEnumerable<T> getNear(Rect bound)
     {
         HashSet<T> result = new HashSet<T>();
+
+//        float boundxMin = bound.xMin;
+//        float boundxMax = bound.xMax;
+//        float boundyMin = bound.yMin;
+//        float boundyMax = bound.yMax;
+
+//        int bottomLeftX = (int) ((boundxMin - min.x) / cellSize);
+//        int bottomLeftY = (int)((boundyMin - min.y) / cellSize);
+
+//        int topRightX = (int)((boundxMax - min.x) / cellSize);
+//        int topRightY = (int)((boundxMax - min.x) / cellSize);
+
+//        int bucketIndexMin = bottomLeftX + (bottomLeftY * ((int)Math.Ceiling((max.x - min.x) / cellSize)));
+//        int bucketIndexMax = topRightX + (topRightY * ((int)Math.Ceiling((max.x - min.x) / cellSize)));
+
+//        for (int i = bucketIndexMin; i <= bucketIndexMax; i++)
+//        {
+//            Debug.Log(i);
+//            result.UnionWith(buckets[i]);
+//        }
+
         result.UnionWith(getNear(bound.xMax, bound.yMax));
         result.UnionWith(getNear(bound.xMax, bound.yMin));
         result.UnionWith(getNear(bound.xMin, bound.yMax));
