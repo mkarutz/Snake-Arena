@@ -1,6 +1,7 @@
 package in.slyther.network;
 
 import in.slyther.gameobjects.Snake;
+import in.slyther.math.Rect;
 
 import java.net.SocketAddress;
 
@@ -62,5 +63,11 @@ public class ClientProxy {
      */
     public void setSnake(Snake snake) {
         this.snake = snake;
+    }
+
+
+    public Rect getViewportZone() {
+        // TODO
+        return null;
     }
 }
