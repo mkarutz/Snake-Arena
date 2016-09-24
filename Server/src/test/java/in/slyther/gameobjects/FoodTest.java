@@ -14,27 +14,23 @@ import java.awt.Color;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by mkarutz on 15/09/16.
- */
 public class FoodTest {
     private static final Vector2 pos = new Vector2(0, 1);
     private static final int weight = 255;
     private static final int foodId = 123;
-    private static final Color color = Color.RED;
 
     private Food food;
 
     @Before
     public void buildSnake() {
-        food = new Food(pos, weight, color);
+        food = new Food(foodId, pos, weight);
     }
 
     @Test
     public void testSerialize() throws Exception {
         FlatBufferBuilder builder = new FlatBufferBuilder(0);
 
-        int foodOffset = food.serialize(builder, foodId);
+        int foodOffset = food.serialize(builder);
 
         NetworkObjectState.startNetworkObjectState(builder);
         NetworkObjectState.addStateType(builder, NetworkObjectStateType.FoodState);
@@ -57,10 +53,6 @@ public class FoodTest {
         System.out.println(foodState.weight());
 
         assertEquals(foodState.weight(), weight);
-
         assertEquals(foodState.foodId(), foodId);
-        assertEquals(foodState.color().r(),color.getRed());
-        assertEquals(foodState.color().g(),color.getGreen());
-        assertEquals(foodState.color().b(),color.getBlue());
     }
 }

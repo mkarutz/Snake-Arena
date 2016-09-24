@@ -67,7 +67,7 @@ public class SpatialHashMap<T> implements SpatialMap<T> {
      * @return The bucket index.
      */
     private int toBucketX(float x) {
-        return (int) ((min.getX() - x) / cellSize);
+        return (int) ((x - min.getX()) / cellSize);
     }
 
 
@@ -77,7 +77,7 @@ public class SpatialHashMap<T> implements SpatialMap<T> {
      * @return The bucket index.
      */
     private int toBucketY(float y) {
-        return (int) ((min.getY() - y) / cellSize);
+        return (int) ((y - min.getY()) / cellSize);
     }
 
 
