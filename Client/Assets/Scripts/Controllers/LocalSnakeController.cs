@@ -6,6 +6,7 @@ using System;
 
 public abstract class LocalSnakeController : MonoBehaviour, IController {
     private const float MOVE_SPEED = 2.0f;
+    private const float MAX_HEAD_OFFSET = 0.02f;
     private Quaternion direction;
     private Quaternion targetDirection;
 
@@ -41,8 +42,39 @@ public abstract class LocalSnakeController : MonoBehaviour, IController {
         this.direction = Quaternion.RotateTowards(this.direction, this.targetDirection, maxRotate() * Time.deltaTime);
         this.snakeState.head.transform.rotation = this.direction;
 
-        // Add to backbone path only if deviating (straight line movements don't need middle points)
-        Vector3 headVec = this.snakeState.getBackbone().Last() - this.snakeState.head.transform.position;
+        // Translate snake forward
+        //Vector2 prevPosition = this.snakeState.head.transform.position;
+        this.snakeState.head.transform.Translate(Vector3.forward * MOVE_SPEED * Time.deltaTime);
+        //this.snakeState.UpdateBackboneHeadPoint(this.snakeState.head.transform.position);
+
+        if (this.snakeState.GetBackboneLength() <= 2)
+        {
+            Debug.LogError("Not enough backbone points defined.");
+            return;
+        }
+
+        // Check if we need to add a new backbone point
+        Vector2 headVec = this.snakeState.GetBackbonePoint(1) - (Vector2)this.snakeState.head.transform.position;
+        Vector2 neckVec = this.snakeState.GetBackbonePoint(2) - this.snakeState.GetBackbonePoint(1);
+
+        Vector2 a = Vector3.Project(headVec, neckVec);
+
+        if (headVec.sqrMagnitude - a.sqrMagnitude > MAX_HEAD_OFFSET * MAX_HEAD_OFFSET)
+        {
+            //Vector3 newPoint = this.snakeState.GetBackbonePoint(1) + a + (a - headVec).normalized * MAX_HEAD_OFFSET;
+            //this.snakeState.UpdateBackboneHeadPoint(prevPosition);
+            this.snakeState.AddBackboneHeadPoint(this.snakeState.head.transform.position);
+            //snakeState.head.transform.position = newPoint;
+            //GameObject o = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            //o.transform.position = this.snakeState.GetBackbonePoint(1);
+            //o.transform.localScale = Vector3.one * 0.1f;
+        }
+
+        this.snakeState.UpdateBackboneHeadPoint(this.snakeState.head.transform.position);
+        
+        /*
+            // Add to backbone path only if deviating (straight line movements don't need middle points)
+            Vector3 headVec = this.snakeState.getBackbone().Last() - this.snakeState.head.transform.position;
         if (headVec.sqrMagnitude > 0.00001f)
         {
             Vector3 firstSegmentVec;
@@ -59,7 +91,7 @@ public abstract class LocalSnakeController : MonoBehaviour, IController {
                 this.snakeState.getBackbone().Add(this.snakeState.head.transform.position);
         }
 
-        this.snakeState.head.transform.Translate(Vector3.forward * MOVE_SPEED * Time.deltaTime);
+        */
     }
 
     public Component getControllerComponent()

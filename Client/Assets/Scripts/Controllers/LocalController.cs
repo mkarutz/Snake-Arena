@@ -30,6 +30,9 @@ public class LocalController : MonoBehaviour {
     // keeps account of the previous body of objects that were activated, so we can deactivate if necessary
     private IEnumerable<MockFoodState> prevResult = new HashSet<MockFoodState>();
 
+    int activateInterval = 60;
+    int activateTimer = 0;
+
 	// Use this for initialization
 	void Start () {
         state.InitState(maxSnakes, maxFoods, worldRadius);
@@ -66,7 +69,7 @@ public class LocalController : MonoBehaviour {
         // the Rect size needs to be optimized
         float minX = this.playerSnake.head.transform.position.x - cameraOrthSize*2;
         float minY = this.playerSnake.head.transform.position.y - cameraOrthSize*2;
-        Rect playerNear = new Rect(minX,minY,(cellSize/2),(cellSize/2));
+        Rect playerNear = new Rect(minX,minY, cameraOrthSize * 4, cameraOrthSize * 4);
 
         IEnumerable<MockFoodState> result = this.worldFoodsX.getNear(playerNear);
         foreach (MockFoodState mFS in result)
@@ -95,8 +98,13 @@ public class LocalController : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {        
-        ManageFoodActivation();        
+	void Update () {
+        if (activateTimer <= 0)
+        {
+            ManageFoodActivation();
+            activateTimer = activateInterval;
+        }
+        activateTimer--;
 
         if (Input.GetKeyDown(KeyCode.A))
             this.state.DeactivateSnake(0);
