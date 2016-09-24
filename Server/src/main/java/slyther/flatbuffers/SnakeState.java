@@ -10,9 +10,8 @@ import com.google.flatbuffers.*;
 @SuppressWarnings("unused")
 public final class SnakeState extends Table {
   public static SnakeState getRootAsSnakeState(ByteBuffer _bb) { return getRootAsSnakeState(_bb, new SnakeState()); }
-  public static SnakeState getRootAsSnakeState(ByteBuffer _bb, SnakeState obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
-  public void __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; }
-  public SnakeState __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
+  public static SnakeState getRootAsSnakeState(ByteBuffer _bb, SnakeState obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__init(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
+  public SnakeState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
   public int playerId() { int o = __offset(4); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
   public String name() { int o = __offset(6); return o != 0 ? __string(o + bb_pos) : null; }
@@ -23,7 +22,7 @@ public final class SnakeState extends Table {
   public boolean isDead() { int o = __offset(12); return o != 0 ? 0!=bb.get(o + bb_pos) : false; }
   public boolean isTurbo() { int o = __offset(14); return o != 0 ? 0!=bb.get(o + bb_pos) : false; }
   public SnakePartState parts(int j) { return parts(new SnakePartState(), j); }
-  public SnakePartState parts(SnakePartState obj, int j) { int o = __offset(16); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
+  public SnakePartState parts(SnakePartState obj, int j) { int o = __offset(16); return o != 0 ? obj.__init(__indirect(__vector(o) + j * 4), bb) : null; }
   public int partsLength() { int o = __offset(16); return o != 0 ? __vector_len(o) : 0; }
   public int head() { int o = __offset(18); return o != 0 ? bb.get(o + bb_pos) & 0xFF : 0; }
   public int tail() { int o = __offset(20); return o != 0 ? bb.get(o + bb_pos) & 0xFF : 0; }
