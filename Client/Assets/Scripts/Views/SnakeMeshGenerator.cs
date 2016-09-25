@@ -116,6 +116,7 @@ public class SnakeMeshGenerator : MonoBehaviour {
     {
         CalcParameters();
 
+        //Debug.Log(this.snake.GetBackboneLength());
         for (int i = 0; i < this.snake.GetBackboneLength(); i++)
         {
             if (i >= 1000)
