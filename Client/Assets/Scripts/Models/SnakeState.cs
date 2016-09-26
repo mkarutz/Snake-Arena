@@ -13,13 +13,12 @@ public class SnakeState : MonoBehaviour {
     public int score;
     public string name;
 
-    public static int MAX_BACKBONE_POINTS = 1000;
+    public static int MAX_BACKBONE_POINTS = 5000;
     public static int GROWTH_CAP = 40000;
     public static float MIN_LENGTH = 1.0f;
     public static float MIN_THICKNESS = 0.2f;
     public static float GROWTH_RATE = 1.0f / 100.0f;
-
-    //private IList<Vector3> backbonePoints = new List<Vector3>();
+    
     private Vector2[] backbone;
     private int backboneStartIdx;
     private int backboneLength;

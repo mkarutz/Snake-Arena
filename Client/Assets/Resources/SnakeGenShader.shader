@@ -16,34 +16,48 @@
 
 			#include "UnityCG.cginc"
 
-			#define MAX_BACKBONE_POINTS 1000
-
+			// Main snake skin texture
 			uniform sampler2D _MainTex;
+
+			// Texture with passed in coords
 			uniform sampler2D _BackboneTex;
 
-			uniform float2 _Backbone[MAX_BACKBONE_POINTS];
+			// Snake parameters
+			uniform int _BackboneTexDim;
 			uniform int _BackboneLength;
 			uniform float _SnakeLength;
 			uniform float _SnakeRadius;
 
+			// Input structure
 			struct vertIn
 			{
 				float3 params : POSITION;
 			};
 
+			// VS Output/PS Input
 			struct vertOut
 			{
 				float4 vertex : SV_POSITION;
 				float2 uv : TEXCOORD0;
 			};
 
-			float2 getBackbonePoint(int idx)
+			// Helper to retrieve a backbone point given an index
+			// Samples the backbone texture by scaling the index
+			float2 getBackbonePoint(uint idx)
 			{
+				float x = idx % _BackboneTexDim;
+				float y = floor(idx / _BackboneTexDim);
 				float2 pt = tex2Dlod(_BackboneTex, 
-					float4(((idx + 0.5f) / (float)MAX_BACKBONE_POINTS), 0.5f, 0, 0));
+					float4(((x + 0.5f) / (float)_BackboneTexDim), 
+						   ((y + 0.5f) / (float)_BackboneTexDim), 0, 0));
 				return pt;
 			}
 
+			// Calculate a position and normal given a parametized
+			// distance from the head of the snake.
+			// Encoded as:
+			// x,y - Pos
+			// z,w - Norm
 			float4 calcParametizedPosNorm(float distance)
 			{
 				if (_BackboneLength == 0)
@@ -81,12 +95,15 @@
 			{
 				vertOut o;
 
+				// Get info from current vertex
 				float distance = v.params.x;
 				float parity = v.params.y;
 				float texh = v.params.z;
 
+				// Scale vertex based on distance (larger snakes should not have the same density)
 				distance *= _SnakeRadius * 2.0f;
 
+				// Short-circuit unnecessary vertices
 				if (distance > _SnakeLength + 1.0f)
 				{
 					o.vertex = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -94,6 +111,7 @@
 					return o;
 				}
 
+				// Ensure distance is capped
 				distance = saturate(distance / _SnakeLength) * _SnakeLength;
 
 				float4 posNorm = calcParametizedPosNorm(distance); // Expensive, possibly optimise
@@ -102,6 +120,7 @@
 
 				float4 localPos = float4(0.0f, 0.0f, 0.0f, 1.0f);
 
+				// Tail taper
 				float fct = saturate((_SnakeLength - distance) / (_SnakeLength * 0.1f));
 				if (distance < _SnakeRadius * 2.0f)
 				{
@@ -109,11 +128,14 @@
 					fct = saturate((distance / (_SnakeRadius * 2.0f)) + 0.15f);
 				}
 
+				// Calculate world-space position
 				localPos.xy = pos + (norm * _SnakeRadius * parity * fct);
-				localPos.z = distance;
+				localPos.z = distance; // Increase z to achieve ortho depth effect
 
+				// Calculate texture coordinate
 				float2 uv = float2(texh, distance / (_SnakeRadius * 2.0f));
 
+				// Convert to screen space and pass through tex coord
 				o.vertex = mul(UNITY_MATRIX_MVP, localPos);
 				o.uv = uv;
 				
@@ -123,8 +145,7 @@
 			// Implementation of the fragment shader
 			fixed4 frag(vertOut v) : SV_Target
 			{
-				fixed4 col = tex2D(_MainTex, v.uv);
-				return col;
+				return tex2D(_MainTex, v.uv);
 			}
 
 			

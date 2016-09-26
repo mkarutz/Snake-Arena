@@ -16,17 +16,26 @@ public class SnakeMeshGenerator : MonoBehaviour {
     private MeshRenderer meshRenderer;
 
     private Texture2D backboneEncTex;
+    private int backboneEncTexDim;
 
     private int backboneVertsLength;
-    //private int backboneLength;
-    //private int backboneStartIdx;
+
+    private void EncodeBackboneTexPoint(int i, Vector2 point)
+    {
+        int x = i % this.backboneEncTexDim;
+        int y = i / this.backboneEncTexDim;
+        this.backboneEncTex.SetPixel(x, y, new Color(point.x, point.y, 0.0f, 0.0f));
+    }
+
+    private void FlushBackboneTex()
+    {
+        this.backboneEncTex.Apply();
+    }
 
 	// Use this for initialization
 	void Awake () {
         this.snake = this.GetComponent<SnakeState>();
         this.backboneVertsLength = (int)(this.snake.MaxSnakeLength() * this.snakeVertexDensity) + 1;
-        //this.backboneLength = 0;
-        //this.backboneStartIdx = 0;
         CalcParameters();
 
         this.meshFilter = this.gameObject.AddComponent<MeshFilter>();
@@ -36,11 +45,13 @@ public class SnakeMeshGenerator : MonoBehaviour {
         
         this.meshRenderer.material.shader = Shader.Find("Unlit/SnakeGenShader");
 
-        this.backboneEncTex = new Texture2D(SnakeState.MAX_BACKBONE_POINTS, 1, TextureFormat.RGBAFloat, false);
+        // Tex dimension is nearest power of two of the square root of the maximum number of backbone points
+        this.backboneEncTexDim = (int)Mathf.Pow(2, ((int)Mathf.Log(Mathf.Sqrt((float)SnakeState.MAX_BACKBONE_POINTS) + 1.0f, 2.0f) + 1));
+        this.backboneEncTex = new Texture2D(this.backboneEncTexDim, this.backboneEncTexDim, TextureFormat.RGBAFloat, false);
         this.backboneEncTex.filterMode = FilterMode.Point;
         this.backboneEncTex.anisoLevel = 1;
         for (int i = 0; i < SnakeState.MAX_BACKBONE_POINTS; i++)
-            this.backboneEncTex.SetPixel(i, 0, new Color(0.0f, 0.0f, 0.0f, 0.0f));
+            this.EncodeBackboneTexPoint(i, new Vector2(0.0f, 0.0f));
         this.backboneEncTex.Apply();
     }
 
@@ -112,18 +123,26 @@ public class SnakeMeshGenerator : MonoBehaviour {
         Bounds b = new Bounds();
         for (int i = 0; i < this.snake.GetBackboneLength(); i++)
         {
-            if (i >= 1000)
+            if (i >= SnakeState.MAX_BACKBONE_POINTS)
             {
                 Debug.LogError("Max shader backbone length exceeded.");
                 break;
             }
-            //this.meshRenderer.material.SetVector("_Backbone" + i.ToString(), this.snake.GetBackbonePoint(i));
-            Vector2 pt = this.snake.GetBackbonePoint(i);
-            this.backboneEncTex.SetPixel(i, 0, new Color(pt.x, pt.y, 0.0f, 0.0f));
-            b.Encapsulate(this.snake.GetBackbonePoint(i));
-        }
-        this.backboneEncTex.Apply();
 
+            Vector2 pt = this.snake.GetBackbonePoint(i);
+
+            // Encode backbone point in texture
+            this.EncodeBackboneTexPoint(i, pt);
+
+            // Encapsulate extremities for this backbone point (so snake radius is taken into account)
+            b.Encapsulate(pt + new Vector2(this.snakeRadius, this.snakeRadius));
+            b.Encapsulate(pt + new Vector2(-this.snakeRadius, this.snakeRadius));
+            b.Encapsulate(pt + new Vector2(this.snakeRadius, -this.snakeRadius));
+            b.Encapsulate(pt + new Vector2(-this.snakeRadius, -this.snakeRadius));
+        }
+        this.FlushBackboneTex(); // Update backbone texture
+
+        this.meshRenderer.material.SetInt("_BackboneTexDim", this.backboneEncTexDim);
         this.meshRenderer.material.SetTexture("_BackboneTex", this.backboneEncTex);
         this.meshRenderer.material.SetInt("_BackboneLength", this.snake.GetBackboneLength());
         this.meshRenderer.material.SetFloat("_SnakeLength", this.snakeLength);
@@ -131,6 +150,7 @@ public class SnakeMeshGenerator : MonoBehaviour {
 
         this.snakeSkin = Resources.Load<Texture>("SnakeSkin" + this.snake.snakeSkinID);
         this.meshRenderer.material.mainTexture = snakeSkin;
+        
         this.meshFilter.mesh.bounds = b;
     }
 }
