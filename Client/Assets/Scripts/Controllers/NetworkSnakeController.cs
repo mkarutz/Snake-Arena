@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using slyther.flatbuffers;
 
 public class NetworkSnakeController : MonoBehaviour, IController {
 
@@ -32,7 +33,7 @@ public class NetworkSnakeController : MonoBehaviour, IController {
         Destroy(this.snakeState.head.GetComponent<NetworkSnakeHeadController>());
     }
 
-    public void ReplicateSnakeState(slyther.flatbuffers.SnakeState fSnakeState)
+    public void ReplicateSnakeState(NetworkSnakeState fSnakeState)
     {
         float headX = fSnakeState.GetParts(fSnakeState.Head).Position.X;
         float headY = fSnakeState.GetParts(fSnakeState.Head).Position.Y;

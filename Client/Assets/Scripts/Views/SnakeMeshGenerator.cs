@@ -120,27 +120,12 @@ public class SnakeMeshGenerator : MonoBehaviour {
     {
         CalcParameters();
 
-        Bounds b = new Bounds();
-        Vector4[] vs = new Vector4[this.snake.GetBackboneLength()];
-        for (int i = 0; i < this.snake.GetBackboneLength(); i++)
+        for (int i = 0; i < snake.GetBackboneLength(); i++)
         {
-            if (i >= SnakeState.MAX_BACKBONE_POINTS)
-            {
-                Debug.LogError("Max shader backbone length exceeded.");
-                break;
-            }
-
-            Vector2 pt = this.snake.GetBackbonePoint(i);
-
-            // Encode backbone point in texture
+            Vector2 pt = snake.GetBackbonePoint(i);
             this.EncodeBackboneTexPoint(i, pt);
-
-            // Encapsulate extremities for this backbone point (so snake radius is taken into account)
-            b.Encapsulate(pt + new Vector2(this.snakeRadius, this.snakeRadius));
-            b.Encapsulate(pt + new Vector2(-this.snakeRadius, this.snakeRadius));
-            b.Encapsulate(pt + new Vector2(this.snakeRadius, -this.snakeRadius));
-            b.Encapsulate(pt + new Vector2(-this.snakeRadius, -this.snakeRadius));
         }
+
         this.FlushBackboneTex(); // Update backbone texture
 
         this.meshRenderer.material.SetInt("_BackboneTexDim", this.backboneEncTexDim);
@@ -151,7 +136,7 @@ public class SnakeMeshGenerator : MonoBehaviour {
 
         this.snakeSkin = Resources.Load<Texture>("SnakeSkin" + this.snake.snakeSkinID);
         this.meshRenderer.material.mainTexture = snakeSkin;
-        
-        this.meshFilter.mesh.bounds = b;
+    
+        this.meshFilter.mesh.bounds = snake.LocalBounds(); 
     }
 }

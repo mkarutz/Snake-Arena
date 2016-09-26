@@ -136,7 +136,7 @@
 				float2 uv = float2(texh, distance / (_SnakeRadius * 2.0f));
 
 				// Convert to screen space and pass through tex coord
-				o.vertex = mul(UNITY_MATRIX_MVP, localPos);
+				o.vertex = mul(UNITY_MATRIX_VP, localPos);
 				o.uv = uv;
 				
 				return o;

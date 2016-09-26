@@ -52,10 +52,10 @@ public abstract class LocalSnakeController : MonoBehaviour, IController {
 
         this.MovementControl();
         this.direction = Quaternion.RotateTowards(this.direction, this.targetDirection, maxRotate() * Time.deltaTime);
-        this.snakeState.head.transform.rotation = this.direction;
+        this.snakeState.transform.rotation = this.direction;
 
         // Translate snake forward
-        this.snakeState.head.transform.Translate(Vector3.forward * MOVE_SPEED * Time.deltaTime);
+        this.snakeState.transform.Translate(Vector3.forward * MOVE_SPEED * Time.deltaTime);
 
         if (this.snakeState.GetBackboneLength() <= 2)
         {
@@ -64,16 +64,16 @@ public abstract class LocalSnakeController : MonoBehaviour, IController {
         }
 
         // Check if we need to add a new backbone point
-        Vector2 headVec = this.snakeState.GetBackbonePoint(1) - (Vector2)this.snakeState.head.transform.position;
+        Vector2 headVec = this.snakeState.GetBackbonePoint(1) - (Vector2)this.snakeState.transform.position;
         Vector2 neckVec = this.snakeState.GetBackbonePoint(2) - this.snakeState.GetBackbonePoint(1);
 
         Vector2 a = Vector3.Project(headVec, neckVec);
         if (headVec.sqrMagnitude - a.sqrMagnitude > MAX_HEAD_OFFSET * MAX_HEAD_OFFSET)
         {
-            this.snakeState.AddBackboneHeadPoint(this.snakeState.head.transform.position);
+            this.snakeState.AddBackboneHeadPoint(this.snakeState.transform.position);
         }
 
-        this.snakeState.UpdateBackboneHeadPoint(this.snakeState.head.transform.position);
+        this.snakeState.UpdateBackboneHeadPoint(this.snakeState.transform.position);
     }
 
     public Component getControllerComponent()

@@ -117,16 +117,16 @@ public class NetworkController : MonoBehaviour {
         {
             NetworkObjectState objectState = state.GetObjectStates(i);
             NetworkObjectStateType objectType = objectState.StateType;
-            if (objectType == NetworkObjectStateType.FoodState)
+            if (objectType == NetworkObjectStateType.NetworkFoodState)
             {
-                slyther.flatbuffers.FoodState foodState = objectState.GetState<slyther.flatbuffers.FoodState>(new slyther.flatbuffers.FoodState());
+                slyther.flatbuffers.NetworkFoodState foodState = objectState.GetState<NetworkFoodState>(new NetworkFoodState());
                 if (!this.gameState.IsFoodActive(foodState.FoodId))
                     //should be NetworkFoodController .. changed to Local for testing
                     this.gameState.ActivateFood<LocalFoodController>(foodState.FoodId, new Vector2(foodState.Position.X, foodState.Position.Y), Color.red, foodState.Weight);
             }
-            if (objectType == NetworkObjectStateType.SnakeState)
+            if (objectType == NetworkObjectStateType.NetworkSnakeState)
             {
-                slyther.flatbuffers.SnakeState snakeState = objectState.GetState<slyther.flatbuffers.SnakeState>(new slyther.flatbuffers.SnakeState());
+                slyther.flatbuffers.NetworkSnakeState snakeState = objectState.GetState<NetworkSnakeState>(new NetworkSnakeState());
                 if (!this.gameState.IsSnakeActive(snakeState.PlayerId))
                 {
                     this.gameState.ActivateSnake<NetworkSnakeController>(snakeState.PlayerId, snakeState.Name, (int)snakeState.Score, Vector3.zero, 1);

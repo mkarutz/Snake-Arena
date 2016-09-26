@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using slyther.flatbuffers;
 
 public class SnakeState : MonoBehaviour {
 
@@ -34,7 +35,7 @@ public class SnakeState : MonoBehaviour {
 
     void Update()
     {
-        transform.position = head.transform.position;
+        //transform.position = head.transform.position;
     }
 
     private void InitBackbone()
@@ -42,6 +43,22 @@ public class SnakeState : MonoBehaviour {
         this.backbone = new Vector2[MAX_BACKBONE_POINTS];
         this.backboneStartIdx = 0;
         this.backboneLength = 0;
+    }
+
+    public Bounds LocalBounds()
+    {
+        Bounds b = new Bounds();
+        float radius = GetSnakeThickness() / 2.0f;
+        for (int i = 0; i < GetBackboneLength(); i++)
+        {
+            Vector2 pt = GetBackbonePoint(i);
+            b.Encapsulate(transform.InverseTransformPoint(pt + new Vector2(radius, radius)));
+            b.Encapsulate(transform.InverseTransformPoint(pt + new Vector2(-radius, radius)));
+            b.Encapsulate(transform.InverseTransformPoint(pt + new Vector2(radius, -radius)));
+            b.Encapsulate(transform.InverseTransformPoint(pt + new Vector2(-radius, -radius)));
+        }
+
+        return b;
     }
 
     private void TrimBackbone()
@@ -81,6 +98,27 @@ public class SnakeState : MonoBehaviour {
         TrimBackbone();
     }
 
+    public void ReplicateState(NetworkSnakeState state)
+    {
+        NetworkSnakePartState snakePartState = new NetworkSnakePartState();
+        this.backboneStartIdx = state.Head;
+        
+        if (state.Tail < state.Head)
+        {
+            this.backboneLength = state.Tail + MAX_BACKBONE_POINTS - state.Head;
+        }
+        else
+        {
+            this.backboneLength = state.Tail - state.Head;
+        }
+        
+        for (int i = 0; i < state.PartsLength; i++)
+        {
+            state.GetParts(snakePartState, i);
+            this.backbone[snakePartState.Index] = new Vector2(snakePartState.Position.X, snakePartState.Position.Y);
+        }
+    }
+
     public void UpdateBackboneHeadPoint(Vector2 point)
     {
         this.backbone[this.backboneStartIdx] = point;
@@ -104,6 +142,11 @@ public class SnakeState : MonoBehaviour {
     public Vector2 GetBackbonePoint(int idx)
     {
         return this.backbone[(backboneStartIdx + idx) % MAX_BACKBONE_POINTS];
+    }
+
+    public Vector2 GetLocalBackbonePoint(int idx)
+    {
+        return GetBackbonePoint(idx) - (Vector2) transform.position;
     }
 
     public Vector3 CalcBackboneParametizedPosition(float distance)
