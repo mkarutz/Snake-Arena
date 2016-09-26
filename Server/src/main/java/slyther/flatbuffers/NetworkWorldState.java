@@ -4,14 +4,14 @@ package slyther.flatbuffers;
 
 import java.nio.*;
 import java.lang.*;
-import java.util.*;
+
 import com.google.flatbuffers.*;
 
 @SuppressWarnings("unused")
-public final class ServerWorldState extends Table {
-  public static ServerWorldState getRootAsServerWorldState(ByteBuffer _bb) { return getRootAsServerWorldState(_bb, new ServerWorldState()); }
-  public static ServerWorldState getRootAsServerWorldState(ByteBuffer _bb, ServerWorldState obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__init(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
-  public ServerWorldState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
+public final class NetworkWorldState extends Table {
+  public static NetworkWorldState getRootAsServerWorldState(ByteBuffer _bb) { return getRootAsServerWorldState(_bb, new NetworkWorldState()); }
+  public static NetworkWorldState getRootAsServerWorldState(ByteBuffer _bb, NetworkWorldState obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__init(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
+  public NetworkWorldState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
   public long tick() { int o = __offset(4); return o != 0 ? (long)bb.getInt(o + bb_pos) & 0xFFFFFFFFL : 0; }
   public slyther.flatbuffers.NetworkObjectState objectStates(int j) { return objectStates(new slyther.flatbuffers.NetworkObjectState(), j); }
@@ -22,22 +22,16 @@ public final class ServerWorldState extends Table {
       long tick,
       int objectStatesOffset) {
     builder.startObject(2);
-    ServerWorldState.addObjectStates(builder, objectStatesOffset);
-    ServerWorldState.addTick(builder, tick);
-    return ServerWorldState.endServerWorldState(builder);
+    NetworkWorldState.addObjectStates(builder, objectStatesOffset);
+    NetworkWorldState.addTick(builder, tick);
+    return NetworkWorldState.endServerWorldState(builder);
   }
 
   public static void startServerWorldState(FlatBufferBuilder builder) { builder.startObject(2); }
   public static void addTick(FlatBufferBuilder builder, long tick) { builder.addInt(0, (int)tick, 0); }
   public static void addObjectStates(FlatBufferBuilder builder, int objectStatesOffset) { builder.addOffset(1, objectStatesOffset, 0); }
   public static int createObjectStatesVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
-
-  public static int createObjectStatesVector(FlatBufferBuilder builder, int[] data, int n) {
-    builder.startVector(4, n, 4);
-    for (int i = n - 1; i >= 0; i--) builder.addOffset(data[i]);
-    return builder.endVector();
-  }
-
+  public static int createObjectStatesVector(FlatBufferBuilder builder, int[] data, int n) { builder.startVector(4, n, 4); for (int i = n - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
   public static void startObjectStatesVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }
   public static int endServerWorldState(FlatBufferBuilder builder) {
     int o = builder.endObject();

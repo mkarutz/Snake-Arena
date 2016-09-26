@@ -4,21 +4,21 @@ package slyther.flatbuffers;
 
 import java.nio.*;
 import java.lang.*;
-import java.util.*;
+
 import com.google.flatbuffers.*;
 
 @SuppressWarnings("unused")
-public final class SnakePartState extends Table {
-  public static SnakePartState getRootAsSnakePartState(ByteBuffer _bb) { return getRootAsSnakePartState(_bb, new SnakePartState()); }
-  public static SnakePartState getRootAsSnakePartState(ByteBuffer _bb, SnakePartState obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__init(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
-  public SnakePartState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
+public final class NetworkSnakePartState extends Table {
+  public static NetworkSnakePartState getRootAsSnakePartState(ByteBuffer _bb) { return getRootAsSnakePartState(_bb, new NetworkSnakePartState()); }
+  public static NetworkSnakePartState getRootAsSnakePartState(ByteBuffer _bb, NetworkSnakePartState obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__init(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
+  public NetworkSnakePartState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
-  public int index() { int o = __offset(4); return o != 0 ? bb.get(o + bb_pos) & 0xFF : 0; }
+  public int index() { int o = __offset(4); return o != 0 ? bb.getShort(o + bb_pos) & 0xFFFF : 0; }
   public slyther.flatbuffers.Vec2 position() { return position(new slyther.flatbuffers.Vec2()); }
   public slyther.flatbuffers.Vec2 position(slyther.flatbuffers.Vec2 obj) { int o = __offset(6); return o != 0 ? obj.__init(o + bb_pos, bb) : null; }
 
   public static void startSnakePartState(FlatBufferBuilder builder) { builder.startObject(2); }
-  public static void addIndex(FlatBufferBuilder builder, int index) { builder.addByte(0, (byte)index, 0); }
+  public static void addIndex(FlatBufferBuilder builder, int index) { builder.addShort(0, (short)index, 0); }
   public static void addPosition(FlatBufferBuilder builder, int positionOffset) { builder.addStruct(1, positionOffset, 0); }
   public static int endSnakePartState(FlatBufferBuilder builder) {
     int o = builder.endObject();

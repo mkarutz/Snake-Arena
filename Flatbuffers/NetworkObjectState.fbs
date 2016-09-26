@@ -22,12 +22,12 @@ table NetworkSnakeState {
     score:uint;
     isDead:bool;
     isTurbo:bool;
-    parts:[SnakePartState];
+    parts:[NetworkSnakePartState];
     head:ushort;
     tail:ushort;
 }
 
-table SnakePartState {
+table NetworkSnakePartState {
     index:ushort;
     position:Vec2;
 }
