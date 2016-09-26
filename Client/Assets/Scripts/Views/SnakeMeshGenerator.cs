@@ -121,6 +121,7 @@ public class SnakeMeshGenerator : MonoBehaviour {
         CalcParameters();
 
         Bounds b = new Bounds();
+        Vector4[] vs = new Vector4[this.snake.GetBackboneLength()];
         for (int i = 0; i < this.snake.GetBackboneLength(); i++)
         {
             if (i >= SnakeState.MAX_BACKBONE_POINTS)

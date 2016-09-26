@@ -35,9 +35,9 @@ public class SpatialHashMap<T> : SpatialMap<T>
         int bucketIndex = bucketX + (bucketY * ((int)Math.Ceiling((max.x - min.x) / cellSize)));
         buckets[bucketIndex].Add(obj);
 
-        HashSet<int> indexSet = new HashSet<int>();
         if (!bucketsMap.ContainsKey(obj))
         {
+            HashSet<int> indexSet = new HashSet<int>();
             indexSet.Add(bucketIndex);
             bucketsMap.Add(obj, indexSet);
         }
@@ -46,6 +46,22 @@ public class SpatialHashMap<T> : SpatialMap<T>
             bucketsMap[obj].Add(bucketIndex);
         }
             
+    }
+
+    public void insert(T obj, int bucketIndex)
+    {
+        buckets[bucketIndex].Add(obj);
+
+        if (!bucketsMap.ContainsKey(obj))
+        {
+            HashSet<int> indexSet = new HashSet<int>();
+            indexSet.Add(bucketIndex);
+            bucketsMap.Add(obj, indexSet);
+        }
+        else
+        {
+            bucketsMap[obj].Add(bucketIndex);
+        }
     }
 
     public bool contains(T obj)
@@ -65,30 +81,10 @@ public class SpatialHashMap<T> : SpatialMap<T>
     {
         HashSet<T> result = new HashSet<T>();
 
-//        float boundxMin = bound.xMin;
-//        float boundxMax = bound.xMax;
-//        float boundyMin = bound.yMin;
-//        float boundyMax = bound.yMax;
-
-//        int bottomLeftX = (int) ((boundxMin - min.x) / cellSize);
-//        int bottomLeftY = (int)((boundyMin - min.y) / cellSize);
-
-//        int topRightX = (int)((boundxMax - min.x) / cellSize);
-//        int topRightY = (int)((boundxMax - min.x) / cellSize);
-
-//        int bucketIndexMin = bottomLeftX + (bottomLeftY * ((int)Math.Ceiling((max.x - min.x) / cellSize)));
-//        int bucketIndexMax = topRightX + (topRightY * ((int)Math.Ceiling((max.x - min.x) / cellSize)));
-
-//        for (int i = bucketIndexMin; i <= bucketIndexMax; i++)
-//        {
-//            Debug.Log(i);
-//            result.UnionWith(buckets[i]);
-//        }
-
-        result.UnionWith(getNear(bound.xMax, bound.yMax));
-        result.UnionWith(getNear(bound.xMax, bound.yMin));
-        result.UnionWith(getNear(bound.xMin, bound.yMax));
-        result.UnionWith(getNear(bound.xMin, bound.yMin));
+       foreach(int i in GetRelevantBuckets(bound))
+        {
+            result.UnionWith(buckets[i]);
+        }
         return result;
     }
 
@@ -100,11 +96,14 @@ public class SpatialHashMap<T> : SpatialMap<T>
     public void put(T obj, Rect bound)
     {
         remove(obj);
-        insert(obj, bound.xMax, bound.yMax);
-        insert(obj, bound.xMax, bound.yMin);
-        insert(obj, bound.xMin, bound.yMax);
-        insert(obj, bound.xMin, bound.yMin);
-
+        foreach(int i in GetRelevantBuckets(bound))
+        {
+            insert(obj, i);
+        }
+        //insert(obj, bound.xMax, bound.yMax);
+        //insert(obj, bound.xMax, bound.yMin);
+        //insert(obj, bound.xMin, bound.yMax);
+        //insert(obj, bound.xMin, bound.yMin);
     }
 
     public void put(T obj, Vector2 pos)
@@ -136,5 +135,26 @@ public class SpatialHashMap<T> : SpatialMap<T>
     public void update(T obj, Vector2 pos)
     {
         put(obj, pos);
+    }
+
+    private List<int> GetRelevantBuckets(Rect bound)
+    {
+        List<int> relevantBuckets = new List<int>();
+
+        int minXIndex = (int)((bound.xMin - min.x) / cellSize);
+        int minYIndex = (int)((bound.yMin - min.y) / cellSize);
+
+        int maxXIndex = (int)((bound.xMax - min.x) / cellSize);
+        int maxYIndex = (int)((bound.yMax - min.y) / cellSize);
+
+        for (int i = minXIndex; i <= maxXIndex; i++)
+        {
+            for (int j = minYIndex; j <= maxYIndex; j++)
+            {
+                relevantBuckets.Add(i + j * ((int)Math.Ceiling((max.x - min.x) / cellSize)));
+            }
+
+        }
+        return relevantBuckets;
     }
 }

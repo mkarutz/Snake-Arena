@@ -31,15 +31,14 @@ public class ClientMessageConstructor {
          
     }
 
-    public byte[] ConstructClientInputState(ClientMessageType type,byte clientId, uint tick, Vec2 desiredMove, bool isTurbo)
+    public byte[] ConstructClientInputState(ClientMessageType type,byte clientId, uint tick, Vector3 desiredMove, bool isTurbo)
     {
         fbBuilder.Clear();
 
-        Offset<Vec2> desiredMoveOffset = Vec2.CreateVec2(fbBuilder, desiredMove.X, desiredMove.Y);
 
         ClientInputState.StartClientInputState(fbBuilder);
         ClientInputState.AddTick(fbBuilder, tick);
-        ClientInputState.AddDesiredMove(fbBuilder, desiredMoveOffset);
+        ClientInputState.AddDesiredMove(fbBuilder, Vec2.CreateVec2(fbBuilder, desiredMove.x, desiredMove.y));
         ClientInputState.AddIsTurbo(fbBuilder, isTurbo);
         Offset<ClientInputState> clientInputStateOffset = ClientInputState.EndClientInputState(fbBuilder);
 

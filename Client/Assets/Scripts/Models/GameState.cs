@@ -22,23 +22,6 @@ public class GameState : MonoBehaviour {
 	    
 	}
 
-    public void ReplicateState(ServerWorldState state)
-    {
-        for (int i = 0; i < state.ObjectStatesLength; i++)
-        {
-            NetworkObjectState objectState = state.GetObjectStates(i);
-            NetworkObjectStateType objectType = objectState.StateType;
-
-            if (objectType == NetworkObjectStateType.FoodState)
-            {
-                slyther.flatbuffers.FoodState foodState = objectState.GetState<slyther.flatbuffers.FoodState>(new slyther.flatbuffers.FoodState());
-                if (!IsFoodActive(foodState.FoodId))
-                    //should be NetworkFoodController .. changed to Local for testing
-                    ActivateFood<LocalFoodController>(foodState.FoodId,new Vector2 (foodState.Position.X,foodState.Position.Y),Color.red, foodState.Weight);
-            }
-        }
-    }
-
     public void InitState(int maxSnakes, int maxFoods, float worldRadius)
     {
         this.maxSnakes = maxSnakes;

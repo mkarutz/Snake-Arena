@@ -11,6 +11,12 @@ public class NetworkController : MonoBehaviour {
     public int maxFoods = 10000;
     public int worldRadius = 500;
 
+    private SpatialHashMap<SnakeState> worldSnakeMap;
+    private SpatialHashMap<FoodState> worldFoodMap;
+
+    public int cellSize = 25;
+    public int playerID;
+
     public GameState gameState;
     public ClientMessageConstructor clientMessageConstructor = new ClientMessageConstructor();
 
@@ -22,14 +28,22 @@ public class NetworkController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        this.worldFoodMap = new SpatialHashMap<FoodState>(new Vector2(-(worldRadius), -(worldRadius)), new Vector2(worldRadius, worldRadius), cellSize);
+        this.worldSnakeMap = new SpatialHashMap<SnakeState>(new Vector2(-(worldRadius), -(worldRadius)), new Vector2(worldRadius, worldRadius), cellSize);
         gameState.InitState(maxSnakes, maxFoods, worldRadius);
         InitConnection();
+        
     }
 
     // Update is called once per frame
     void Update () {
         ReadPacketsToQueue();
         ProcessQueuedMessages();
+        if (this.gameState.IsSnakeActive(this.playerID))
+        {
+            SendInputState(this.gameState.GetSnake(this.playerID).GetComponent<NetworkSnakeController>().GetDesiredMove(Camera.main));
+        }
+        
     }
 
 
@@ -37,6 +51,7 @@ public class NetworkController : MonoBehaviour {
     {
         while (udpc.Available > 0)
         {
+            
             byte[] buf = udpc.Receive(ref serverEndPoint);
 
             ByteBuffer byteBuf = new ByteBuffer(buf);
@@ -62,14 +77,15 @@ public class NetworkController : MonoBehaviour {
         {
             case ServerMessageType.ServerWorldState:
                 ServerWorldState serverWorldState = msg.GetMsg(new ServerWorldState());
-                gameState.ReplicateState(serverWorldState);
+                this.ReplicateState(serverWorldState);
                 break;
         }
     }
 
     private void InitConnection()
     {
-        this.udpc = new UdpClient("localhost", 3000);
+//        this.udpc = new UdpClient("localhost", 3000);
+        this.udpc = new UdpClient("10.12.56.120", 3000);
         var message = clientMessageConstructor.ConstructClientHello(ClientMessageType.ClientHello,0,"foo");
 
         this.udpc.Send(message, message.Length);
@@ -84,10 +100,50 @@ public class NetworkController : MonoBehaviour {
             byte[] buf = udpc.Receive(ref serverEndPoint);
             ByteBuffer byteBuf = new ByteBuffer(buf);
             ServerMessage sm = ServerMessage.GetRootAsServerMessage(byteBuf);
+            this.playerID = sm.GetMsg(new ServerHello()).ClientId;
         }
     }
 
-    
+    void SendInputState(Vector3 desiredMove)
+    {
+        Debug.Log(desiredMove);
+        var inputStatemessage = clientMessageConstructor.ConstructClientInputState(ClientMessageType.ClientInputState,(byte)this.playerID,30,desiredMove,false);
+        this.udpc.Send(inputStatemessage,inputStatemessage.Length);
+    }
+
+    public void ReplicateState(ServerWorldState state)
+    {
+        for (int i = 0; i < state.ObjectStatesLength; i++)
+        {
+            NetworkObjectState objectState = state.GetObjectStates(i);
+            NetworkObjectStateType objectType = objectState.StateType;
+            if (objectType == NetworkObjectStateType.FoodState)
+            {
+                slyther.flatbuffers.FoodState foodState = objectState.GetState<slyther.flatbuffers.FoodState>(new slyther.flatbuffers.FoodState());
+                if (!this.gameState.IsFoodActive(foodState.FoodId))
+                    //should be NetworkFoodController .. changed to Local for testing
+                    this.gameState.ActivateFood<LocalFoodController>(foodState.FoodId, new Vector2(foodState.Position.X, foodState.Position.Y), Color.red, foodState.Weight);
+            }
+            if (objectType == NetworkObjectStateType.SnakeState)
+            {
+                slyther.flatbuffers.SnakeState snakeState = objectState.GetState<slyther.flatbuffers.SnakeState>(new slyther.flatbuffers.SnakeState());
+                if (!this.gameState.IsSnakeActive(snakeState.PlayerId))
+                {
+                    this.gameState.ActivateSnake<NetworkSnakeController>(snakeState.PlayerId, snakeState.Name, (int)snakeState.Score, Vector3.zero, 1);
+                    if(snakeState.PlayerId == this.playerID)
+                    {
+                        //Debug.Log(snakeState.PlayerId + " " + this.playerID);
+                        SnakeState playerSnake = this.gameState.GetSnake(snakeState.PlayerId);
+                        Debug.Log(playerSnake);
+                        Camera.main.GetComponent<CameraController>().snakeToTrack = playerSnake; 
+                    }
+                }
+
+                this.gameState.GetSnake(snakeState.PlayerId).GetComponent<NetworkSnakeController>().ReplicateSnakeState(snakeState);
+            }
+        }
+    }
+
     private void PollConnection()
     {
 
