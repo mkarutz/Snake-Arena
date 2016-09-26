@@ -10,7 +10,11 @@ public class NetworkController : MonoBehaviour {
     public int maxSnakes = 100;
     public int maxFoods = 10000;
     public int worldRadius = 500;
-    
+
+    private SpatialHashMap<SnakeState> worldSnakeMap;
+    private SpatialHashMap<FoodState> worldFoodMap;
+
+    public int cellSize = 25;
     public int playerID;
 
     public GameState gameState;
@@ -24,6 +28,8 @@ public class NetworkController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        this.worldFoodMap = new SpatialHashMap<FoodState>(new Vector2(-(worldRadius), -(worldRadius)), new Vector2(worldRadius, worldRadius), cellSize);
+        this.worldSnakeMap = new SpatialHashMap<SnakeState>(new Vector2(-(worldRadius), -(worldRadius)), new Vector2(worldRadius, worldRadius), cellSize);
         gameState.InitState(maxSnakes, maxFoods, worldRadius);
         InitConnection();
         
@@ -78,8 +84,8 @@ public class NetworkController : MonoBehaviour {
 
     private void InitConnection()
     {
-        this.udpc = new UdpClient("localhost", 3000);
-//        this.udpc = new UdpClient("10.12.56.120", 3000);
+//        this.udpc = new UdpClient("localhost", 3000);
+        this.udpc = new UdpClient("10.12.56.120", 3000);
         var message = clientMessageConstructor.ConstructClientHello(ClientMessageType.ClientHello,0,"foo");
 
         this.udpc.Send(message, message.Length);
