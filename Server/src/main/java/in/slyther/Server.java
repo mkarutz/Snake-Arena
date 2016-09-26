@@ -24,7 +24,7 @@ public class Server extends Thread {
     private Server(Builder builder) {
         this.timeStep = 1000 / builder.tickRate;
         this.world = new World(this);
-        this.networkManager = new NetworkManager(world, builder.udpPort);
+        this.networkManager = new NetworkManager(this, world, builder.udpPort);
     }
 
 
@@ -59,6 +59,12 @@ public class Server extends Thread {
     }
 
 
+    private int tick;
+
+    public int getTick() {
+        return tick;
+    }
+
     /**
      * Main Server Thread.
      */
@@ -75,7 +81,7 @@ public class Server extends Thread {
             System.exit(-1);
         }
 
-        int tick = 0;
+        tick = 0;
         long lastTickTime = 0;
         while (true) {
             long startTime = System.currentTimeMillis();

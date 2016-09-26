@@ -25,6 +25,7 @@ public class NetworkManager {
     private static final int MAX_PACKET = 2400;
     private static final int MAX_PACKETS_PER_TICK = 200;
 
+    private final Server server;
     private final World world;
 
     private final int udpPort;
@@ -48,7 +49,8 @@ public class NetworkManager {
      * @param world The game world.
      * @param udpPort The port for UDP communication with game clients.
      */
-    public NetworkManager(World world, int udpPort) {
+    public NetworkManager(Server server, World world, int udpPort) {
+        this.server = server;
         this.world = world;
         this.udpPort = udpPort;
     }
@@ -221,7 +223,7 @@ public class NetworkManager {
         switch (msgType) {
             case ClientMessageType.ClientInputState:
                 ClientInputState inputState = (ClientInputState) msg.msg(clientInputState);
-                processInputStateMessage(msg.clientId(), inputState);
+                processInputStateMessage(clientProxy, inputState);
                 break;
             case ClientMessageType.ClientGoodbye:
                 ClientGoodbye goodbye = (ClientGoodbye) msg.msg(clientGoodbye);
@@ -231,21 +233,29 @@ public class NetworkManager {
     }
 
 
-    Vec2 input = new Vec2();
-    Vector2 desiredMove = Vector2.zero();
+    private Vec2 input = new Vec2();
+    private Vector2 desiredMove = Vector2.zero();
 
     /**
      * Process new input from from a client.
+     * @param clientProxy Client proxy.
      * @param inputState The input state received.
      */
-    private void processInputStateMessage(int clientId, ClientInputState inputState) {
+    private void processInputStateMessage(ClientProxy clientProxy, ClientInputState inputState) {
+        final int clientId = clientProxy.getClientId();
         System.out.println("Received input from " + clientId);
+
+        if (clientProxy.getLastInputTick() <= server.getTick()) {
+            return;
+        }
 
         input = inputState.desiredMove(input);
         desiredMove.setX(input.x());
         desiredMove.setY(input.y());
 
         world.handleInput(clientId, inputState.isTurbo(), desiredMove);
+
+        clientProxy.setLastInputTick(server.getTick());
     }
 
 
@@ -259,7 +269,7 @@ public class NetworkManager {
 
 
     /**
-     *
+     * Send world replication packets out to clients.
      */
     public void sendOutgoingPackets(int tick) {
         for (ClientProxy clientProxy : socketAddressClientProxyMap.values()) {

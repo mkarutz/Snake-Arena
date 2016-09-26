@@ -4,7 +4,6 @@ import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.math.Vector2;
 import slyther.flatbuffers.FoodState;
 import slyther.flatbuffers.Vec2;
-import java.awt.Color;
 
 public class Food {
     private int foodId;

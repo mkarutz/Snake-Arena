@@ -40,6 +40,28 @@ public class SnakeState : MonoBehaviour {
         this.backboneLength = 0;
     }
 
+    private void TrimBackbone()
+    {
+        if (this.backboneLength <= 10)
+            return;
+
+        float accDistance = 0.0f;
+        Vector3 prev = this.GetBackbonePoint(0);
+        int i;
+        for (i = 1; i < this.backboneLength; i++)
+        {
+            Vector3 curr = this.GetBackbonePoint(i);
+            Vector3 segmentVector = curr - prev;
+            float segmentMagnitude = segmentVector.magnitude;
+            accDistance += segmentMagnitude;
+            if (accDistance > this.GetSnakeLength())
+                break;
+            prev = curr;
+        }
+
+        this.backboneLength = i + 1;
+    }
+
     public void AddBackboneHeadPoint(Vector2 point)
     {
         if (backboneLength >= MAX_BACKBONE_POINTS - 1)
@@ -51,6 +73,8 @@ public class SnakeState : MonoBehaviour {
         if (backboneStartIdx < 0) backboneStartIdx = MAX_BACKBONE_POINTS - 1;
         backbone[backboneStartIdx] = point;
         backboneLength++;
+        
+        TrimBackbone();
     }
 
     public void UpdateBackboneHeadPoint(Vector2 point)
@@ -103,13 +127,6 @@ public class SnakeState : MonoBehaviour {
         }
         return Vector3.zero;
     }
-
-    /*public IList<Vector3> getBackbone()
-    {
-        return this.backbonePoints;
-    }*/
-
-    //public 
 
     public float CappedScore()
     {

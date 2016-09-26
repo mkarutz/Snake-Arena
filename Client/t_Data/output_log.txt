@@ -16,7 +16,7 @@ Platform assembly: C:\Users\Comp30019\Documents\comp90018\Client\t_Data\Managed\
 Loading C:\Users\Comp30019\Documents\comp90018\Client\t_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
 Platform assembly: C:\Users\Comp30019\Documents\comp90018\Client\t_Data\Managed\FlatBuffers.dll (this message is harmless)
 Loading C:\Users\Comp30019\Documents\comp90018\Client\t_Data\Managed\FlatBuffers.dll into Unity Child Domain
-- Completed reload, in  0.225 seconds
+- Completed reload, in  0.175 seconds
 Platform assembly: C:\Users\Comp30019\Documents\comp90018\Client\t_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Users\Comp30019\Documents\comp90018\Client\t_Data\Managed\System.dll (this message is harmless)
 desktop: 2736x1824 60Hz; virtual: 2736x1824 at 0,0
@@ -24,7 +24,7 @@ desktop: 2736x1824 60Hz; virtual: 2736x1824 at 0,0
 XInput1_3.dll not found. Trying XInput9_1_0.dll instead...
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 0.967107 ms
+UnloadTime: 2.487525 ms
 Look rotation viewing vector is zero
  
 (Filename:  Line: 82)
@@ -38,7 +38,7 @@ Look rotation viewing vector is zero
 (Filename:  Line: 82)
 
 Setting up 1 worker threads for Enlighten.
-  Thread -> id: 263c -> priority: 1 
+  Thread -> id: e7c -> priority: 1 
 NullReferenceException
   at (wrapper managed-to-native) UnityEngine.GameObject:GetComponentFastPath (System.Type,intptr)
   at UnityEngine.GameObject.GetComponent[LocalSnakeHeadController] () [0x00000] in <filename unknown>:0 

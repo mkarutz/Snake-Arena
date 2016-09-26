@@ -62,7 +62,7 @@ public class GameState : MonoBehaviour {
             GameObject newSnake = new GameObject();
             GameObject newSnakeHead = new GameObject();
             snakePool[i] = newSnake.AddComponent<SnakeState>();
-            newSnake.AddComponent<SnakeMeshGenerator>();
+            newSnake.AddComponent<SnakeMeshGenerator>().enabled = false;
             newSnakeHead.gameObject.transform.parent = newSnake.transform;
             snakePool[i].head = newSnakeHead;
             snakePool[i].enabled = false;
