@@ -3,6 +3,7 @@
 	Properties
 	{
 		_MainTex("Texture", 2D) = "white" {}
+		_BackboneTex("Texture", 2D) = "white" {}
 	}
 	SubShader
 	{
@@ -11,12 +12,14 @@
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
+			#pragma glsl
 
 			#include "UnityCG.cginc"
 
 			#define MAX_BACKBONE_POINTS 1000
 
 			uniform sampler2D _MainTex;
+			uniform sampler2D _BackboneTex;
 
 			uniform float2 _Backbone[MAX_BACKBONE_POINTS];
 			uniform int _BackboneLength;
@@ -34,16 +37,23 @@
 				float2 uv : TEXCOORD0;
 			};
 
+			float2 getBackbonePoint(int idx)
+			{
+				float2 pt = tex2Dlod(_BackboneTex, 
+					float4(((idx + 0.5f) / (float)MAX_BACKBONE_POINTS), 0.5f, 0, 0));
+				return pt;
+			}
+
 			float4 calcParametizedPosNorm(float distance)
 			{
 				if (_BackboneLength == 0)
 					return float4(0.0f, 0.0f, 0.0f, 0.0f);
 
 				float accDistance = 0.0f;
-				float2 prev = _Backbone[0];
+				float2 prev = getBackbonePoint(0);
 				for (int i = 0; i < _BackboneLength; i++)
 				{
-					float2 curr = _Backbone[i];
+					float2 curr = getBackbonePoint(i);
 					float2 segmentVector = curr - prev;
 					float segmentMagnitude = length(segmentVector);
 					if (accDistance + segmentMagnitude >= distance)
