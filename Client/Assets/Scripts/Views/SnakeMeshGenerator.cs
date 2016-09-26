@@ -15,6 +15,8 @@ public class SnakeMeshGenerator : MonoBehaviour {
     private MeshFilter meshFilter;
     private MeshRenderer meshRenderer;
 
+    private Texture2D backboneEncTex;
+
     private int backboneVertsLength;
     //private int backboneLength;
     //private int backboneStartIdx;
@@ -33,6 +35,13 @@ public class SnakeMeshGenerator : MonoBehaviour {
         this.meshRenderer.enabled = false;
         
         this.meshRenderer.material.shader = Shader.Find("Unlit/SnakeGenShader");
+
+        this.backboneEncTex = new Texture2D(SnakeState.MAX_BACKBONE_POINTS, 1, TextureFormat.RGBAFloat, false);
+        this.backboneEncTex.filterMode = FilterMode.Point;
+        this.backboneEncTex.anisoLevel = 1;
+        for (int i = 0; i < SnakeState.MAX_BACKBONE_POINTS; i++)
+            this.backboneEncTex.SetPixel(i, 0, new Color(0.0f, 0.0f, 0.0f, 0.0f));
+        this.backboneEncTex.Apply();
     }
 
     private Mesh generateBackboneMesh()
@@ -110,12 +119,13 @@ public class SnakeMeshGenerator : MonoBehaviour {
                 break;
             }
             //this.meshRenderer.material.SetVector("_Backbone" + i.ToString(), this.snake.GetBackbonePoint(i));
+            Vector2 pt = this.snake.GetBackbonePoint(i);
+            this.backboneEncTex.SetPixel(i, 0, new Color(pt.x, pt.y, 0.0f, 0.0f));
             b.Encapsulate(this.snake.GetBackbonePoint(i));
-            vs[i] = this.snake.GetBackbonePoint(i);
         }
+        this.backboneEncTex.Apply();
 
-        this.meshRenderer.material.SetVectorArray("_Backbone", vs);
-        //this.meshRenderer.material.SetTexture("_BackboneTex", )
+        this.meshRenderer.material.SetTexture("_BackboneTex", this.backboneEncTex);
         this.meshRenderer.material.SetInt("_BackboneLength", this.snake.GetBackboneLength());
         this.meshRenderer.material.SetFloat("_SnakeLength", this.snakeLength);
         this.meshRenderer.material.SetFloat("_SnakeRadius", this.snakeRadius);
