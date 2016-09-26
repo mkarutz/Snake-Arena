@@ -30,19 +30,11 @@ public final class ServerWorldState extends Table {
   public static void startServerWorldState(FlatBufferBuilder builder) { builder.startObject(2); }
   public static void addTick(FlatBufferBuilder builder, long tick) { builder.addInt(0, (int)tick, 0); }
   public static void addObjectStates(FlatBufferBuilder builder, int objectStatesOffset) { builder.addOffset(1, objectStatesOffset, 0); }
-
-
-  public static int createObjectStatesVector(FlatBufferBuilder builder, int[] data) {
-    builder.startVector(4, data.length, 4);
-    for (int i = data.length - 1; i >= 0; i--)
-      builder.addOffset(data[i]);
-    return builder.endVector();
-  }
+  public static int createObjectStatesVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
 
   public static int createObjectStatesVector(FlatBufferBuilder builder, int[] data, int n) {
     builder.startVector(4, n, 4);
-    for (int i = n - 1; i >= 0; i--)
-      builder.addOffset(data[i]);
+    for (int i = n - 1; i >= 0; i--) builder.addOffset(data[i]);
     return builder.endVector();
   }
 

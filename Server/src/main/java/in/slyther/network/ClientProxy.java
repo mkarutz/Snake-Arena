@@ -11,6 +11,7 @@ public class ClientProxy {
     private SocketAddress socketAddress;
     private Snake snake;
     private Rect viewPortZone = new Rect();
+    private int lastInputTick = -1;
 
     /**
      *
@@ -89,5 +90,14 @@ public class ClientProxy {
 
     private float viewPortSize() {
         return snake.getThickness() * VIEWPORT_SCALE;
+    }
+
+
+    public int getLastInputTick() {
+        return lastInputTick;
+    }
+
+    public void setLastInputTick(int lastInputTick) {
+        this.lastInputTick = lastInputTick;
     }
 }

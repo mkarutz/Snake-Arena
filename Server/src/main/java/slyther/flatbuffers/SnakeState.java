@@ -58,19 +58,13 @@ public final class SnakeState extends Table {
   public static void addIsDead(FlatBufferBuilder builder, boolean isDead) { builder.addBoolean(4, isDead, false); }
   public static void addIsTurbo(FlatBufferBuilder builder, boolean isTurbo) { builder.addBoolean(5, isTurbo, false); }
   public static void addParts(FlatBufferBuilder builder, int partsOffset) { builder.addOffset(6, partsOffset, 0); }
+  public static int createPartsVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
 
-
-  public static int createPartsVector(FlatBufferBuilder builder, int[] data) {
-    builder.startVector(4, data.length, 4);
-    for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]);
-    return builder.endVector();
-  }
-
-  public static int createPartsVector(FlatBufferBuilder builder, int[] data, int n) {
-    builder.startVector(4, n, 4);
-    for (int i = n - 1; i >= 0; i--) builder.addOffset(data[i]);
-    return builder.endVector();
-  }
+    public static int createPartsVector(FlatBufferBuilder builder, int[] data, int n) {
+        builder.startVector(4, n, 4);
+        for (int i = n - 1; i >= 0; i--) builder.addOffset(data[i]);
+        return builder.endVector();
+    }
 
   public static void startPartsVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }
   public static void addHead(FlatBufferBuilder builder, int head) { builder.addByte(7, (byte)head, 0); }
