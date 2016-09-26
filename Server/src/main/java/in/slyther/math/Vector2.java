@@ -34,6 +34,19 @@ public class Vector2 {
     }
 
 
+    public Vector2 set(Vector2 other) {
+        x = other.x;
+        y = other.y;
+        return this;
+    }
+
+    public static float distance(Vector2 a, Vector2 b) {
+        final float dx = a.x - b.x;
+        final float dy = a.y - b.y;
+        return (float) Math.sqrt(dx * dx + dy * dy);
+    }
+
+
     /**
      * x^2 + y^2 < bound^2
      * y < sqrt(bound^2 - x^2)
@@ -60,6 +73,73 @@ public class Vector2 {
         y = random.nextFloat() * 2 * yBound - yBound;
     }
 
+
+    public void translate(float x, float y) {
+        this.x += x;
+        this.y += y;
+    }
+
+    public static Vector2 minus(Vector2 a, Vector2 b) {
+        Vector2 result = new Vector2(a.x, a.y);
+        return result.subtract(b);
+    }
+
+
+    public Vector2 add(Vector2 v) {
+        translate(v.x, v.y);
+        return this;
+    }
+
+    public Vector2 subtract(Vector2 v) {
+        return add(v.multiply(-1));
+    }
+
+    public Vector2 multiply(float k) {
+        this.x *= k;
+        this.y *= k;
+        return this;
+    }
+
+    public Vector2 divide(float k) {
+        return multiply(1.0f / k);
+    }
+
+    public Vector2 normalize() {
+        return divide(magnitude());
+    }
+
+    public float magnitude() {
+        return (float) Math.sqrt(x*x + y*y);
+    }
+
+    public Vector2 rotateTowards(Vector2 other, float maxDegrees) {
+        float rotateAngle = angleBetween(this, other);
+        int sign = rotateAngle < 0 ? -1 : 1;
+        rotateAngle = sign * Math.min(sign * rotateAngle, Math.abs(maxDegrees));
+
+        float newX = (float) (Math.cos(rotateAngle) * x - Math.sin(rotateAngle) * y);
+        float newY = (float) (Math.sin(rotateAngle) * x + Math.cos(rotateAngle) * y);
+        x = newX;
+        y = newY;
+        return this;
+    }
+
+    public static float angleBetween(Vector2 from, Vector2 to) {
+        final float toTheta = (float) Math.atan2(to.getY(), to.getX());
+        final float fromTheta = (float) Math.atan2(from.getY(), from.getX());
+
+        float delta = toTheta - fromTheta;
+        int sign = delta < 0 ? -1 : 1;
+
+        delta *= sign;
+
+        if (delta > Math.PI) {
+            delta = (float) (2 * Math.PI - delta);
+            sign *= -1;
+        }
+
+        return sign * delta;
+    }
 
     public float getX() {
         return x;

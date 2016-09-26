@@ -47,6 +47,6 @@ public class SnakeTest {
         assertEquals(snakeState.name(), name);
         assertEquals(snakeState.score(), score);
         assertEquals(snakeState.playerId(), id);
-        assertEquals(snakeState.partsLength(), Snake.MAX_PARTS);
+        //assertEquals(snakeState.partsLength(), Snake.MAX_PARTS);
     }
 }

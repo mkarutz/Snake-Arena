@@ -13,23 +13,81 @@ public class SnakeState : MonoBehaviour {
     public int score;
     public string name;
 
-    private IList<Vector3> backbonePoints = new List<Vector3>();
+    public static int MAX_BACKBONE_POINTS = 1000;
+    public static int GROWTH_CAP = 40000;
+    public static float MIN_LENGTH = 1.0f;
+    public static float MIN_THICKNESS = 0.2f;
+    public static float GROWTH_RATE = 1.0f / 100.0f;
+
+    //private IList<Vector3> backbonePoints = new List<Vector3>();
+    private Vector2[] backbone;
+    private int backboneStartIdx;
+    private int backboneLength;
 
     // Use this for initialization
     void Start() {
         // Default backbone
-        this.backbonePoints.Add(this.head.transform.position);
+        this.InitBackbone();
+        this.AddBackboneHeadPoint(new Vector2(0.0f, 0.0f));
+        this.AddBackboneHeadPoint(new Vector2(0.0f, 1.0f));
+        this.AddBackboneHeadPoint(new Vector2(0.0f, 2.0f));
+    }
+
+    private void InitBackbone()
+    {
+        this.backbone = new Vector2[MAX_BACKBONE_POINTS];
+        this.backboneStartIdx = 0;
+        this.backboneLength = 0;
+    }
+
+    public void AddBackboneHeadPoint(Vector2 point)
+    {
+        if (backboneLength >= MAX_BACKBONE_POINTS - 1)
+        {
+            Debug.LogError("Backbone point maximum exceeded.");
+            return;
+        }
+        backboneStartIdx = backboneStartIdx - 1;
+        if (backboneStartIdx < 0) backboneStartIdx = MAX_BACKBONE_POINTS - 1;
+        backbone[backboneStartIdx] = point;
+        backboneLength++;
+    }
+
+    public void UpdateBackboneHeadPoint(Vector2 point)
+    {
+        this.backbone[this.backboneStartIdx] = point;
+    }
+
+    public int GetBackboneLength()
+    {
+        return this.backboneLength;
+    }
+
+    public Vector2[] GetRawBackboneArray()
+    {
+        return this.backbone;
+    }
+
+    public int GetRawBackboneStartIdx()
+    {
+        return this.backboneStartIdx;
+    }
+
+    public Vector2 GetBackbonePoint(int idx)
+    {
+        return this.backbone[(backboneStartIdx + idx) % MAX_BACKBONE_POINTS];
     }
 
     public Vector3 CalcBackboneParametizedPosition(float distance)
     {
-        if (this.backbonePoints.Count == 0)
+        if (this.backboneLength == 0)
             return Vector3.zero;
 
         float accDistance = 0.0f;
-        Vector3 prev = this.backbonePoints.Last();
-        foreach (Vector3 curr in this.backbonePoints.Reverse())
+        Vector3 prev = this.GetBackbonePoint(0);
+        for (int i = 0; i < this.backboneLength; i++)
         {
+            Vector3 curr = this.GetBackbonePoint(i);
             Vector3 segmentVector = curr - prev;
             float segmentMagnitude = segmentVector.magnitude;
             if (accDistance + segmentMagnitude >= distance)
@@ -46,18 +104,30 @@ public class SnakeState : MonoBehaviour {
         return Vector3.zero;
     }
 
-    public IList<Vector3> getBackbone()
+    /*public IList<Vector3> getBackbone()
     {
         return this.backbonePoints;
+    }*/
+
+    //public 
+
+    public float CappedScore()
+    {
+        return Mathf.Min(GROWTH_CAP, this.score);
     }
 
     public float GetSnakeLength()
     {
-        return 1 + Mathf.Min(40000, this.score) / 100.0f;
+        return MIN_LENGTH + GROWTH_RATE * CappedScore();
     }
 
     public float GetSnakeThickness()
     {
-        return 0.2f + Mathf.Sqrt(Mathf.Min(40000, this.score)) / 100.0f;
+        return MIN_THICKNESS + GROWTH_RATE * Mathf.Sqrt(CappedScore());
+    }
+
+    public float MaxSnakeLength()
+    {
+        return MIN_LENGTH + GROWTH_RATE * GROWTH_CAP;
     }
 }

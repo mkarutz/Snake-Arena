@@ -30,6 +30,9 @@ public class LocalController : MonoBehaviour {
     // keeps account of the previous body of objects that were activated, so we can deactivate if necessary
     private IEnumerable<MockFoodState> prevResult = new HashSet<MockFoodState>();
 
+    int activateInterval = 60;
+    int activateTimer = 0;
+
 	// Use this for initialization
 	void Start () {
         state.InitState(maxSnakes, maxFoods, worldRadius);
@@ -95,8 +98,13 @@ public class LocalController : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {        
-        ManageFoodActivation();        
+	void Update () {
+        if (activateTimer <= 0)
+        {
+            ManageFoodActivation();
+            activateTimer = activateInterval;
+        }
+        activateTimer--;
 
         if (Input.GetKeyDown(KeyCode.A))
             this.state.DeactivateSnake(0);

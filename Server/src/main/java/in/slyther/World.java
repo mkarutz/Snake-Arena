@@ -4,6 +4,9 @@ import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.gameobjects.Food;
 import in.slyther.gameobjects.Snake;
 import in.slyther.math.Vector2;
+import in.slyther.math.collisions.SpatialHashMap;
+import in.slyther.math.collisions.SpatialMap;
+import in.slyther.network.ClientProxy;
 import slyther.flatbuffers.*;
 
 import java.nio.ByteBuffer;
@@ -32,6 +35,16 @@ public class World {
     private final Deque<Integer> freeSnakeIdsPool = new ArrayDeque<>(MAX_PLAYERS);
     private final Deque<Integer> freeFoodIdsPool = new ArrayDeque<>(MAX_FOOD);
 
+    private final SpatialMap<Snake> snakeSpatialMap = new SpatialHashMap<>(
+            new Vector2(-2 * WORLD_RADIUS, -2 * WORLD_RADIUS),
+            new Vector2(2 * WORLD_RADIUS, 2 * WORLD_RADIUS),
+            10);
+
+    private final SpatialMap<Food> foodSpatialMap = new SpatialHashMap<>(
+            new Vector2(-2 * WORLD_RADIUS, -2 * WORLD_RADIUS),
+            new Vector2(2 * WORLD_RADIUS, 2 * WORLD_RADIUS),
+            10);
+
 
     /**
      *
@@ -55,29 +68,39 @@ public class World {
     }
 
 
-    public int serializeObjectStates(FlatBufferBuilder builder, int tick) {
+    public void handleInput(int snakeId, boolean isTurbo, Vector2 desiredMove) {
+        final Snake snake = snakes[snakeId];
+
+        snake.setTurbo(isTurbo);
+        snake.move(desiredMove, server.getTimeStep() / 1000.0f);
+
+        snakeSpatialMap.update(snake, snake.getBoundingBox());
+    }
+
+
+    public int serializeObjectStates(FlatBufferBuilder builder, int tick, ClientProxy clientProxy) {
         int[] objectOffsets = new int[MAX_PLAYERS + MAX_FOOD];
         int n = 0;
 
-        for (int i = 0; i < MAX_PLAYERS; i++) {
-            int snakeStateOffset = snakes[i].serialize(builder);
+        // Get snakes near the viewport
+        for (Snake snake : snakeSpatialMap.getNear(clientProxy.getViewportZone())) {
+            int snakeStateOffset = snake.serialize(builder);
             NetworkObjectState.startNetworkObjectState(builder);
             NetworkObjectState.addStateType(builder, NetworkObjectStateType.SnakeState);
             NetworkObjectState.addState(builder, snakeStateOffset);
             objectOffsets[n++] = NetworkObjectState.endNetworkObjectState(builder);
         }
 
-        for (int i = 0; i < MAX_FOOD; i++) {
-            int foodStateOffset = food[i].serialize(builder, i);
+        // Get the food near the viewport
+        for (Food food : foodSpatialMap.getNear(clientProxy.getViewportZone())) {
+            int foodStateOffset = food.serialize(builder);
             NetworkObjectState.startNetworkObjectState(builder);
             NetworkObjectState.addStateType(builder, NetworkObjectStateType.FoodState);
             NetworkObjectState.addState(builder, foodStateOffset);
             objectOffsets[n++] = NetworkObjectState.endNetworkObjectState(builder);
         }
 
-        assert(n == MAX_PLAYERS + MAX_FOOD);
-
-        int objectsVectorOffset = ServerWorldState.createObjectStatesVector(builder, objectOffsets);
+        int objectsVectorOffset = ServerWorldState.createObjectStatesVector(builder, objectOffsets, n);
         ServerWorldState.startServerWorldState(builder);
         ServerWorldState.addObjectStates(builder, objectsVectorOffset);
         ServerWorldState.addTick(builder, tick);
@@ -103,6 +126,7 @@ public class World {
     private void respawnSnake(Snake snake) {
         snake.setScore(STARTING_SCORE);
         snake.respawn(Vector2.randomUniform(WORLD_RADIUS), STARTING_SCORE);
+        updateSpatialSnakeMap(snake);
     }
 
 
@@ -112,8 +136,16 @@ public class World {
      */
     private void respawnFood(Food food) {
         food.getPosition().setRandomUniform(WORLD_RADIUS);
+        updateSpatialFoodMap(food);
     }
 
+    private void updateSpatialFoodMap(Food food) {
+        foodSpatialMap.update(food, food.getPosition());
+    }
+
+    private void updateSpatialSnakeMap(Snake snake) {
+        snakeSpatialMap.update(snake, snake.getBoundingBox());
+    }
 
     /**
      *
@@ -131,7 +163,8 @@ public class World {
      */
     private void initFood() {
         for (int i = 0; i < MAX_FOOD; i++) {
-            food[i] = new Food(Vector2.randomUniform(WORLD_RADIUS), random.nextInt(FOOD_MAX_WEIGHT));
+            food[i] = new Food(i, Vector2.randomUniform(WORLD_RADIUS), random.nextInt(FOOD_MAX_WEIGHT));
+            foodSpatialMap.put(food[i], food[i].getPosition());
         }
     }
 }

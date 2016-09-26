@@ -13,7 +13,7 @@ public class FoodView : MonoBehaviour {
         this.foodState = this.GetComponent<FoodState>();
         this.spriteRenderer = this.gameObject.AddComponent<SpriteRenderer>();
         this.spriteRenderer.sprite = Resources.Load<Sprite>("FoodSprite");
-        this.spriteRenderer.material.shader = Shader.Find("Particles/Additive");
+        this.spriteRenderer.material.shader = Shader.Find("Mobile/Particles/Additive");
         this.spriteRenderer.enabled = false;
     }
 
