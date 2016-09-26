@@ -32,6 +32,11 @@ public class SnakeState : MonoBehaviour {
         this.AddBackboneHeadPoint(new Vector2(0.0f, 2.0f));
     }
 
+    void Update()
+    {
+        transform.position = head.transform.position;
+    }
+
     private void InitBackbone()
     {
         this.backbone = new Vector2[MAX_BACKBONE_POINTS];

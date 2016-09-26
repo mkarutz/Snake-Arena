@@ -55,9 +55,7 @@ public abstract class LocalSnakeController : MonoBehaviour, IController {
         this.snakeState.head.transform.rotation = this.direction;
 
         // Translate snake forward
-        //Vector2 prevPosition = this.snakeState.head.transform.position;
         this.snakeState.head.transform.Translate(Vector3.forward * MOVE_SPEED * Time.deltaTime);
-        //this.snakeState.UpdateBackboneHeadPoint(this.snakeState.head.transform.position);
 
         if (this.snakeState.GetBackboneLength() <= 2)
         {
@@ -70,16 +68,9 @@ public abstract class LocalSnakeController : MonoBehaviour, IController {
         Vector2 neckVec = this.snakeState.GetBackbonePoint(2) - this.snakeState.GetBackbonePoint(1);
 
         Vector2 a = Vector3.Project(headVec, neckVec);
-
         if (headVec.sqrMagnitude - a.sqrMagnitude > MAX_HEAD_OFFSET * MAX_HEAD_OFFSET)
         {
-            //Vector3 newPoint = this.snakeState.GetBackbonePoint(1) + a + (a - headVec).normalized * MAX_HEAD_OFFSET;
-            //this.snakeState.UpdateBackboneHeadPoint(prevPosition);
             this.snakeState.AddBackboneHeadPoint(this.snakeState.head.transform.position);
-            //snakeState.head.transform.position = newPoint;
-            //GameObject o = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            //o.transform.position = this.snakeState.GetBackbonePoint(1);
-            //o.transform.localScale = Vector3.one * 0.1f;
         }
 
         this.snakeState.UpdateBackboneHeadPoint(this.snakeState.head.transform.position);
