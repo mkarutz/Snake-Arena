@@ -75,33 +75,38 @@
 				float parity = v.params.y;
 				float texh = v.params.z;
 
-				/*if (_SnakeLength < distance)
+				distance *= _SnakeRadius * 2.0f;
+
+				if (distance > _SnakeLength + 1.0f)
 				{
 					o.vertex = float4(0.0f, 0.0f, 0.0f, 0.0f);
 					o.uv = float2(0.0f, 0.0f);
+					return o;
 				}
-				else
-				{*/
-					float4 posNorm = calcParametizedPosNorm(distance); // Expensive, possibly optimise
-					float2 pos = float2(posNorm.x, posNorm.y);
-					float2 norm = float2(posNorm.z, posNorm.w);
 
-					float4 localPos = float4(0.0f, 0.0f, 0.0f, 1.0f);
+				distance = saturate(distance / _SnakeLength) * _SnakeLength;
 
-					float fct = saturate((_SnakeLength - distance) / (_SnakeLength * 0.1f));
-					if (distance < _SnakeRadius * 2.0f)
-					{
-						// Head taper
-						fct = saturate((distance / (_SnakeRadius * 2.0f)) + 0.3f);
-					}
+				float4 posNorm = calcParametizedPosNorm(distance); // Expensive, possibly optimise
+				float2 pos = float2(posNorm.x, posNorm.y);
+				float2 norm = float2(posNorm.z, posNorm.w);
 
-					localPos.xy = pos + (norm * _SnakeRadius * parity * fct);
+				float4 localPos = float4(0.0f, 0.0f, 0.0f, 1.0f);
 
-					float2 uv = float2(texh, distance / (_SnakeRadius * 2.0f));
+				float fct = saturate((_SnakeLength - distance) / (_SnakeLength * 0.1f));
+				if (distance < _SnakeRadius * 2.0f)
+				{
+					// Head taper
+					fct = saturate((distance / (_SnakeRadius * 2.0f)) + 0.15f);
+				}
 
-					o.vertex = mul(UNITY_MATRIX_MVP, localPos);
-					o.uv = uv;
-				//}
+				localPos.xy = pos + (norm * _SnakeRadius * parity * fct);
+				localPos.z = distance;
+
+				float2 uv = float2(texh, distance / (_SnakeRadius * 2.0f));
+
+				o.vertex = mul(UNITY_MATRIX_MVP, localPos);
+				o.uv = uv;
+				
 				return o;
 			}
 
