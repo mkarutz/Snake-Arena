@@ -6,12 +6,16 @@ using FlatBuffers;
 using slyther.flatbuffers;
 using System.Collections.Generic;
 
-public class NetworkManager : MonoBehaviour {
+namespace Slyther {
+	
+public class ClientNetworkManager : MonoBehaviour {
+	public static int localPlayerID = 0;
+
 	public ReplicationManager replicationManager;
 
 	public ClientMessageConstructor clientMessageConstructor = new ClientMessageConstructor();
-
 	private Queue<ServerMessage> messageQueue = new Queue<ServerMessage>();
+
 
 	void Start() {
 		InitConnection();
@@ -24,6 +28,14 @@ public class NetworkManager : MonoBehaviour {
 	}
 
 
+	public Snake getLocalPlayer() {
+		return replicationManager.getSnakes()[localPlayerID];
+	}
+
+
+	/**
+	 * Reads all the packets from the udp socket into the queue.
+	 */
 	void ReadPacketsToQueue()
 	{
 		while (udpc.Available > 0)
@@ -96,4 +108,6 @@ public class NetworkManager : MonoBehaviour {
 			ServerMessage sm = ServerMessage.GetRootAsServerMessage(byteBuf);
 		}
 	}
+}
+
 }

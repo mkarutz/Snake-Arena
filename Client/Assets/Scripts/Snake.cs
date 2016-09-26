@@ -13,7 +13,7 @@ public class Snake : MonoBehaviour {
 	private int score;
 
 	void Awake() {
-		
+		initSnakeParts ();
 	}
 
 	void Start() {
@@ -21,7 +21,7 @@ public class Snake : MonoBehaviour {
 	}
 
 	void Update() {
-
+		transform.position = parts[headPointer].transform.position;
 	}
 
 	private SnakePartStateFB snakePartState = new SnakePartStateFB ();
@@ -45,6 +45,7 @@ public class Snake : MonoBehaviour {
 
 	private SnakePart newSnakePart() {
 		SnakePart snakePart = (SnakePart) GameObject.Instantiate(snakePartPrefab);
+		snakePart.transform.parent = transform;
 		return snakePart;
 	}
 
