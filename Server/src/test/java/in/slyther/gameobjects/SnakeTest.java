@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import slyther.flatbuffers.NetworkObjectState;
 import slyther.flatbuffers.NetworkObjectStateType;
-import slyther.flatbuffers.SnakeState;
+import slyther.flatbuffers.NetworkSnakeState;
 
 import java.nio.ByteBuffer;
 
@@ -30,7 +30,7 @@ public class SnakeTest {
         int snakeOffset = snake.serialize(builder);
 
         NetworkObjectState.startNetworkObjectState(builder);
-        NetworkObjectState.addStateType(builder, NetworkObjectStateType.SnakeState);
+        NetworkObjectState.addStateType(builder, NetworkObjectStateType.NetworkSnakeState);
         NetworkObjectState.addState(builder, snakeOffset);
         int objectOffset = NetworkObjectState.endNetworkObjectState(builder);
 
@@ -40,13 +40,13 @@ public class SnakeTest {
 
         NetworkObjectState state = NetworkObjectState.getRootAsNetworkObjectState(buf);
 
-        assertEquals(state.stateType(), NetworkObjectStateType.SnakeState);
+        assertEquals(state.stateType(), NetworkObjectStateType.NetworkSnakeState);
 
-        SnakeState snakeState = (SnakeState) state.state(new SnakeState());
+        NetworkSnakeState NetworkSnakeState = (NetworkSnakeState) state.state(new NetworkSnakeState());
 
-        assertEquals(snakeState.name(), name);
-        assertEquals(snakeState.score(), score);
-        assertEquals(snakeState.playerId(), id);
-        //assertEquals(snakeState.partsLength(), Snake.MAX_PARTS);
+        assertEquals(NetworkSnakeState.name(), name);
+        assertEquals(NetworkSnakeState.score(), score);
+        assertEquals(NetworkSnakeState.playerId(), id);
+        //assertEquals(NetworkSnakeState.partsLength(), Snake.MAX_PARTS);
     }
 }

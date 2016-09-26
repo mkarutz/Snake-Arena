@@ -4,15 +4,14 @@ import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.math.Vector2;
 import org.junit.Before;
 import org.junit.Test;
-import slyther.flatbuffers.FoodState;
+import slyther.flatbuffers.NetworkFoodState;
 import slyther.flatbuffers.NetworkObjectState;
 import slyther.flatbuffers.NetworkObjectStateType;
-import slyther.flatbuffers.SnakeState;
 
 import java.nio.ByteBuffer;
-import java.awt.Color;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class FoodTest {
     private static final Vector2 pos = new Vector2(0, 1);
@@ -33,7 +32,7 @@ public class FoodTest {
         int foodOffset = food.serialize(builder);
 
         NetworkObjectState.startNetworkObjectState(builder);
-        NetworkObjectState.addStateType(builder, NetworkObjectStateType.FoodState);
+        NetworkObjectState.addStateType(builder, NetworkObjectStateType.NetworkFoodState);
         NetworkObjectState.addState(builder, foodOffset);
         int objectOffset = NetworkObjectState.endNetworkObjectState(builder);
 
@@ -43,16 +42,16 @@ public class FoodTest {
 
         NetworkObjectState state = NetworkObjectState.getRootAsNetworkObjectState(buf);
 
-        assertEquals(state.stateType(), NetworkObjectStateType.FoodState);
+        assertEquals(state.stateType(), NetworkObjectStateType.NetworkFoodState);
 
-        FoodState foodState = (FoodState) state.state(new FoodState());
+        NetworkFoodState NetworkFoodState = (NetworkFoodState) state.state(new NetworkFoodState());
 
-        assertTrue(Math.abs(foodState.position().x() - pos.getX()) < 1e-4);
-        assertTrue(Math.abs(foodState.position().y() - pos.getY()) < 1e-4);
+        assertTrue(Math.abs(NetworkFoodState.position().x() - pos.getX()) < 1e-4);
+        assertTrue(Math.abs(NetworkFoodState.position().y() - pos.getY()) < 1e-4);
 
-        System.out.println(foodState.weight());
+        System.out.println(NetworkFoodState.weight());
 
-        assertEquals(foodState.weight(), weight);
-        assertEquals(foodState.foodId(), foodId);
+        assertEquals(NetworkFoodState.weight(), weight);
+        assertEquals(NetworkFoodState.foodId(), foodId);
     }
 }

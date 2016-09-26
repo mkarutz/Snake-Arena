@@ -9,12 +9,9 @@ import in.slyther.math.collisions.SpatialMap;
 import in.slyther.network.ClientProxy;
 import slyther.flatbuffers.*;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.Random;
-import java.awt.Color;
 
 
 /**
@@ -86,7 +83,7 @@ public class World {
         for (Snake snake : snakeSpatialMap.getNear(clientProxy.getViewportZone())) {
             int snakeStateOffset = snake.serialize(builder);
             NetworkObjectState.startNetworkObjectState(builder);
-            NetworkObjectState.addStateType(builder, NetworkObjectStateType.SnakeState);
+            NetworkObjectState.addStateType(builder, NetworkObjectStateType.NetworkSnakeState);
             NetworkObjectState.addState(builder, snakeStateOffset);
             objectOffsets[n++] = NetworkObjectState.endNetworkObjectState(builder);
         }
@@ -95,17 +92,17 @@ public class World {
         for (Food food : foodSpatialMap.getNear(clientProxy.getViewportZone())) {
             int foodStateOffset = food.serialize(builder);
             NetworkObjectState.startNetworkObjectState(builder);
-            NetworkObjectState.addStateType(builder, NetworkObjectStateType.FoodState);
+            NetworkObjectState.addStateType(builder, NetworkObjectStateType.NetworkFoodState);
             NetworkObjectState.addState(builder, foodStateOffset);
             objectOffsets[n++] = NetworkObjectState.endNetworkObjectState(builder);
         }
 
-        int objectsVectorOffset = ServerWorldState.createObjectStatesVector(builder, objectOffsets, n);
-        ServerWorldState.startServerWorldState(builder);
-        ServerWorldState.addObjectStates(builder, objectsVectorOffset);
-        ServerWorldState.addTick(builder, tick);
+        int objectsVectorOffset = NetworkWorldState.createObjectStatesVector(builder, objectOffsets, n);
+        NetworkWorldState.startServerWorldState(builder);
+        NetworkWorldState.addObjectStates(builder, objectsVectorOffset);
+        NetworkWorldState.addTick(builder, tick);
 
-        return ServerWorldState.endServerWorldState(builder);
+        return NetworkWorldState.endServerWorldState(builder);
     }
 
 

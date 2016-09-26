@@ -10,7 +10,7 @@ public final class ServerMessageType {
   public static final byte ServerGoodbye = 3;
   public static final byte TickAck = 4;
 
-  public static final String[] names = { "NONE", "ServerHello", "ServerWorldState", "ServerGoodbye", "TickAck", };
+  public static final String[] names = { "NONE", "ServerHello", "NetworkWorldState", "ServerGoodbye", "TickAck", };
 
   public static String name(int e) { return names[e]; }
 }

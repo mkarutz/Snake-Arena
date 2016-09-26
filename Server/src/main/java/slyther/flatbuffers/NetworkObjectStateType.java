@@ -5,10 +5,10 @@ package slyther.flatbuffers;
 public final class NetworkObjectStateType {
   private NetworkObjectStateType() { }
   public static final byte NONE = 0;
-  public static final byte FoodState = 1;
-  public static final byte SnakeState = 2;
+  public static final byte NetworkFoodState = 1;
+  public static final byte NetworkSnakeState = 2;
 
-  public static final String[] names = { "NONE", "FoodState", "SnakeState", };
+  public static final String[] names = { "NONE", "NetworkFoodState", "NetworkSnakeState", };
 
   public static String name(int e) { return names[e]; }
 }

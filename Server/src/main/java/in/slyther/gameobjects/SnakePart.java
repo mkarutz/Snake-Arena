@@ -2,7 +2,7 @@ package in.slyther.gameobjects;
 
 import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.math.Vector2;
-import slyther.flatbuffers.SnakePartState;
+import slyther.flatbuffers.NetworkSnakePartState;
 import slyther.flatbuffers.Vec2;
 
 public class SnakePart {
@@ -16,11 +16,11 @@ public class SnakePart {
 
 
     public int serialize(FlatBufferBuilder builder) {
-        SnakePartState.startSnakePartState(builder);
-        SnakePartState.addPosition(builder, Vec2.createVec2(builder, position.getX(), position.getY()));
-        SnakePartState.addIndex(builder, index);
+        NetworkSnakePartState.startSnakePartState(builder);
+        NetworkSnakePartState.addPosition(builder, Vec2.createVec2(builder, position.getX(), position.getY()));
+        NetworkSnakePartState.addIndex(builder, index);
 
-        return SnakePartState.endSnakePartState(builder);
+        return NetworkSnakePartState.endSnakePartState(builder);
     }
 
 

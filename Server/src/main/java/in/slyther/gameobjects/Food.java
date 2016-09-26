@@ -2,7 +2,7 @@ package in.slyther.gameobjects;
 
 import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.math.Vector2;
-import slyther.flatbuffers.FoodState;
+import slyther.flatbuffers.NetworkFoodState;
 import slyther.flatbuffers.Vec2;
 
 public class Food {
@@ -20,13 +20,13 @@ public class Food {
     }
 
     public int serialize(FlatBufferBuilder builder) {
-        FoodState.startFoodState(builder);
-        FoodState.addFoodId(builder, foodId);
-        FoodState.addIsActive(builder, isActive);
-        FoodState.addWeight(builder, weight);
-        FoodState.addPosition(builder, Vec2.createVec2(builder, position.getX(), position.getY()));
+        NetworkFoodState.startNetworkFoodState(builder);
+        NetworkFoodState.addFoodId(builder, foodId);
+        NetworkFoodState.addIsActive(builder, isActive);
+        NetworkFoodState.addWeight(builder, weight);
+        NetworkFoodState.addPosition(builder, Vec2.createVec2(builder, position.getX(), position.getY()));
 
-        return FoodState.endFoodState(builder);
+        return NetworkFoodState.endNetworkFoodState(builder);
     }
 
     public int getFoodId() {

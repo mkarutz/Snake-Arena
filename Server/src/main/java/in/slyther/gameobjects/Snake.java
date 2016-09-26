@@ -3,7 +3,7 @@ package in.slyther.gameobjects;
 import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.math.Rect;
 import in.slyther.math.Vector2;
-import slyther.flatbuffers.SnakeState;
+import slyther.flatbuffers.NetworkSnakeState;
 
 
 /**
@@ -119,21 +119,21 @@ public class Snake {
             partsOffsets[n++] = parts[i].serialize(builder);
         }
 
-        int vectorOffset = SnakeState.createPartsVector(builder, partsOffsets, n);
+        int vectorOffset = NetworkSnakeState.createPartsVector(builder, partsOffsets, n);
         int nameOffset = builder.createString(name);
 
-        SnakeState.startSnakeState(builder);
-        SnakeState.addPlayerId(builder, pid);
-        SnakeState.addParts(builder, vectorOffset);
-        SnakeState.addHead(builder, headPointer);
-        SnakeState.addIsDead(builder, isDead);
-        SnakeState.addIsTurbo(builder, isTurbo);
-        SnakeState.addName(builder, nameOffset);
-        SnakeState.addScore(builder, score);
-        SnakeState.addTail(builder, tailPointer);
-        SnakeState.addSkin(builder, skin);
+        NetworkSnakeState.startNetworkSnakeState(builder);
+        NetworkSnakeState.addPlayerId(builder, pid);
+        NetworkSnakeState.addParts(builder, vectorOffset);
+        NetworkSnakeState.addHead(builder, headPointer);
+        NetworkSnakeState.addIsDead(builder, isDead);
+        NetworkSnakeState.addIsTurbo(builder, isTurbo);
+        NetworkSnakeState.addName(builder, nameOffset);
+        NetworkSnakeState.addScore(builder, score);
+        NetworkSnakeState.addTail(builder, tailPointer);
+        NetworkSnakeState.addSkin(builder, skin);
 
-        return SnakeState.endSnakeState(builder);
+        return NetworkSnakeState.endNetworkSnakeState(builder);
     }
 
 

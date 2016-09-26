@@ -34,7 +34,7 @@ public class WorldTest {
 //        int worldStateOffset = world.serializeObjectStates(builder, tick);
 //
 //        ServerMessage.startServerMessage(builder);
-//        ServerMessage.addMsgType(builder, ServerMessageType.ServerWorldState);
+//        ServerMessage.addMsgType(builder, ServerMessageType.NetworkWorldState);
 //        ServerMessage.addMsg(builder, worldStateOffset);
 //        int messageOffset = ServerMessage.endServerMessage(builder);
 //
@@ -44,9 +44,9 @@ public class WorldTest {
 //
 //        ServerMessage msg = ServerMessage.getRootAsServerMessage(buf);
 //
-//        assertEquals(msg.msgType(), ServerMessageType.ServerWorldState);
+//        assertEquals(msg.msgType(), ServerMessageType.NetworkWorldState);
 //
-//        ServerWorldState state = (ServerWorldState) msg.msg(new ServerWorldState());
+//        NetworkWorldState state = (NetworkWorldState) msg.msg(new NetworkWorldState());
 //
 //        assertEquals(state.tick(), tick);
 //        assertEquals(state.objectStatesLength(), MAX_PLAYERS + MAX_FOOD);
