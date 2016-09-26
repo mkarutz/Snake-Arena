@@ -131,10 +131,7 @@ public class World {
      */
     private void initFood() {
         for (int i = 0; i < MAX_FOOD; i++) {
-            int r = random.nextInt(2)*255;
-            int g = ((r==0)?random.nextInt(2):0)*255;
-            int b = ((r==0 && g == 0)?1:random.nextInt(2))*255;
-            food[i] = new Food(Vector2.randomUniform(WORLD_RADIUS), random.nextInt(FOOD_MAX_WEIGHT), new Color(r,g,b));
+            food[i] = new Food(Vector2.randomUniform(WORLD_RADIUS), random.nextInt(FOOD_MAX_WEIGHT));
         }
     }
 }
