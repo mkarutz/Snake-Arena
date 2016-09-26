@@ -33,6 +33,10 @@ public class Vector2 {
         return new Vector2(0, 0);
     }
 
+    public static Vector2 up() {
+        return new Vector2(0, 1);
+    }
+
 
     public Vector2 set(Vector2 other) {
         x = other.x;

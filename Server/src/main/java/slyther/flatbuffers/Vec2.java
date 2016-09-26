@@ -14,6 +14,11 @@ public final class Vec2 extends Struct {
   public float x() { return bb.getFloat(bb_pos + 0); }
   public float y() { return bb.getFloat(bb_pos + 4); }
 
+  @Override
+  public String toString() {
+    return "(" + x() + ", " + y() + ")";
+  }
+
   public static int createVec2(FlatBufferBuilder builder, float x, float y) {
     builder.prep(4, 8);
     builder.putFloat(y);

@@ -233,25 +233,28 @@ public class NetworkManager {
     }
 
 
-    private Vec2 input = new Vec2();
+    private Vec2 inputVec2 = new Vec2();
     private Vector2 desiredMove = Vector2.zero();
 
     /**
-     * Process new input from from a client.
+     * Process new inputVec2 from from a client.
      * @param clientProxy Client proxy.
-     * @param inputState The input state received.
+     * @param inputState The inputVec2 state received.
      */
     private void processInputStateMessage(ClientProxy clientProxy, ClientInputState inputState) {
         final int clientId = clientProxy.getClientId();
-        System.out.println("Received input from " + clientId);
+        System.out.println("Received inputVec2 from " + clientId);
 
-        if (clientProxy.getLastInputTick() <= server.getTick()) {
+        if (clientProxy.getLastInputTick() >= server.getTick()) {
             return;
         }
 
-        input = inputState.desiredMove(input);
-        desiredMove.setX(input.x());
-        desiredMove.setY(input.y());
+        inputVec2 = inputState.desiredMove(inputVec2);
+
+        System.out.println("Desired Move = " + inputVec2);
+
+        desiredMove.setX(inputVec2.x());
+        desiredMove.setY(inputVec2.y());
 
         world.handleInput(clientId, inputState.isTurbo(), desiredMove);
 
