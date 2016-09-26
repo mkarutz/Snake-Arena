@@ -35,7 +35,7 @@ public class SnakeState : MonoBehaviour {
 
     void Update()
     {
-        //transform.position = head.transform.position;
+        //transform.position = GetBackbonePoint(he); //transform.position;
     }
 
     private void InitBackbone()

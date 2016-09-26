@@ -8,7 +8,7 @@ public abstract class LocalSnakeController : MonoBehaviour, IController {
     private const float MOVE_SPEED = 2.0f;
     private const float MAX_HEAD_OFFSET = 0.02f;
     private Quaternion direction;
-    private Quaternion targetDirection;
+    public Quaternion targetDirection;
 
     protected SnakeState snakeState;
 
@@ -18,14 +18,6 @@ public abstract class LocalSnakeController : MonoBehaviour, IController {
     void Awake () {
         this.snakeState = this.GetComponent<SnakeState>();
         this.snakeState.head.AddComponent<LocalSnakeHeadController>().snakeState = this.snakeState;
-
-        //boundingBox = this.gameObject.GetComponent<BoxCollider>();
-        //if (boundingBox == null)
-       // {
-       //     this.boundingBox = this.gameObject.AddComponent<BoxCollider>();
-       //     updateBoundingBox();         
-       // }
-       // this.boundingBox.isTrigger = true;
     }
 
     

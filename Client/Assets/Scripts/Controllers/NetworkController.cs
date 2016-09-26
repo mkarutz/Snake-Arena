@@ -41,6 +41,8 @@ public class NetworkController : MonoBehaviour {
         ProcessQueuedMessages();
         if (this.gameState.IsSnakeActive(this.playerID))
         {
+            Quaternion targetDir = this.gameState.GetSnake(this.playerID).GetComponent<LocalSnakeController>().targetDirection;
+
             SendInputState(this.gameState.GetSnake(this.playerID).GetComponent<NetworkSnakeController>().GetDesiredMove(Camera.main));
         }
         
