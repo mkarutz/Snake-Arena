@@ -10,8 +10,7 @@ public class NetworkController : MonoBehaviour {
     public int maxSnakes = 100;
     public int maxFoods = 10000;
     public int worldRadius = 500;
-
-    public new CameraController camera;
+    
     public int playerID;
 
     public GameState gameState;
@@ -35,8 +34,8 @@ public class NetworkController : MonoBehaviour {
         ReadPacketsToQueue();
         ProcessQueuedMessages();
         if (this.gameState.IsSnakeActive(this.playerID))
-        {       
-            SendInputState(this.gameState.GetSnake(this.playerID).GetComponent<NetworkSnakeController>().GetDesiredMove());
+        {
+            SendInputState(this.gameState.GetSnake(this.playerID).GetComponent<NetworkSnakeController>().GetDesiredMove(Camera.main));
         }
         
     }
@@ -72,14 +71,15 @@ public class NetworkController : MonoBehaviour {
         {
             case ServerMessageType.ServerWorldState:
                 ServerWorldState serverWorldState = msg.GetMsg(new ServerWorldState());
-                this.gameState.ReplicateState(serverWorldState);
+                this.ReplicateState(serverWorldState);
                 break;
         }
     }
 
     private void InitConnection()
     {
-        this.udpc = new UdpClient("10.12.52.84", 3000);
+        this.udpc = new UdpClient("localhost", 3000);
+//        this.udpc = new UdpClient("10.12.56.120", 3000);
         var message = clientMessageConstructor.ConstructClientHello(ClientMessageType.ClientHello,0,"foo");
 
         this.udpc.Send(message, message.Length);
@@ -100,6 +100,7 @@ public class NetworkController : MonoBehaviour {
 
     void SendInputState(Vector3 desiredMove)
     {
+        Debug.Log(desiredMove);
         var inputStatemessage = clientMessageConstructor.ConstructClientInputState(ClientMessageType.ClientInputState,(byte)this.playerID,30,desiredMove,false);
         this.udpc.Send(inputStatemessage,inputStatemessage.Length);
     }
@@ -125,14 +126,14 @@ public class NetworkController : MonoBehaviour {
                     this.gameState.ActivateSnake<NetworkSnakeController>(snakeState.PlayerId, snakeState.Name, (int)snakeState.Score, Vector3.zero, 1);
                     if(snakeState.PlayerId == this.playerID)
                     {
-                        Debug.Log(snakeState.PlayerId + " " + this.playerID);
-                        this.camera.snakeToTrack = this.gameState.GetSnake(snakeState.PlayerId);
+                        //Debug.Log(snakeState.PlayerId + " " + this.playerID);
+                        SnakeState playerSnake = this.gameState.GetSnake(snakeState.PlayerId);
+                        Debug.Log(playerSnake);
+                        Camera.main.GetComponent<CameraController>().snakeToTrack = playerSnake; 
                     }
                 }
-                else
-                {
-                    this.gameState.GetSnake(snakeState.PlayerId).GetComponent<NetworkSnakeController>().ReplicateSnakeState(snakeState);
-                }
+
+                this.gameState.GetSnake(snakeState.PlayerId).GetComponent<NetworkSnakeController>().ReplicateSnakeState(snakeState);
             }
         }
     }

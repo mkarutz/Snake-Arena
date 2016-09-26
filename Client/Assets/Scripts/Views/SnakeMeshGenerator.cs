@@ -101,6 +101,7 @@ public class SnakeMeshGenerator : MonoBehaviour {
         CalcParameters();
 
         Bounds b = new Bounds();
+        Vector4[] vs = new Vector4[this.snake.GetBackboneLength()];
         for (int i = 0; i < this.snake.GetBackboneLength(); i++)
         {
             if (i >= 1000)
@@ -108,9 +109,12 @@ public class SnakeMeshGenerator : MonoBehaviour {
                 Debug.LogError("Max shader backbone length exceeded.");
                 break;
             }
-            this.meshRenderer.material.SetVector("_Backbone" + i.ToString(), this.snake.GetBackbonePoint(i));
+            //this.meshRenderer.material.SetVector("_Backbone" + i.ToString(), this.snake.GetBackbonePoint(i));
             b.Encapsulate(this.snake.GetBackbonePoint(i));
+            vs[i] = this.snake.GetBackbonePoint(i);
         }
+
+        this.meshRenderer.material.SetVectorArray("_Backbone", vs);
         //this.meshRenderer.material.SetTexture("_BackboneTex", )
         this.meshRenderer.material.SetInt("_BackboneLength", this.snake.GetBackboneLength());
         this.meshRenderer.material.SetFloat("_SnakeLength", this.snakeLength);

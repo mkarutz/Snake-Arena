@@ -18,7 +18,7 @@
 
 			uniform sampler2D _MainTex;
 
-			uniform float2 _Backbone[MAX_BACKBONE_POINTS];
+			uniform float4 _Backbone[MAX_BACKBONE_POINTS];
 			uniform int _BackboneLength;
 			uniform float _SnakeLength;
 			uniform float _SnakeRadius;
