@@ -171,6 +171,9 @@ public class NetworkManager {
      */
     private ClientProxy getClientProxy(SocketAddress socketAddress, String playerName) {
         final Snake playerSnake = world.spawnSnake();
+
+        System.out.println("Spawned new snake " + playerSnake.getPid());
+
         playerSnake.setName(playerName);
 
         return new ClientProxy(socketAddress, playerSnake);
@@ -245,15 +248,11 @@ public class NetworkManager {
         final int clientId = clientProxy.getClientId();
         System.out.println("Received input from " + clientId);
 
-        if (clientProxy.getLastInputTick() <= server.getTick()) {
-            return;
-        }
-
         input = inputState.desiredMove(input);
-        desiredMove.setX(input.x());
-        desiredMove.setY(input.y());
+//        desiredMove.setX(input.x());
+//        desiredMove.setY(input.y());
 
-        world.handleInput(clientId, inputState.isTurbo(), desiredMove);
+        world.handleInput(clientId, inputState.isTurbo(), new Vector2(input.x(), input.y()));
 
         clientProxy.setLastInputTick(server.getTick());
     }

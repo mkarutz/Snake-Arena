@@ -184,20 +184,29 @@ public class Snake {
 
     /**
      * Move the snake.
-     * @param desiredMove The position that the player wants to move towards.
+     * @param desiredMove The direction in which the player wishes to move.
      */
     public void move(Vector2 desiredMove, float dt) {
-        final Vector2 desiredMoveDirection = desiredMove.subtract(getHeadPosition()).normalize();
-        final Vector2 moveDirection = getDirection().rotateTowards(desiredMoveDirection, turnSpeed() * dt);
-
-        getHead().getPosition().add(moveDirection.multiply(dt * moveSpeed()));
-
-        if (Math.abs(segmentAngle()) > MAX_SEGMENT_ANGLE) {
-            addNewSnakePart();
-        }
-
-        updateTailPointer();
-        updateBoundingBox();
+//        Vector2 direction = getDirection();
+//        if (desiredMove.magnitude() > 0.0f) {
+//            direction.rotateTowards(desiredMove, turnSpeed() * dt);
+//        }
+//
+//        getHeadPosition().add(direction.multiply(moveSpeed() * dt));
+//
+//        if (Math.abs(segmentAngle()) > MAX_SEGMENT_ANGLE) {
+//            addNewSnakePart();
+//        }
+//
+//        updateTailPointer();
+//        updateBoundingBox();
+//        System.out.println("desired move = " + desiredMove);
+//        System.out.println("dt = " + dt);
+//        System.out.println("movespeed = " + moveSpeed());
+//
+        Vector2 moveVec = desiredMove.normalize().multiply(0.05f);
+        System.out.println("Move vec = " + moveVec);
+        getHeadPosition().add(new Vector2(-0.04109339f, 0.028483912f));
     }
 
 
@@ -280,7 +289,7 @@ public class Snake {
     }
 
 
-    private final Vector2 direction = Vector2.zero();
+    private final Vector2 direction = Vector2.up();
 
     /**
      * Gets the direction the snake is currently facing.

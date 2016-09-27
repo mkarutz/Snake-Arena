@@ -29,8 +29,17 @@ public class Vector2 {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
+
     public static Vector2 zero() {
         return new Vector2(0, 0);
+    }
+
+    public static Vector2 up() {
+        return new Vector2(0, 1);
     }
 
 

@@ -74,15 +74,8 @@ public class ClientProxy {
         viewPortZone.setHeight(viewPortSize());
         viewPortZone.center(snake.getHeadPosition().getX(), snake.getHeadPosition().getY());
 
-        System.out.println("Player position: ("
-                + snake.getHeadPosition().getX() + ", "
-                + snake.getHeadPosition().getY() + ")");
-
-        System.out.println("Client viewport: { ("
-                + viewPortZone.getMin().getX() + ", "
-                + viewPortZone.getMin().getY() + "), ("
-                + viewPortZone.getMax().getX() + ", "
-                + viewPortZone.getMax().getY() + ") }");
+        System.out.println("Player position: " + snake.getHeadPosition());
+        System.out.println("Client viewport: { " + viewPortZone.getMin() + ", " + viewPortZone.getMax() + " }");
 
         return viewPortZone;
     }
