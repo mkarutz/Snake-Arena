@@ -18,10 +18,10 @@ import java.util.Random;
  *
  */
 public class World {
-    private static final float WORLD_RADIUS = 10;
+    private static final float WORLD_RADIUS = 20;
     private static final int STARTING_SCORE = 200;
     public static final int MAX_PLAYERS = 100;
-    public static final int MAX_FOOD = 100;
+    public static final int MAX_FOOD = 1000;
     private static final int FOOD_MAX_WEIGHT = 50;
 
     private final Random random = new Random();

@@ -10,16 +10,17 @@ import slyther.flatbuffers.NetworkSnakeState;
  *
  */
 public class Snake {
+    private static final float PI = (float) Math.PI;
     public static final int GROWTH_CAP = 40000;
     public static final float MIN_LENGTH = 1.0f;
     public static final float MIN_THICKNESS = 0.2f;
     public static final float GROWTH_RATE = 1.0f / 100.0f;
-    public static final float MOVE_SPEED = 2.0f;
-    public static final float TURN_RADIUS_FACTOR = 4.0f;
+    public static final float MOVE_SPEED = 1.0f;
+    public static final float TURN_RADIUS_FACTOR = 1.5f;
     public static final int MAX_PARTS = 100;
 
     public static final float MAX_SEGMENT_ANGLE_DEG = 5.0f;
-    public static final float MAX_SEGMENT_ANGLE = MAX_SEGMENT_ANGLE_DEG * (float) Math.PI / 180.0f;
+    public static final float MAX_SEGMENT_ANGLE = MAX_SEGMENT_ANGLE_DEG * PI / 180.0f;
 
     private final int pid;
     private String name;
@@ -94,7 +95,7 @@ public class Snake {
     public void respawn(Vector2 position, int startingScore) {
         score = startingScore;
         headPointer = 0;
-        tailPointer = 3;
+        tailPointer = MAX_PARTS - 1;
         isDead = false;
         isTurbo = false;
 
@@ -182,31 +183,50 @@ public class Snake {
     }
 
 
+    private Vector2 direction = Vector2.up();
+    private Vector2 moveVec = Vector2.zero();
+
     /**
      * Move the snake.
      * @param desiredMove The direction in which the player wishes to move.
      */
     public void move(Vector2 desiredMove, float dt) {
-//        Vector2 direction = getDirection();
-//        if (desiredMove.magnitude() > 0.0f) {
-//            direction.rotateTowards(desiredMove, turnSpeed() * dt);
-//        }
-//
-//        getHeadPosition().add(direction.multiply(moveSpeed() * dt));
-//
+        shuffleUp();
+
+        if (desiredMove.magnitude() > 0.0f) {
+            System.out.println("MAX TURN = " + turnSpeed() * dt);
+            direction.rotateTowards(desiredMove, turnSpeed() * dt);
+        }
+
+        moveVec.set(direction);
+
+        getHeadPosition().add(moveVec.multiply(moveSpeed() * dt));
+
 //        if (Math.abs(segmentAngle()) > MAX_SEGMENT_ANGLE) {
 //            addNewSnakePart();
 //        }
-//
+
 //        updateTailPointer();
-//        updateBoundingBox();
-//        System.out.println("desired move = " + desiredMove);
-//        System.out.println("dt = " + dt);
-//        System.out.println("movespeed = " + moveSpeed());
-//
-        Vector2 moveVec = desiredMove.normalize().multiply(0.05f);
-        System.out.println("Move vec = " + moveVec);
-        getHeadPosition().add(new Vector2(-0.04109339f, 0.028483912f));
+        updateBoundingBox();
+    }
+
+
+    private void shuffleUp() {
+        for (int ptr = prevPointer(tailPointer); ptr != headPointer; ptr = prevPointer(ptr)) {
+            parts[ptr].getPosition().set(parts[prevPointer(ptr)].getPosition());
+        }
+    }
+
+
+    private void dumpSnakeParts() {
+        System.out.print("Snake: [ ");
+        for (int i = headPointer; i != tailPointer; i = nextPointer(i)) {
+            if (i != headPointer) {
+                System.out.print(", ");
+            }
+            System.out.print(parts[i].getPosition());
+        }
+        System.out.println(" ]");
     }
 
 
@@ -219,7 +239,7 @@ public class Snake {
 
         while (ptr != tailPointer) {
             if (i > 2 && partDistance > length) {
-                tailPointer = i;
+                tailPointer = ptr;
                 return;
             }
 
@@ -276,33 +296,7 @@ public class Snake {
 
 
     private float turnSpeed() {
-        return (360 * MOVE_SPEED) / (TURN_RADIUS_FACTOR * ((float) Math.PI) * getThickness());
-    }
-
-
-    /**
-     * Move the snake forwards.
-     * @param dt Change in game time.
-     */
-    private void moveHeadForward(float dt) {
-        getHead().getPosition().add(getDirection().multiply(dt * MOVE_SPEED));
-    }
-
-
-    private final Vector2 direction = Vector2.up();
-
-    /**
-     * Gets the direction the snake is currently facing.
-     * @return Vector2 direction.
-     */
-    public Vector2 getDirection() {
-        Vector2 headPos = getHeadPosition();
-        Vector2 neckPos = getNeckPosition();
-
-        direction.setX(headPos.getX() - neckPos.getX());
-        direction.setY(headPos.getY() - neckPos.getY());
-
-        return direction.normalize();
+        return (2.0f * PI * MOVE_SPEED) / (TURN_RADIUS_FACTOR * PI * getThickness());
     }
 
 
@@ -328,11 +322,16 @@ public class Snake {
     }
 
     private int nextPointer(int pointer) {
-        return (pointer + 1) % MAX_PARTS;
+        return mod(pointer + 1, MAX_PARTS);
     }
 
     private int prevPointer(int pointer) {
-        return (pointer - 1) % MAX_PARTS;
+        return mod(pointer - 1, MAX_PARTS);
+    }
+
+    private int mod(int x, int radix) {
+        int rem = x % radix;
+        return rem < 0 ? rem + radix : rem;
     }
 
     public Rect getBoundingBox() {

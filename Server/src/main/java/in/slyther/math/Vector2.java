@@ -12,6 +12,10 @@ public class Vector2 {
         this.y = y;
     }
 
+    public Vector2(Vector2 other) {
+        this(other.x, other.y);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
