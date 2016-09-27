@@ -5,9 +5,6 @@ using System.Linq;
 using slyther.flatbuffers;
 
 public class SnakeState : MonoBehaviour {
-
-    public GameObject head;
-
     public float speedFactor;
 
     public int snakeSkinID;
@@ -19,19 +16,34 @@ public class SnakeState : MonoBehaviour {
     public static float MIN_LENGTH = 1.0f;
     public static float MIN_THICKNESS = 0.2f;
     public static float GROWTH_RATE = 1.0f / 100.0f;
+
+	public static float MOVE_SPEED = 3.0f;
+	public static float MAX_HEAD_OFFSET = 0.02f;
     
     private Vector2[] backbone;
     private int backboneStartIdx;
     private int backboneLength;
 
-    // Use this for initialization
-    void Start() {
-        // Default backbone
+
+    void Awake()
+	{
         this.InitBackbone();
         this.AddBackboneHeadPoint(new Vector2(0.0f, 0.0f));
         this.AddBackboneHeadPoint(new Vector2(0.0f, 1.0f));
         this.AddBackboneHeadPoint(new Vector2(0.0f, 2.0f));
+
+		Despawn();
     }
+
+	public void Despawn()
+	{
+		gameObject.SetActive(false);
+	}
+
+	public void Respawn()
+	{
+		gameObject.SetActive(true);
+	}
 
     void Update()
     {
@@ -44,6 +56,57 @@ public class SnakeState : MonoBehaviour {
         this.backboneStartIdx = 0;
         this.backboneLength = 0;
     }
+
+
+	private float maxRotate()
+	{
+		return (360 * MOVE_SPEED) / (4.0f * Mathf.PI * GetSnakeThickness());
+	}
+
+
+	private Quaternion DirectionVectorToQuaterion(Vector3 lookDirection)
+	{
+		return Quaternion.LookRotation(lookDirection, Vector3.back);
+	}
+
+
+	private void TurnTowards(Vector2 desiredMoveDirection, float dt) 
+	{
+		Quaternion desiredRotation = DirectionVectorToQuaterion(desiredMoveDirection);
+		transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, maxRotate() * dt);
+	}
+
+
+	public void Move(Vector2 desiredMovePosition, float dt) 
+	{
+		Vector2 desiredMoveDirection = desiredMovePosition - (Vector2) transform.position;
+		if (desiredMoveDirection.sqrMagnitude > float.Epsilon)
+		{
+			TurnTowards(desiredMoveDirection, dt);
+		}
+			
+		// Translate snake forward
+		transform.Translate(Vector3.forward * MOVE_SPEED * dt);
+
+		if (GetBackboneLength() <= 2)
+		{
+			Debug.LogError("Not enough backbone points defined.");
+			return;
+		}
+
+		// Check if we need to add a new backbone point
+		Vector2 headVec = GetBackbonePoint(1) - (Vector2) transform.position;
+		Vector2 neckVec = GetBackbonePoint(2) - GetBackbonePoint(1);
+
+		Vector2 a = Vector3.Project(headVec, neckVec);
+		if (headVec.sqrMagnitude - a.sqrMagnitude > MAX_HEAD_OFFSET * MAX_HEAD_OFFSET)
+		{
+			AddBackboneHeadPoint(transform.position);
+		}
+
+		UpdateBackboneHeadPoint(transform.position);
+	}
+
 
     public Bounds LocalBounds()
     {
@@ -117,6 +180,9 @@ public class SnakeState : MonoBehaviour {
             state.GetParts(snakePartState, i);
             this.backbone[snakePartState.Index] = new Vector2(snakePartState.Position.X, snakePartState.Position.Y);
         }
+
+		transform.position = backbone[backboneStartIdx];
+		gameObject.SetActive(!state.IsDead);
     }
 
     public void UpdateBackboneHeadPoint(Vector2 point)

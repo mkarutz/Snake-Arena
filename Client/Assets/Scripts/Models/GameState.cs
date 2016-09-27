@@ -3,13 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using slyther.flatbuffers;
 
-public class GameState : MonoBehaviour {
+public class GameState : MonoBehaviour 
+{
+	public int MAX_SNAKES = 100;
+	public int MAX_FOODS = 100;
+	public int WORLD_RADIUS = 500;
 
-    // Public/exposed attributes
-    //public GameObject snakeTemplate;
-    //public GameObject foodTemplate;
+	public SnakeState snakePrefab;
+	public FoodState foodPrefab;
 
-    // Private attributes
     private SnakeState[] snakePool;
     private FoodState[] foodPool;
 
@@ -17,88 +19,51 @@ public class GameState : MonoBehaviour {
     private int maxFoods;
     private float worldRadius;
 
-    // Use this for initialization
-    void Start () {
-	    
+
+    void Awake() 
+	{
+		InitState(MAX_SNAKES, MAX_FOODS, WORLD_RADIUS);
 	}
+
 
     public void InitState(int maxSnakes, int maxFoods, float worldRadius)
     {
-        this.maxSnakes = maxSnakes;
-        this.maxFoods = maxFoods;
-        this.worldRadius = worldRadius;
+		this.maxSnakes = maxSnakes;
+		this.maxFoods = maxFoods;
+		this.worldRadius = worldRadius;
 
-        this.snakePool = new SnakeState[this.maxSnakes];
-        for (int i = 0; i < this.maxSnakes; i++)
-        {
-            GameObject newSnake = new GameObject();
-            GameObject newSnakeHead = new GameObject();
-            snakePool[i] = newSnake.AddComponent<SnakeState>();
-            newSnake.AddComponent<SnakeMeshGenerator>().enabled = false;
-            newSnakeHead.gameObject.transform.parent = newSnake.transform;
-            snakePool[i].head = newSnakeHead;
-            snakePool[i].enabled = false;
-        }
-
-        this.foodPool = new FoodState[this.maxFoods];
-        for (int i = 0; i < this.maxFoods; i++)
-        {
-            GameObject newFood = new GameObject();
-            foodPool[i] = newFood.AddComponent<FoodState>();
-            foodPool[i].enabled = false;
-            foodPool[i].gameObject.AddComponent<FoodView>().enabled = false;
-        }
+		InitSnakes();
+		InitFood();
     }
 
-    public SnakeState ActivateSnake<T>(int snakeID, string name, int score, Vector2 position, int skinID)
-        where T : IController
-    {
-        if (snakePool[snakeID].enabled == true)
-            this.DeactivateSnake(snakeID);
 
-        snakePool[snakeID].enabled = true;
-        snakePool[snakeID].name = name;
-        snakePool[snakeID].head.transform.position = position;
-        snakePool[snakeID].snakeSkinID = skinID;
+	private void InitSnakes()
+	{
+		this.snakePool = new SnakeState[this.maxSnakes];
 
-        SnakeMeshGenerator view = snakePool[snakeID].GetComponent<SnakeMeshGenerator>();
-        view.enabled = true;
-        snakePool[snakeID].score = score;
-        snakePool[snakeID].gameObject.AddComponent(typeof(T));
-        return snakePool[snakeID];
-    }
+		for (int i = 0; i < this.maxSnakes; i++)
+		{
+			snakePool[i] = GameObject.Instantiate(snakePrefab);
+		}
+	}
 
-    public SnakeState GetSnake(int snakeID)
-    {
-        return snakePool[snakeID];
-    }
 
-    public void DeactivateSnake(int snakeID)
-    {
-        snakePool[snakeID].enabled = false;
-        SnakeMeshGenerator view = snakePool[snakeID].GetComponent<SnakeMeshGenerator>();
-        view.enabled = false;
-        Destroy(snakePool[snakeID].GetComponent<IController>().getControllerComponent());
-    }
+	private void InitFood()
+	{
+		this.foodPool = new FoodState[this.maxFoods];
 
-    public FoodState ActivateFood<T>(int foodID, Vector2 position, Color color, int weight)
-        where T : IController
-    {
-        if (foodPool[foodID].enabled == true)
-            DeactivateFood(foodID);
-        
-        foodPool[foodID].enabled = true;
-        foodPool[foodID].position = position;
-        foodPool[foodID].color = color;
-        foodPool[foodID].weight = weight;
-        foodPool[foodID].collected = false;
+		for (int i = 0; i < this.maxFoods; i++)
+		{
+			foodPool[i] = GameObject.Instantiate(foodPrefab);
+		}
+	}
 
-        foodPool[foodID].gameObject.AddComponent(typeof(T));
 
-        foodPool[foodID].GetComponent<FoodView>().enabled = true;
+	public SnakeState GetSnake(int snakeId)
+	{
+		return snakePool[snakeId];
+	}
 
-        return foodPool[foodID];
-    }
 
     public FoodState GetFood(int foodID)
     {

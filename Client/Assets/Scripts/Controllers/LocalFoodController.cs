@@ -29,7 +29,7 @@ public class LocalFoodController : MonoBehaviour, IController {
         
         this.tag = "Food";
 
-        this.transform.position = this.foodState.position;
+        //this.transform.position = this.foodState.position;
     }
 
     void OnDestroy()
@@ -39,15 +39,15 @@ public class LocalFoodController : MonoBehaviour, IController {
 	
 	void Update ()
     {
-        this.transform.position = this.foodState.position;
+       // this.transform.position = this.foodState.position;
 
         if (this.foodState.collected && this.foodView.scaleFactor > float.Epsilon)
         {
             this.foodView.scaleFactor -= this.foodCollectionSpeed * Time.deltaTime;
 
             // Lerp towards collecting snake
-            this.transform.position = 
-                Vector2.Lerp(this.foodState.position, this.collectingSnake.head.transform.position, 1.0f - this.foodView.scaleFactor);
+            //this.transform.position = 
+              //  Vector2.Lerp(this.foodState.position, this.collectingSnake.head.transform.position, 1.0f - this.foodView.scaleFactor);
         }
         else if (!this.foodState.collected && this.foodView.scaleFactor < 1.0f - float.Epsilon)
         {

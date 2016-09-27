@@ -1,21 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FoodView : MonoBehaviour {
+public class FoodView : MonoBehaviour 
+{
+    public float scaleFactor = 1;
 
-    public float scaleFactor;
+    public FoodState foodState;
+    public SpriteRenderer spriteRenderer;
 
-    private FoodState foodState;
-    private SpriteRenderer spriteRenderer;
-
-    // Use this for initialization
-    void Awake () {
-        this.foodState = this.GetComponent<FoodState>();
-        this.spriteRenderer = this.gameObject.AddComponent<SpriteRenderer>();
-        this.spriteRenderer.sprite = Resources.Load<Sprite>("FoodSprite");
-        this.spriteRenderer.material.shader = Shader.Find("Mobile/Particles/Additive");
-        this.spriteRenderer.enabled = false;
-    }
+	void Update () 
+	{
+		//this.transform.localScale = Vector3.one * 0.05f * this.foodState.weight * this.scaleFactor;
+		//foodState.color.a = 0.6f;
+		//spriteRenderer.material.SetColor("_TintColor", foodState.color);
+	}
 
     void OnEnable()
     {
@@ -25,13 +23,5 @@ public class FoodView : MonoBehaviour {
     void OnDisable()
     {
         this.spriteRenderer.enabled = false;
-    }
-	
-	// Update is called once per frame
-	void Update () {
-        this.transform.localScale = Vector3.one * 0.05f * this.foodState.weight * this.scaleFactor;
-
-        foodState.color.a = 0.6f;
-        spriteRenderer.material.SetColor("_TintColor", foodState.color);
     }
 }

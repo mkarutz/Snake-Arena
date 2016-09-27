@@ -31,7 +31,7 @@ public class ClientMessageConstructor {
          
     }
 
-    public byte[] ConstructClientInputState(ClientMessageType type,byte clientId, uint tick, Vector3 desiredMove, bool isTurbo)
+    public byte[] ConstructClientInputState(ClientMessageType type, short clientId, uint tick, Vector3 desiredMove, bool isTurbo)
     {
         fbBuilder.Clear();
 
@@ -44,7 +44,7 @@ public class ClientMessageConstructor {
 
         ClientMessage.StartClientMessage(fbBuilder);
         //var clientIdOffset = clientId;
-        ClientMessage.AddClientId(fbBuilder, clientId);
+		ClientMessage.AddClientId(fbBuilder, (byte) clientId);
         ClientMessage.AddMsgType(fbBuilder, type);
         ClientMessage.AddMsg(fbBuilder, clientInputStateOffset.Value);
         Offset<ClientMessage> clientMessageOffset = ClientMessage.EndClientMessage(fbBuilder);

@@ -15,7 +15,7 @@ public class NetworkSnakeController : MonoBehaviour, IController {
     void Awake()
     {
         this.snakeState = this.GetComponent<SnakeState>();
-        this.snakeState.head.AddComponent<NetworkSnakeHeadController>().snakeState = this.snakeState;
+        //this.snakeState.head.AddComponent<NetworkSnakeHeadController>().snakeState = this.snakeState;
     }
 
     public Vector3 GetDesiredMove(Camera camera)
@@ -30,7 +30,7 @@ public class NetworkSnakeController : MonoBehaviour, IController {
 
     void OnDestroy()
     {
-        Destroy(this.snakeState.head.GetComponent<NetworkSnakeHeadController>());
+        //Destroy(this.snakeState.head.GetComponent<NetworkSnakeHeadController>());
     }
 
     public void ReplicateSnakeState(NetworkSnakeState fSnakeState)
@@ -39,7 +39,7 @@ public class NetworkSnakeController : MonoBehaviour, IController {
         float headY = fSnakeState.GetParts(fSnakeState.Head).Position.Y;
        // Debug.Log("Recieved head position = (" + headX + ", " + headY + ")");
 
-        this.snakeState.head.transform.position = new Vector3(headX, headY, 0.0f);
+        //this.snakeState.head.transform.position = new Vector3(headX, headY, 0.0f);
         this.snakeState.snakeSkinID = 1;//int.Parse(snakeState.Skin);
         this.snakeState.name = fSnakeState.Name;
         this.snakeState.score = (int)fSnakeState.Score;

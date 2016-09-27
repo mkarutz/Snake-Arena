@@ -51,16 +51,16 @@ public class LocalController : MonoBehaviour {
             this.worldFoodsX.put(mFood,mFood.position);
         }
 
-        this.playerSnake = state.ActivateSnake<LocalSnakeControllerInput>(0, "Player", 20, Vector2.zero, 0);
+     //   this.playerSnake = state.ActivateSnake<LocalSnakeControllerInput>(0, "Player", 20, Vector2.zero, 0);
 
         this.camera.snakeToTrack = this.playerSnake.GetComponent<SnakeState>();
         
-        state.ActivateSnake<LocalSnakeControllerAI>(1, "Enemy", 100, Vector2.zero, 1).GetComponent<SnakeState>();
-        state.ActivateSnake<LocalSnakeControllerAI>(2, "Enemy", 30000, Vector2.zero, 2).GetComponent<SnakeState>();
-        state.ActivateSnake<LocalSnakeControllerAI>(3, "Enemy", 300, Vector2.zero, 2).GetComponent<SnakeState>();
+        //state.ActivateSnake<LocalSnakeControllerAI>(1, "Enemy", 100, Vector2.zero, 1).GetComponent<SnakeState>();
+      //  state.ActivateSnake<LocalSnakeControllerAI>(2, "Enemy", 30000, Vector2.zero, 2).GetComponent<SnakeState>();
+      //  state.ActivateSnake<LocalSnakeControllerAI>(3, "Enemy", 300, Vector2.zero, 2).GetComponent<SnakeState>();
     }
 
-    private void ManageFoodActivation()
+    /*private void ManageFoodActivation()
     {
         //minX and maxY to set upper left corner of Rect 
         // documemntation says upper left but seems to create rect from lower left
@@ -91,6 +91,7 @@ public class LocalController : MonoBehaviour {
         }
         prevResult = result;
     }
+    */
 
     private void CollectFoodGarbage()
     {
@@ -101,14 +102,14 @@ public class LocalController : MonoBehaviour {
 	void Update () {
         if (activateTimer <= 0)
         {
-            ManageFoodActivation();
+            //ManageFoodActivation();
             activateTimer = activateInterval;
         }
         activateTimer--;
 
-        if (Input.GetKeyDown(KeyCode.A))
-            this.state.DeactivateSnake(0);
-        if (Input.GetKeyDown(KeyCode.B))
-            this.playerSnake = state.ActivateSnake<LocalSnakeControllerInput>(0, "Player", 20, Vector2.zero, 0);
+      //  if (Input.GetKeyDown(KeyCode.A))
+//            this.state.DeactivateSnake(0);
+      //  if (Input.GetKeyDown(KeyCode.B))
+      //      this.playerSnake = state.ActivateSnake<LocalSnakeControllerInput>(0, "Player", 20, Vector2.zero, 0);
     }
 }
