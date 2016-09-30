@@ -181,6 +181,8 @@ public class SnakeState : MonoBehaviour {
             this.backbone[snakePartState.Index] = new Vector2(snakePartState.Position.X, snakePartState.Position.Y);
         }
 
+		score = (int) state.Score;
+
 		transform.position = backbone[backboneStartIdx];
 		gameObject.SetActive(!state.IsDead);
     }

@@ -6,7 +6,7 @@ import in.slyther.math.Rect;
 import java.net.SocketAddress;
 
 public class ClientProxy {
-    private static final float VIEWPORT_SCALE = 10.0f;
+    private static final float VIEWPORT_SCALE = 30.0f;
 
     private SocketAddress socketAddress;
     private Snake snake;

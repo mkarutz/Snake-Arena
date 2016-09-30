@@ -53,6 +53,13 @@ public class Vector2 {
         return this;
     }
 
+
+    public void lerpTo(Vector2 other, float lerp) {
+        x += lerp * (other.x - x);
+        y += lerp * (other.y - y);
+    }
+
+
     public static float distance(Vector2 a, Vector2 b) {
         final float dx = a.x - b.x;
         final float dy = a.y - b.y;

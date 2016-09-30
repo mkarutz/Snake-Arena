@@ -5,6 +5,8 @@ import in.slyther.math.Rect;
 import in.slyther.math.Vector2;
 import slyther.flatbuffers.NetworkSnakeState;
 
+import java.util.Vector;
+
 
 /**
  *
@@ -17,7 +19,8 @@ public class Snake {
     public static final float GROWTH_RATE = 1.0f / 100.0f;
     public static final float MOVE_SPEED = 1.0f;
     public static final float TURN_RADIUS_FACTOR = 1.5f;
-    public static final int MAX_PARTS = 100;
+    public static final int MAX_PARTS = 1000;
+    public static final float EAT_DISTANCE_RATIO = 1.0f;
 
     public static final float MAX_SEGMENT_ANGLE_DEG = 5.0f;
     public static final float MAX_SEGMENT_ANGLE = MAX_SEGMENT_ANGLE_DEG * PI / 180.0f;
@@ -138,6 +141,21 @@ public class Snake {
     }
 
 
+    public boolean isCollidedWith(Vector2 point) {
+        return Vector2.distance(getHeadPosition(), point) < getEatDistance();
+    }
+
+
+    public void addScore(int points) {
+        score += points;
+    }
+
+
+    public float getEatDistance() {
+        return getThickness() * EAT_DISTANCE_RATIO;
+    }
+
+
     /**
      * Returns the players score capped at the growth limit.
      * @return The capped score.
@@ -153,6 +171,11 @@ public class Snake {
      */
     public float getLength() {
         return MIN_LENGTH + GROWTH_RATE * cappedScore();
+    }
+
+
+    public static float maxLength() {
+        return MIN_LENGTH + GROWTH_RATE * GROWTH_CAP;
     }
 
 
@@ -213,9 +236,17 @@ public class Snake {
 
     private void shuffleUp() {
         for (int ptr = prevPointer(tailPointer); ptr != headPointer; ptr = prevPointer(ptr)) {
-            parts[ptr].getPosition().set(parts[prevPointer(ptr)].getPosition());
+            parts[ptr].getPosition().lerpTo(parts[prevPointer(ptr)].getPosition(), getLerpAmount());
         }
     }
+
+
+    private float getLerpAmount() {
+        return 0.1f + 0.5f * (1.0f - (getLength() / maxLength()));
+    }
+
+
+
 
 
     private void dumpSnakeParts() {

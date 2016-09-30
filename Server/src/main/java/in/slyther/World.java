@@ -22,7 +22,7 @@ public class World {
     private static final int STARTING_SCORE = 200;
     public static final int MAX_PLAYERS = 100;
     public static final int MAX_FOOD = 1000;
-    private static final int FOOD_MAX_WEIGHT = 50;
+    private static final int FOOD_MAX_WEIGHT = 5;
 
     private final Random random = new Random();
     private final Server server;
@@ -33,13 +33,13 @@ public class World {
     private final Deque<Integer> freeFoodIdsPool = new ArrayDeque<>(MAX_FOOD);
 
     private final SpatialMap<Snake> snakeSpatialMap = new SpatialHashMap<>(
-            new Vector2(-2 * WORLD_RADIUS, -2 * WORLD_RADIUS),
-            new Vector2(2 * WORLD_RADIUS, 2 * WORLD_RADIUS),
+            new Vector2(-3 * WORLD_RADIUS, -3 * WORLD_RADIUS),
+            new Vector2(3 * WORLD_RADIUS, 3 * WORLD_RADIUS),
             10);
 
     private final SpatialMap<Food> foodSpatialMap = new SpatialHashMap<>(
-            new Vector2(-2 * WORLD_RADIUS, -2 * WORLD_RADIUS),
-            new Vector2(2 * WORLD_RADIUS, 2 * WORLD_RADIUS),
+            new Vector2(-3 * WORLD_RADIUS, -3 * WORLD_RADIUS),
+            new Vector2(3 * WORLD_RADIUS, 3 * WORLD_RADIUS),
             10);
 
 
@@ -70,8 +70,19 @@ public class World {
 
         snake.setTurbo(isTurbo);
         snake.move(desiredMove, server.getTimeStep() / 1000.0f);
-
         snakeSpatialMap.update(snake, snake.getBoundingBox());
+
+        checkCollisions(snake);
+    }
+
+
+    public void checkCollisions(Snake snake) {
+        for (Food food : foodSpatialMap.getNear(snake.getBoundingBox())) {
+            if (snake.isCollidedWith(food.getPosition())) {
+                snake.addScore(food.getWeight());
+                food.setActive(false);
+            }
+        }
     }
 
 
