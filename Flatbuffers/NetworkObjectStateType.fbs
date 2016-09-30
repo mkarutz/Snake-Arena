@@ -1,0 +1,29 @@
+include "Vec2.fbs";
+
+namespace slyther.flatbuffers;
+
+union NetworkObjectStateType { NetworkFoodState, NetworkSnakeState }
+
+table NetworkFoodState {
+    foodId:ushort (deprecated);
+    position:Vec2;
+    weight:ubyte;
+    isActive:bool;
+}
+
+table NetworkSnakeState {
+    playerId:ushort (deprecated);
+    name:string;
+    skin:string;
+    score:uint;
+    isDead:bool;
+    isTurbo:bool;
+    parts:[NetworkSnakePartState];
+    head:ushort;
+    tail:ushort;
+}
+
+table NetworkSnakePartState {
+    index:ushort;
+    position:Vec2;
+}

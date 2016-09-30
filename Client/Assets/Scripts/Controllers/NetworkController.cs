@@ -13,7 +13,6 @@ public class NetworkController : MonoBehaviour {
 
     public int playerID;
 
-    public GameState gameState;
     public ClientMessageConstructor clientMessageConstructor = new ClientMessageConstructor();
 
     private IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Any, 3000);
@@ -100,30 +99,11 @@ public class NetworkController : MonoBehaviour {
         ByteBuffer byteBuf = new ByteBuffer(buf);
         ServerMessage sm = ServerMessage.GetRootAsServerMessage(byteBuf);
         this.playerID = sm.GetMsg(new ServerHello()).ClientId;
-
-		Debug.Log("Got new player ID = " + playerID);
-		cameraController.snakeToTrack = gameState.GetSnake(playerID);
     }
 		
 
     public void ReplicateState(ServerWorldState state)
     {
-        for (int i = 0; i < state.ObjectStatesLength; i++)
-        {
-            NetworkObjectState objectState = state.GetObjectStates(i);
-            NetworkObjectStateType objectType = objectState.StateType;
-
-            if (objectType == NetworkObjectStateType.NetworkFoodState)
-            {
-				NetworkFoodState foodState = objectState.GetState<NetworkFoodState>(new NetworkFoodState());
-				replicationManager.ReplicateFood(foodState);
-            }
-
-            if (objectType == NetworkObjectStateType.NetworkSnakeState)
-            {
-				NetworkSnakeState snakeState = objectState.GetState<NetworkSnakeState>(new NetworkSnakeState());
-				replicationManager.ReplicateSnake(snakeState);
-            }
-        }
+		replicationManager.ReceiveReplicatedGameObjects(state);
     }
 }

@@ -1,0 +1,10 @@
+include "NetworkObjectState.fbs";
+
+namespace slyther.flatbuffers;
+
+table ReplicationData {
+    networkID:ushort;
+    gameObject:NetworkObjectState;
+}
+
+root_type ReplicationData;

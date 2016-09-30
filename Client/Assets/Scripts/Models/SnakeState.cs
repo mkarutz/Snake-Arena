@@ -32,7 +32,7 @@ public class SnakeState : MonoBehaviour {
         this.AddBackboneHeadPoint(new Vector2(0.0f, 1.0f));
         this.AddBackboneHeadPoint(new Vector2(0.0f, 2.0f));
 
-		Despawn();
+		//Despawn();
     }
 
 	public void Despawn()

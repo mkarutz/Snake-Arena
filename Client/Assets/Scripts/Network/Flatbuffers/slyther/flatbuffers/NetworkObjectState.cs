@@ -11,21 +11,25 @@ public sealed class NetworkObjectState : Table {
   public static NetworkObjectState GetRootAsNetworkObjectState(ByteBuffer _bb, NetworkObjectState obj) { return (obj.__init(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
   public NetworkObjectState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
-  public NetworkObjectStateType StateType { get { int o = __offset(4); return o != 0 ? (NetworkObjectStateType)bb.Get(o + bb_pos) : NetworkObjectStateType.NONE; } }
-  public TTable GetState<TTable>(TTable obj) where TTable : Table { int o = __offset(6); return o != 0 ? __union(obj, o) : null; }
+  public ushort NetworkId { get { int o = __offset(4); return o != 0 ? bb.GetUshort(o + bb_pos) : (ushort)0; } }
+  public slyther.flatbuffers.NetworkObjectStateType StateType { get { int o = __offset(6); return o != 0 ? (slyther.flatbuffers.NetworkObjectStateType)bb.Get(o + bb_pos) : slyther.flatbuffers.NetworkObjectStateType.NONE; } }
+  public TTable GetState<TTable>(TTable obj) where TTable : Table { int o = __offset(8); return o != 0 ? __union(obj, o) : null; }
 
   public static Offset<NetworkObjectState> CreateNetworkObjectState(FlatBufferBuilder builder,
-      NetworkObjectStateType state_type = NetworkObjectStateType.NONE,
+      ushort networkId = 0,
+      slyther.flatbuffers.NetworkObjectStateType state_type = slyther.flatbuffers.NetworkObjectStateType.NONE,
       int stateOffset = 0) {
-    builder.StartObject(2);
+    builder.StartObject(3);
     NetworkObjectState.AddState(builder, stateOffset);
+    NetworkObjectState.AddNetworkId(builder, networkId);
     NetworkObjectState.AddStateType(builder, state_type);
     return NetworkObjectState.EndNetworkObjectState(builder);
   }
 
-  public static void StartNetworkObjectState(FlatBufferBuilder builder) { builder.StartObject(2); }
-  public static void AddStateType(FlatBufferBuilder builder, NetworkObjectStateType stateType) { builder.AddByte(0, (byte)stateType, 0); }
-  public static void AddState(FlatBufferBuilder builder, int stateOffset) { builder.AddOffset(1, stateOffset, 0); }
+  public static void StartNetworkObjectState(FlatBufferBuilder builder) { builder.StartObject(3); }
+  public static void AddNetworkId(FlatBufferBuilder builder, ushort networkId) { builder.AddUshort(0, networkId, 0); }
+  public static void AddStateType(FlatBufferBuilder builder, slyther.flatbuffers.NetworkObjectStateType stateType) { builder.AddByte(1, (byte)stateType, 0); }
+  public static void AddState(FlatBufferBuilder builder, int stateOffset) { builder.AddOffset(2, stateOffset, 0); }
   public static Offset<NetworkObjectState> EndNetworkObjectState(FlatBufferBuilder builder) {
     int o = builder.EndObject();
     return new Offset<NetworkObjectState>(o);

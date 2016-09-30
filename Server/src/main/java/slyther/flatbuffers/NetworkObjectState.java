@@ -13,21 +13,25 @@ public final class NetworkObjectState extends Table {
   public static NetworkObjectState getRootAsNetworkObjectState(ByteBuffer _bb, NetworkObjectState obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__init(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
   public NetworkObjectState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
-  public byte stateType() { int o = __offset(4); return o != 0 ? bb.get(o + bb_pos) : 0; }
-  public Table state(Table obj) { int o = __offset(6); return o != 0 ? __union(obj, o) : null; }
+  public int networkId() { int o = __offset(4); return o != 0 ? bb.getShort(o + bb_pos) & 0xFFFF : 0; }
+  public byte stateType() { int o = __offset(6); return o != 0 ? bb.get(o + bb_pos) : 0; }
+  public Table state(Table obj) { int o = __offset(8); return o != 0 ? __union(obj, o) : null; }
 
   public static int createNetworkObjectState(FlatBufferBuilder builder,
+      int networkId,
       byte state_type,
       int stateOffset) {
-    builder.startObject(2);
+    builder.startObject(3);
     NetworkObjectState.addState(builder, stateOffset);
+    NetworkObjectState.addNetworkId(builder, networkId);
     NetworkObjectState.addStateType(builder, state_type);
     return NetworkObjectState.endNetworkObjectState(builder);
   }
 
-  public static void startNetworkObjectState(FlatBufferBuilder builder) { builder.startObject(2); }
-  public static void addStateType(FlatBufferBuilder builder, byte stateType) { builder.addByte(0, stateType, 0); }
-  public static void addState(FlatBufferBuilder builder, int stateOffset) { builder.addOffset(1, stateOffset, 0); }
+  public static void startNetworkObjectState(FlatBufferBuilder builder) { builder.startObject(3); }
+  public static void addNetworkId(FlatBufferBuilder builder, int networkId) { builder.addShort(0, (short)networkId, 0); }
+  public static void addStateType(FlatBufferBuilder builder, byte stateType) { builder.addByte(1, stateType, 0); }
+  public static void addState(FlatBufferBuilder builder, int stateOffset) { builder.addOffset(2, stateOffset, 0); }
   public static int endNetworkObjectState(FlatBufferBuilder builder) {
     int o = builder.endObject();
     return o;

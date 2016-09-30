@@ -10,7 +10,7 @@ public class FoodState : MonoBehaviour
 
 	void Awake()
 	{
-		Despawn();
+		//Despawn();
 	}
 
 	public void Despawn()

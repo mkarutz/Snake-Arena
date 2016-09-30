@@ -83,6 +83,7 @@ public class World {
         for (Snake snake : snakeSpatialMap.getNear(clientProxy.getViewportZone())) {
             int snakeStateOffset = snake.serialize(builder);
             NetworkObjectState.startNetworkObjectState(builder);
+            NetworkObjectState.addNetworkId(builder, snake.getPid());
             NetworkObjectState.addStateType(builder, NetworkObjectStateType.NetworkSnakeState);
             NetworkObjectState.addState(builder, snakeStateOffset);
             objectOffsets[n++] = NetworkObjectState.endNetworkObjectState(builder);
@@ -92,6 +93,7 @@ public class World {
         for (Food food : foodSpatialMap.getNear(clientProxy.getViewportZone())) {
             int foodStateOffset = food.serialize(builder);
             NetworkObjectState.startNetworkObjectState(builder);
+            NetworkObjectState.addNetworkId(builder, food.getFoodId() + 1000);
             NetworkObjectState.addStateType(builder, NetworkObjectStateType.NetworkFoodState);
             NetworkObjectState.addState(builder, foodStateOffset);
             objectOffsets[n++] = NetworkObjectState.endNetworkObjectState(builder);
