@@ -7,11 +7,11 @@ using slyther.flatbuffers;
 using System.Collections.Generic;
 
 public class NetworkController : MonoBehaviour {
+	public LinkingContext linkingContext;
 	public ReplicationManager replicationManager;
-	public CameraController cameraController;
 	public InputManager inputManager;
 
-    public int playerID;
+    public int playerID = -1;
 
     public ClientMessageConstructor clientMessageConstructor = new ClientMessageConstructor();
 
@@ -20,7 +20,7 @@ public class NetworkController : MonoBehaviour {
     private Queue<ServerMessage> messageQueue = new Queue<ServerMessage>();
 
 
-    void Start() 
+    void Start()
 	{
         InitConnection();
     }
@@ -37,7 +37,9 @@ public class NetworkController : MonoBehaviour {
 	void SendInputPacket()
 	{
 		Vector3 desiredMove = inputManager.TargetDirection();
-		var message = clientMessageConstructor.ConstructClientInputState(ClientMessageType.ClientInputState, (short) playerID, 0, desiredMove.normalized, false);
+		bool isTurbo = inputManager.IsTurbo();
+
+		var message = clientMessageConstructor.ConstructClientInputState(ClientMessageType.ClientInputState, (short) playerID, 0, desiredMove.normalized, isTurbo);
 		udpc.Send(message, message.Length);
 	}
 
@@ -106,4 +108,10 @@ public class NetworkController : MonoBehaviour {
     {
 		replicationManager.ReceiveReplicatedGameObjects(state);
     }
+
+
+	public INetworkGameObject GetLocalPlayer()
+	{
+		return playerID == -1 ? null : linkingContext.GetGameObject(playerID);
+	}
 }

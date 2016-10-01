@@ -54,6 +54,13 @@ public class Vector2 {
     }
 
 
+    public Vector2 set(float x, float y) {
+        this.x = x;
+        this.y = y;
+        return this;
+    }
+
+
     public void lerpTo(Vector2 other, float lerp) {
         x += lerp * (other.x - x);
         y += lerp * (other.y - y);
@@ -64,6 +71,25 @@ public class Vector2 {
         final float dx = a.x - b.x;
         final float dy = a.y - b.y;
         return (float) Math.sqrt(dx * dx + dy * dy);
+    }
+
+
+    public static float distanceToLine(Vector2 from, Vector2 a, Vector2 b) {
+        float dx = b.x - a.x;
+        float dy = b.y - a.y;
+        float area2 = Math.abs(dy * from.x - dx * from.y + b.x * a.y - b.y * a.x);
+        float dist = (float) Math.sqrt(dy * dy + dx * dx);
+        return area2 / dist;
+    }
+
+
+    public static boolean isPerpendicularToSegment(Vector2 p, Vector2 a, Vector2 b) {
+        Vector2 aToB = Vector2.minus(b, a);
+        Vector2 aToP = Vector2.minus(a, p);
+        Vector2 bToP = Vector2.minus(b, p);
+
+        return Math.abs(angleBetween(aToB, bToP)) < Math.PI
+                && Math.abs(angleBetween(aToB, aToP)) < Math.PI;
     }
 
 
@@ -105,13 +131,28 @@ public class Vector2 {
     }
 
 
+    public Vector2 withLength(float length) {
+        normalize().multiply(length);
+        assert(Math.abs(this.magnitude() - length) < 10e-7);
+        return this;
+    }
+
+
+    public static Vector2 plus(Vector2 a, Vector2 b) {
+        Vector2 result = new Vector2(a.x, a.y);
+        return result.add(b);
+    }
+
+
     public Vector2 add(Vector2 v) {
         translate(v.x, v.y);
         return this;
     }
 
     public Vector2 subtract(Vector2 v) {
-        return add(v.multiply(-1));
+        x -= v.x;
+        y -= v.y;
+        return this;
     }
 
     public Vector2 multiply(float k) {

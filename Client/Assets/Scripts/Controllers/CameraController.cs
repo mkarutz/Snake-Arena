@@ -2,21 +2,18 @@
 using System.Collections;
 
 public class CameraController : MonoBehaviour {
+	public const float VIEWPORT_SCALE = 10.0f;
 
-    public SnakeState snakeToTrack;
+	public NetworkController networkController;
+	public SnakeState snakeToTrack = null;
     public new Camera camera;
+	public float LerpAmount = 0.1f;
 
-    private float targetOrthoSize;
 
-	// Use this for initialization
-	void Start () {
-	    
-	}
-	
-	// Update is called once per frame
-	void Update () {
-        this.transform.position = snakeToTrack.transform.position + Vector3.back * 20.0f;
-        this.targetOrthoSize = snakeToTrack.GetSnakeThickness() * 10.0f;
-        this.camera.orthographicSize = this.camera.orthographicSize * 0.99f + targetOrthoSize * 0.01f;
+	void Update () 
+	{
+		snakeToTrack = networkController.GetLocalPlayer().GetComponent<SnakeState>();
+		transform.position = Vector3.Lerp(this.transform.position, snakeToTrack.transform.position, LerpAmount) + Vector3.back;
+		camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, snakeToTrack.GetSnakeThickness() * VIEWPORT_SCALE, LerpAmount);
 	}
 }

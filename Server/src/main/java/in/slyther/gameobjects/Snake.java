@@ -16,11 +16,14 @@ public class Snake {
     public static final int GROWTH_CAP = 40000;
     public static final float MIN_LENGTH = 1.0f;
     public static final float MIN_THICKNESS = 0.2f;
+    public static final int MIN_TURBO_SCORE = 100;
+
     public static final float GROWTH_RATE = 1.0f / 100.0f;
-    public static final float MOVE_SPEED = 1.0f;
+    public static final float MOVE_SPEED = 1.5f;
     public static final float TURN_RADIUS_FACTOR = 1.5f;
     public static final int MAX_PARTS = 1000;
     public static final float EAT_DISTANCE_RATIO = 1.0f;
+    public static final float BURN_SPEED = 75;
 
     public static final float MAX_SEGMENT_ANGLE_DEG = 5.0f;
     public static final float MAX_SEGMENT_ANGLE = MAX_SEGMENT_ANGLE_DEG * PI / 180.0f;
@@ -51,7 +54,7 @@ public class Snake {
         this.score = score;
 
         initSnakeParts();
-        respawn(Vector2.zero(), score);
+        respawn(Vector2.zero(), getScore());
 
         setDead(true);
     }
@@ -76,11 +79,13 @@ public class Snake {
         float y0 = Float.MAX_VALUE;
         float y1 = Float.MIN_NORMAL;
 
+        float radius = getThickness() / 2.0f;
+
         for (int i = headPointer; i != tailPointer; i = nextPointer(i)) {
-            x0 = Math.min(x0, parts[i].getPosition().getX());
-            x1 = Math.max(x1, parts[i].getPosition().getX());
-            y0 = Math.min(y0, parts[i].getPosition().getY());
-            y1 = Math.max(y1, parts[i].getPosition().getY());
+            x0 = Math.min(x0, parts[i].getPosition().getX() - radius);
+            x1 = Math.max(x1, parts[i].getPosition().getX() + radius);
+            y0 = Math.min(y0, parts[i].getPosition().getY() - radius);
+            y1 = Math.max(y1, parts[i].getPosition().getY() + radius);
         }
 
         boundingBox.setMinX(x0);
@@ -98,13 +103,13 @@ public class Snake {
     public void respawn(Vector2 position, int startingScore) {
         score = startingScore;
         headPointer = 0;
-        tailPointer = MAX_PARTS - 1;
+        tailPointer = 500;
         isDead = false;
         isTurbo = false;
 
-        getPart(0).getPosition().set(position);
-        getPart(1).getPosition().set(position).translate(1, 1);
-        getPart(2).getPosition().set(position).translate(2, 2);
+        for (int i = 0; i < MAX_PARTS; i++) {
+            parts[i].getPosition().set(position);
+        }
 
         updateBoundingBox();
     }
@@ -146,6 +151,72 @@ public class Snake {
     }
 
 
+    public boolean isRunInto(Snake other) {
+        if (other == this) {
+            return false;
+        }
+
+        if (!other.boundingBox.collidesWith(getHeadPosition())) {
+            return false;
+        }
+
+        float distanceToOther = other.distanceFrom(getHeadPosition());
+        return distanceToOther < other.getThickness() / 2.0f;
+    }
+
+
+    public Vector2 getPositionAtLength(float length) {
+        int curr = headPointer;
+        int next = nextPointer(headPointer);
+        float accLength = 0.0f;
+
+        while (next != tailPointer) {
+            float segmentLength = Vector2.distance(parts[curr].getPosition(), parts[next].getPosition());
+
+            if (accLength + segmentLength >= length) {
+                float diff = length - accLength;
+                Vector2 segmentVector = Vector2.minus(parts[next].getPosition(), parts[curr].getPosition());
+                return Vector2.plus(parts[curr].getPosition(), segmentVector.withLength(diff));
+            }
+
+            accLength += segmentLength;
+            curr = next;
+            next = nextPointer(next);
+        }
+
+        return null;
+    }
+
+
+    public float distanceFrom(Vector2 point) {
+        float minDistance = Float.MAX_VALUE;
+
+        int curr = headPointer;
+        int next = nextPointer(headPointer);
+
+        for ( ; next != tailPointer; curr = next, next = nextPointer(next)) {
+            Vector2 currPoint = parts[curr].getPosition();
+            Vector2 nextPoint = parts[next].getPosition();
+
+            if (Vector2.distance(currPoint, nextPoint) < 10e-7) {
+                continue;
+            }
+
+            float distanceToLine = Vector2.distanceToLine(point, currPoint, nextPoint);
+            if (!Vector2.isPerpendicularToSegment(point, currPoint, nextPoint)) {
+                distanceToLine = Math.min(
+                        Vector2.distance(point, currPoint),
+                        Vector2.distance(point, nextPoint)
+                );
+            }
+
+            minDistance = Math.min(distanceToLine, minDistance);
+        }
+
+        return minDistance;
+    }
+
+
     public void addScore(int points) {
         score += points;
     }
@@ -161,7 +232,7 @@ public class Snake {
      * @return The capped score.
      */
     public float cappedScore() {
-        return Math.min(GROWTH_CAP, score);
+        return Math.min(GROWTH_CAP, getScore());
     }
 
 
@@ -214,7 +285,11 @@ public class Snake {
      * @param desiredMove The direction in which the player wishes to move.
      */
     public void move(Vector2 desiredMove, float dt) {
-        shuffleUp();
+        incrementHeadPointer();
+
+        if (isTurbo()) {
+            burnScore(dt);
+        }
 
         if (desiredMove.magnitude() > 0.0f) {
             System.out.println("MAX TURN = " + turnSpeed() * dt);
@@ -222,31 +297,28 @@ public class Snake {
         }
 
         moveVec.set(direction);
-
         getHeadPosition().add(moveVec.multiply(moveSpeed() * dt));
 
-//        if (Math.abs(segmentAngle()) > MAX_SEGMENT_ANGLE) {
-//            addNewSnakePart();
-//        }
-
-//        updateTailPointer();
+        updateTailPointer();
         updateBoundingBox();
     }
 
 
-    private void shuffleUp() {
-        for (int ptr = prevPointer(tailPointer); ptr != headPointer; ptr = prevPointer(ptr)) {
-            parts[ptr].getPosition().lerpTo(parts[prevPointer(ptr)].getPosition(), getLerpAmount());
+    private void incrementHeadPointer() {
+        if (headPointer == nextPointer(tailPointer)) {
+            return;
         }
+
+        Vector2 prevHeadPosition = getHeadPosition();
+        headPointer = prevPointer(headPointer);
+        getHeadPosition().set(prevHeadPosition);
     }
 
 
-    private float getLerpAmount() {
-        return 0.1f + 0.5f * (1.0f - (getLength() / maxLength()));
+    private void burnScore(float dt) {
+        score -= dt * BURN_SPEED;
+        score = Math.max(0, score);
     }
-
-
-
 
 
     private void dumpSnakeParts() {
@@ -266,18 +338,20 @@ public class Snake {
         float partDistance = 0;
 
         int i = 0;
-        int ptr = headPointer;
+        int curr = headPointer;
+        int next = nextPointer(headPointer);
 
-        while (ptr != tailPointer) {
+        while (next != tailPointer) {
             if (i > 2 && partDistance > length) {
-                tailPointer = ptr;
+                tailPointer = next;
                 return;
             }
 
-            partDistance += Vector2.distance(getHeadPosition(), parts[i].getPosition());
+            partDistance += Vector2.distance(parts[curr].getPosition(), parts[next].getPosition());
 
             i++;
-            ptr = nextPointer(ptr);
+            curr = next;
+            next = nextPointer(next);
         }
     }
 
@@ -299,25 +373,13 @@ public class Snake {
     }
 
 
-    private void addNewSnakePart() {
-        if (prevPointer(headPointer) == tailPointer) {
-            return;
-        }
-
-        headPointer = prevPointer(headPointer);
-
-        getHeadPosition().setX(getNeckPosition().getX());
-        getHeadPosition().setY(getNeckPosition().getY());
-    }
-
-
     private float moveSpeed() {
-        return isTurbo ? turboMoveSpeed() : normalMoveSpeed();
+        return isTurbo() ? turboMoveSpeed() : normalMoveSpeed();
     }
 
 
     private float turboMoveSpeed() {
-        return 2.0f * MOVE_SPEED;
+        return 2.0f * normalMoveSpeed();
     }
 
 
@@ -394,7 +456,7 @@ public class Snake {
     }
 
     public boolean isTurbo() {
-        return isTurbo;
+        return isTurbo && getScore() > MIN_TURBO_SCORE;
     }
 
     public void setTurbo(boolean turbo) {

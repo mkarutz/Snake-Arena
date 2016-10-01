@@ -4,13 +4,18 @@ using slyther.flatbuffers;
 
 public class FoodState : MonoBehaviour 
 {
-    public Color color;
+	public SpriteRenderer spriteRenderer;
     public int weight;
     public bool collected = false;
 
-	void Awake()
+	void Start()
 	{
-		//Despawn();
+		spriteRenderer.material.SetColor("_TintColor", Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f, 0.6f, 0.6f));
+	}
+
+	void Update()
+	{
+		this.transform.localScale = Vector3.one * 0.1f * weight;
 	}
 
 	public void Despawn()
@@ -20,6 +25,7 @@ public class FoodState : MonoBehaviour
 
 	public void Respawn()
 	{
+		transform.localScale = Vector3.one * ((float) weight / 10.0f);
 		gameObject.SetActive(true);
 	}
 

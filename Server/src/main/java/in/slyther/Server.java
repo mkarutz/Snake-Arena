@@ -50,6 +50,7 @@ public class Server extends Thread {
         }
     }
 
+
     /**
      * Get the time-step of each tick.
      * @return the time-step
@@ -64,6 +65,7 @@ public class Server extends Thread {
     public int getTick() {
         return tick;
     }
+
 
     /**
      * Main Server Thread.
@@ -87,6 +89,7 @@ public class Server extends Thread {
             long startTime = System.currentTimeMillis();
 
             networkManager.handleIncomingPackets(tick);
+            networkManager.checkTimeouts(tick);
 
             world.simulate(tick);
 

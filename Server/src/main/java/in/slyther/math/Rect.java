@@ -21,6 +21,14 @@ public class Rect {
     }
 
 
+    public boolean collidesWith(Vector2 point) {
+        return point.getX() >= min.getX()
+                && point.getX() <= max.getX()
+                && point.getY() >= min.getY()
+                && point.getY() <= max.getY();
+    }
+
+
     public Rect() {
         this(Vector2.zero(), new Vector2(1.0f, 1.0f));
     }
@@ -42,18 +50,22 @@ public class Rect {
         translate(dx, dy);
     }
 
+
     public void translate(float x, float y) {
         getMin().translate(x, y);
         getMax().translate(x, y);
     }
 
+
     public float getWidth() {
         return getMax().getX() - getMin().getX();
     }
 
+
     public float getHeight() {
         return getMax().getY() - getMin().getY();
     }
+
 
     public void setMaxX(float x) {
         max.setX(x);
@@ -90,6 +102,7 @@ public class Rect {
         }
     }
 
+
     public Vector2 getMin() {
         return min;
     }
@@ -99,9 +112,11 @@ public class Rect {
         this.min = min;
     }
 
+
     public Vector2 getMax() {
         return max;
     }
+
 
     public void setMax(Vector2 max) {
         this.max = max;

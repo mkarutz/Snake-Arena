@@ -12,16 +12,14 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 /**
  *
  */
 public class NetworkManager {
+    private static final int TIMEOUT = 5000;
     private static final int MAX_PACKET = 2400;
     private static final int MAX_PACKETS_PER_TICK = 200;
 
@@ -79,6 +77,22 @@ public class NetworkManager {
     }
 
 
+    public void checkTimeouts(int tick) {
+        Iterator<Map.Entry<SocketAddress, ClientProxy>> it = socketAddressClientProxyMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<SocketAddress, ClientProxy> entry = it.next();
+
+            ClientProxy clientProxy = entry.getValue();
+            if (tick - clientProxy.getLastInputTick() > TIMEOUT / server.getTimeStep()) {
+                System.out.println("Player (" + clientProxy.getSnake().getName() + ") timed out");
+
+                world.killSnake(clientProxy.getSnake());
+                it.remove();
+            }
+        }
+    }
+
+
     /**
      * Receive bytes from the network and queue {@link ReceivedPacket}s
      * for processing.
@@ -99,8 +113,6 @@ public class NetworkManager {
 
                 final ReceivedPacket packet = new ReceivedPacket(socketAddress, buf);
                 packetQueue.add(packet);
-
-                System.out.println("Received packet from " + socketAddress.toString());
 
                 packetsRead++;
             } catch (IOException e) {
@@ -155,6 +167,7 @@ public class NetworkManager {
      */
     private void connectNewPlayer(SocketAddress socketAddress, String playerName) {
         final ClientProxy clientProxy = getClientProxy(socketAddress, playerName);
+        clientProxy.setLastInputTick(server.getTick());
 
         System.out.println("New player: " + playerName + " (" + socketAddress + ")");
 
@@ -248,11 +261,14 @@ public class NetworkManager {
         final int clientId = clientProxy.getClientId();
         System.out.println("Received input from " + clientId);
 
-        input = inputState.desiredMove(input);
-//        desiredMove.setX(input.x());
-//        desiredMove.setY(input.y());
+        int ticksSinceLastInput = clientProxy.getLastInputTick() != -1
+                ? server.getTick() - clientProxy.getLastInputTick()
+                : 1;
+        float dt = ticksSinceLastInput * server.getTimeStep() / 1000.0f;
 
-        world.handleInput(clientId, inputState.isTurbo(), new Vector2(input.x(), input.y()));
+        input = inputState.desiredMove(input);
+        desiredMove.set(input.x(), input.y());
+        world.handleInput(clientId, inputState.isTurbo(), desiredMove, dt);
 
         clientProxy.setLastInputTick(server.getTick());
     }

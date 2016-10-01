@@ -49,4 +49,10 @@ public class SnakeTest {
         assertEquals(NetworkSnakeState.playerId(), id);
         //assertEquals(NetworkSnakeState.partsLength(), Snake.MAX_PARTS);
     }
+
+    @Test
+    public void testCollisions() {
+        Snake snake = new Snake(0, "foo", 100);
+        Snake other = new Snake(0, "foo", 100);
+    }
 }

@@ -11,7 +11,7 @@ public class SnakeState : MonoBehaviour {
     public int score;
     public string name;
 
-    public static int MAX_BACKBONE_POINTS = 5000;
+    public static int MAX_BACKBONE_POINTS = 1000;
     public static int GROWTH_CAP = 40000;
     public static float MIN_LENGTH = 1.0f;
     public static float MIN_THICKNESS = 0.2f;
@@ -163,10 +163,9 @@ public class SnakeState : MonoBehaviour {
 
     public void ReplicateState(NetworkSnakeState state)
     {
-        NetworkSnakePartState snakePartState = new NetworkSnakePartState();
         this.backboneStartIdx = state.Head;
         
-        if (state.Tail < state.Head)
+        if (state.Tail <= state.Head)
         {
             this.backboneLength = state.Tail + MAX_BACKBONE_POINTS - state.Head;
         }
@@ -175,6 +174,7 @@ public class SnakeState : MonoBehaviour {
             this.backboneLength = state.Tail - state.Head;
         }
         
+		NetworkSnakePartState snakePartState = new NetworkSnakePartState();
         for (int i = 0; i < state.PartsLength; i++)
         {
             state.GetParts(snakePartState, i);
