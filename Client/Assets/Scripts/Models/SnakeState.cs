@@ -6,6 +6,7 @@ using slyther.flatbuffers;
 
 public class SnakeState : MonoBehaviour {
     public float speedFactor;
+    public bool isTurbo;
 
     public int snakeSkinID;
     public int score;
@@ -173,6 +174,8 @@ public class SnakeState : MonoBehaviour {
         {
             this.backboneLength = state.Tail - state.Head;
         }
+
+        this.isTurbo = state.IsTurbo;
         
 		NetworkSnakePartState snakePartState = new NetworkSnakePartState();
         for (int i = 0; i < state.PartsLength; i++)

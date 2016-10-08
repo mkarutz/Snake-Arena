@@ -31,6 +31,16 @@ public class NetworkController : MonoBehaviour {
         ReadPacketsToQueue();
         ProcessQueuedMessages();
 		SendInputPacket();
+
+        // Needs to be a better place to put this...
+        TagLocalPlayer();
+    }
+
+    void TagLocalPlayer()
+    {
+        GameObject player = this.GetLocalPlayer().gameObject;
+        if (player)
+            player.tag = "Player";
     }
 
 

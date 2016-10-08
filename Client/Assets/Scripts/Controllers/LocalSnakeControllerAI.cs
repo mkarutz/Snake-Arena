@@ -5,7 +5,7 @@ public class LocalSnakeControllerAI : LocalSnakeController {
 
     private Vector3 targetPoint;
 
-    protected override void MovementControl()
+    void MovementControl()
     {
         //Vector3 dirVec = targetPoint - this.snakeState.head.transform.position;
         //if (Random.Range(0.0f, 1.0f) < 0.02f || dirVec.magnitude < 3.0f)

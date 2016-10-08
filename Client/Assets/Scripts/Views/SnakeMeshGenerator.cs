@@ -127,6 +127,8 @@ public class SnakeMeshGenerator : MonoBehaviour {
         this.meshRenderer.material.SetInt("_BackboneLength", this.snake.GetBackboneLength());
         this.meshRenderer.material.SetFloat("_SnakeLength", this.snakeLength);
         this.meshRenderer.material.SetFloat("_SnakeRadius", this.snakeRadius);
+        this.meshRenderer.material.SetInt("_SnakeGlowEnabled", this.snake.isTurbo ? 1 : 0);
+        this.meshRenderer.material.SetFloat("_SnakeGlowOffset", Time.time * 10.0f);
 
         this.snakeSkin = Resources.Load<Texture>("SnakeSkin" + this.snake.snakeSkinID);
         this.meshRenderer.material.mainTexture = snakeSkin;

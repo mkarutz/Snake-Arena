@@ -27,6 +27,8 @@
 			uniform int _BackboneLength;
 			uniform float _SnakeLength;
 			uniform float _SnakeRadius;
+			uniform float _SnakeGlowOffset;
+			uniform int _SnakeGlowEnabled;
 
 			// Input structure
 			struct vertIn
@@ -145,7 +147,9 @@
 			// Implementation of the fragment shader
 			fixed4 frag(vertOut v) : SV_Target
 			{
-				return tex2D(_MainTex, v.uv);
+				float4 col = tex2D(_MainTex, v.uv);
+				col += sin((-v.uv.y * 3.0f) + _SnakeGlowOffset) * 0.5f * _SnakeGlowEnabled;
+				return col;
 			}
 
 			
