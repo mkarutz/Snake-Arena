@@ -12,15 +12,15 @@ public class ScoreBoardState : MonoBehaviour {
     public int maxScoreboardPlayers = GameConfig.MAX_SCOREBOARD_PLAYERS;
     public PlayerScoreEntry[] playerScores;
 
+    public void SetEntry(int pos, string playerName, int playerScore)
+    {
+        playerScores[pos].playerName = playerName;
+        playerScores[pos].playerScore = playerScore;
+    }
+
 	// Use this for initialization
 	void Start () {
         playerScores = new PlayerScoreEntry[this.maxScoreboardPlayers];
-        playerScores[0].playerName = "Alex";
-        playerScores[0].playerScore = 100000000;
-        /*for (int i = 0; i < maxScoreboardPlayers; i++)
-        {
-            this.playerScores[i] = new PlayerScoreEntry();
-        }*/
 	}
 	
 	// Update is called once per frame
