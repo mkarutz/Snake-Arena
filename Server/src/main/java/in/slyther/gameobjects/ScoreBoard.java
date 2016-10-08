@@ -21,8 +21,11 @@ public class ScoreBoard {
         }
 
         entries.remove(entry);
+        entry.name = snake.getName();
         entry.setScore(snake.getScore());
         entries.add(entry);
+
+        System.out.println("Updated score for player " + entry.name);
     }
 
 
@@ -60,7 +63,7 @@ public class ScoreBoard {
 
 
     private class ScoreBoardEntry implements Comparable<ScoreBoardEntry> {
-        private final String name;
+        private String name;
         private int score;
 
         public ScoreBoardEntry(String name, int score) {
@@ -70,11 +73,12 @@ public class ScoreBoard {
 
         @Override
         public int compareTo(ScoreBoardEntry o) {
-            return score - o.score;
+            return o.score - score;
         }
 
 
         public int serialize(FlatBufferBuilder builder) {
+            System.out.println("name = " + name);
             int playerNameOffset = builder.createString(name);
 
             ScoreboardEntry.startScoreboardEntry(builder);
@@ -87,6 +91,10 @@ public class ScoreBoard {
 
         public String getName() {
             return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
         public int getScore() {
