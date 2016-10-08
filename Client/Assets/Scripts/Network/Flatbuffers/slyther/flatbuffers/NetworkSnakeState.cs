@@ -11,7 +11,6 @@ public sealed class NetworkSnakeState : Table {
   public static NetworkSnakeState GetRootAsNetworkSnakeState(ByteBuffer _bb, NetworkSnakeState obj) { return (obj.__init(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
   public NetworkSnakeState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
-  public ushort PlayerId { get { int o = __offset(4); return o != 0 ? bb.GetUshort(o + bb_pos) : (ushort)0; } }
   public string Name { get { int o = __offset(6); return o != 0 ? __string(o + bb_pos) : null; } }
   public ArraySegment<byte>? GetNameBytes() { return __vector_as_arraysegment(6); }
   public string Skin { get { int o = __offset(8); return o != 0 ? __string(o + bb_pos) : null; } }
@@ -26,7 +25,6 @@ public sealed class NetworkSnakeState : Table {
   public ushort Tail { get { int o = __offset(20); return o != 0 ? bb.GetUshort(o + bb_pos) : (ushort)0; } }
 
   public static Offset<NetworkSnakeState> CreateNetworkSnakeState(FlatBufferBuilder builder,
-      ushort playerId = 0,
       StringOffset nameOffset = default(StringOffset),
       StringOffset skinOffset = default(StringOffset),
       uint score = 0,
@@ -42,14 +40,12 @@ public sealed class NetworkSnakeState : Table {
     NetworkSnakeState.AddName(builder, nameOffset);
     NetworkSnakeState.AddTail(builder, tail);
     NetworkSnakeState.AddHead(builder, head);
-    NetworkSnakeState.AddPlayerId(builder, playerId);
     NetworkSnakeState.AddIsTurbo(builder, isTurbo);
     NetworkSnakeState.AddIsDead(builder, isDead);
     return NetworkSnakeState.EndNetworkSnakeState(builder);
   }
 
   public static void StartNetworkSnakeState(FlatBufferBuilder builder) { builder.StartObject(9); }
-  public static void AddPlayerId(FlatBufferBuilder builder, ushort playerId) { builder.AddUshort(0, playerId, 0); }
   public static void AddName(FlatBufferBuilder builder, StringOffset nameOffset) { builder.AddOffset(1, nameOffset.Value, 0); }
   public static void AddSkin(FlatBufferBuilder builder, StringOffset skinOffset) { builder.AddOffset(2, skinOffset.Value, 0); }
   public static void AddScore(FlatBufferBuilder builder, uint score) { builder.AddUint(3, score, 0); }

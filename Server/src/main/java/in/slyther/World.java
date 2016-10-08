@@ -2,6 +2,7 @@ package in.slyther;
 
 import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.gameobjects.Food;
+import in.slyther.gameobjects.ScoreBoard;
 import in.slyther.gameobjects.Snake;
 import in.slyther.math.Vector2;
 import in.slyther.math.collisions.SpatialHashMap;
@@ -14,20 +15,24 @@ import java.util.Deque;
 import java.util.Random;
 
 
-/**
- *
- */
 public class World {
     private static final float WORLD_RADIUS = 20;
     private static final int STARTING_SCORE = 100;
     public static final int MAX_PLAYERS = 100;
     public static final int MAX_FOOD = 1000;
     private static final int FOOD_MAX_WEIGHT = 5;
+    private static final int SCOREBOARD_NETWORK_ID = MAX_PLAYERS + MAX_FOOD;
 
-    private final Random random = new Random();
+    // Server context
     private final Server server;
+
+    // Game objects
     private final Snake[] snakes = new Snake[MAX_PLAYERS];
     private final Food[] foods = new Food[MAX_FOOD];
+    private final ScoreBoard scoreBoard = new ScoreBoard();
+
+    // Utilities and helper data structures
+    private final Random random = new Random();
 
     private final Deque<Integer> freeSnakeIdsPool = new ArrayDeque<>(MAX_PLAYERS);
     private final Deque<Integer> freeFoodIdsPool = new ArrayDeque<>(MAX_FOOD);
@@ -44,8 +49,8 @@ public class World {
 
 
     /**
-     *
-     * @param server
+     * World constructor.
+     * @param server Server context.
      */
     public World(Server server) {
         this.server = server;
@@ -53,7 +58,7 @@ public class World {
 
 
     /**
-     *
+     * Initialize game objects.
      */
     public void initWorld() {
         initFood();
@@ -78,7 +83,20 @@ public class World {
         snake.move(desiredMove, dt);
         snakeSpatialMap.update(snake, snake.getBoundingBox());
 
+        if (snake.isTurbo()) {
+            dropTurboFood(snake, dt);
+        }
+
+        scoreBoard.updateScore(snake);
         checkCollisions(snake);
+    }
+
+
+    private void dropTurboFood(Snake snake, float dt) {
+        float snakeLength = snake.getLength();
+
+        Vector2 foodPos = snake.getPositionAtLength(snakeLength);
+        spawnFood(foodPos, 1);
     }
 
 
@@ -138,9 +156,15 @@ public class World {
 
 
     public void killSnake(Snake snake) {
+        if (snake.isDead()) {
+            return;
+        }
+
         dropFood(snake);
         snake.setDead(true);
         freeSnakeIdsPool.add(snake.getPid());
+        snakeSpatialMap.remove(snake);
+        scoreBoard.remove(snake);
     }
 
 
@@ -188,11 +212,20 @@ public class World {
 
             int foodStateOffset = food.serialize(builder);
             NetworkObjectState.startNetworkObjectState(builder);
-            NetworkObjectState.addNetworkId(builder, food.getFoodId() + 1000);
+            NetworkObjectState.addNetworkId(builder, food.getFoodId() + MAX_PLAYERS);
             NetworkObjectState.addStateType(builder, NetworkObjectStateType.NetworkFoodState);
             NetworkObjectState.addState(builder, foodStateOffset);
             objectOffsets[n++] = NetworkObjectState.endNetworkObjectState(builder);
         }
+
+        // Serialize score board
+        int scoreBoardOffset = scoreBoard.serialize(builder);
+
+        NetworkObjectState.startNetworkObjectState(builder);
+        NetworkObjectState.addNetworkId(builder, SCOREBOARD_NETWORK_ID);
+        NetworkObjectState.addStateType(builder, NetworkObjectStateType.NetworkScoreBoardState);
+        NetworkObjectState.addState(builder, scoreBoardOffset);
+        objectOffsets[n++] = NetworkObjectState.endNetworkObjectState(builder);
 
         int objectsVectorOffset = NetworkWorldState.createObjectStatesVector(builder, objectOffsets, n);
         NetworkWorldState.startServerWorldState(builder);
@@ -221,6 +254,7 @@ public class World {
         snake.setScore(STARTING_SCORE);
         snake.respawn(Vector2.randomUniform(WORLD_RADIUS), STARTING_SCORE);
         updateSpatialSnakeMap(snake);
+        scoreBoard.updateScore(snake);
     }
 
 
@@ -229,7 +263,7 @@ public class World {
      * @param food The foods to respawn.
      */
     private void respawnFood(Food food) {
-        spawnFood(food, Vector2.randomUniform(WORLD_RADIUS), food.getWeight());
+        spawnFood(food, Vector2.randomUniform(WORLD_RADIUS), 1 + random.nextInt(FOOD_MAX_WEIGHT));
     }
 
 
@@ -246,7 +280,6 @@ public class World {
     private void spawnFood(Vector2 pos, int weight) {
         Food food = getFreeFood();
 
-        assert(food != null);
         if (food == null) {
             return;
         }
@@ -277,13 +310,12 @@ public class World {
         foodSpatialMap.update(food, food.getPosition());
     }
 
+
     private void updateSpatialSnakeMap(Snake snake) {
         snakeSpatialMap.update(snake, snake.getBoundingBox());
     }
 
-    /**
-     *
-     */
+
     private void initSnakes() {
         for (int i = 0; i < MAX_PLAYERS; i++) {
             snakes[i] = new Snake(i, "", STARTING_SCORE);
@@ -292,9 +324,6 @@ public class World {
     }
 
 
-    /**
-     *
-     */
     private void initFood() {
         for (int i = 0; i < MAX_FOOD; i++) {
             foods[i] = new Food(i, Vector2.randomUniform(WORLD_RADIUS), 1 + random.nextInt(FOOD_MAX_WEIGHT));

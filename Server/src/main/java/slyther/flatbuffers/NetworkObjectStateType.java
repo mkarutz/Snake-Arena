@@ -7,8 +7,9 @@ public final class NetworkObjectStateType {
   public static final byte NONE = 0;
   public static final byte NetworkFoodState = 1;
   public static final byte NetworkSnakeState = 2;
+  public static final byte NetworkScoreBoardState = 3;
 
-  public static final String[] names = { "NONE", "NetworkFoodState", "NetworkSnakeState", };
+  public static final String[] names = { "NONE", "NetworkFoodState", "NetworkSnakeState", "NetworkScoreBoardState", };
 
   public static String name(int e) { return names[e]; }
 }

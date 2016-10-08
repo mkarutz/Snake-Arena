@@ -8,12 +8,14 @@ public class ObjectCreationRegistry : MonoBehaviour {
 
 	public FoodFactory foodFactory;
 	public SnakeFactory snakeFactory;
+	public ScoreBoardFactory scoreBoardFactory;
 
 
 	void Awake()
 	{
 		RegisterFactory((byte) NetworkObjectStateType.NetworkFoodState, foodFactory);
 		RegisterFactory((byte) NetworkObjectStateType.NetworkSnakeState, snakeFactory);
+		RegisterFactory((byte)NetworkObjectStateType.NetworkScoreBoardState, scoreBoardFactory);
 	}
 
 

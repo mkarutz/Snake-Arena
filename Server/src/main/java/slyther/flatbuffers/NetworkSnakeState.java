@@ -4,7 +4,7 @@ package slyther.flatbuffers;
 
 import java.nio.*;
 import java.lang.*;
-
+import java.util.*;
 import com.google.flatbuffers.*;
 
 @SuppressWarnings("unused")
@@ -13,7 +13,6 @@ public final class NetworkSnakeState extends Table {
   public static NetworkSnakeState getRootAsNetworkSnakeState(ByteBuffer _bb, NetworkSnakeState obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__init(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
   public NetworkSnakeState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
-  public int playerId() { int o = __offset(4); return o != 0 ? bb.getShort(o + bb_pos) & 0xFFFF : 0; }
   public String name() { int o = __offset(6); return o != 0 ? __string(o + bb_pos) : null; }
   public ByteBuffer nameAsByteBuffer() { return __vector_as_bytebuffer(6, 1); }
   public String skin() { int o = __offset(8); return o != 0 ? __string(o + bb_pos) : null; }
@@ -28,7 +27,6 @@ public final class NetworkSnakeState extends Table {
   public int tail() { int o = __offset(20); return o != 0 ? bb.getShort(o + bb_pos) & 0xFFFF : 0; }
 
   public static int createNetworkSnakeState(FlatBufferBuilder builder,
-      int playerId,
       int nameOffset,
       int skinOffset,
       long score,
@@ -44,14 +42,12 @@ public final class NetworkSnakeState extends Table {
     NetworkSnakeState.addName(builder, nameOffset);
     NetworkSnakeState.addTail(builder, tail);
     NetworkSnakeState.addHead(builder, head);
-    NetworkSnakeState.addPlayerId(builder, playerId);
     NetworkSnakeState.addIsTurbo(builder, isTurbo);
     NetworkSnakeState.addIsDead(builder, isDead);
     return NetworkSnakeState.endNetworkSnakeState(builder);
   }
 
   public static void startNetworkSnakeState(FlatBufferBuilder builder) { builder.startObject(9); }
-  public static void addPlayerId(FlatBufferBuilder builder, int playerId) { builder.addShort(0, (short)playerId, 0); }
   public static void addName(FlatBufferBuilder builder, int nameOffset) { builder.addOffset(1, nameOffset, 0); }
   public static void addSkin(FlatBufferBuilder builder, int skinOffset) { builder.addOffset(2, skinOffset, 0); }
   public static void addScore(FlatBufferBuilder builder, long score) { builder.addInt(3, (int)score, 0); }

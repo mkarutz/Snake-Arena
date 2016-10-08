@@ -8,6 +8,7 @@ public enum NetworkObjectStateType : byte
  NONE = 0,
  NetworkFoodState = 1,
  NetworkSnakeState = 2,
+ NetworkScoreBoardState = 3,
 };
 
 

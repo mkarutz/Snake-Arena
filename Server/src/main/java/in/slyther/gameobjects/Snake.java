@@ -132,7 +132,6 @@ public class Snake {
         int nameOffset = builder.createString(name);
 
         NetworkSnakeState.startNetworkSnakeState(builder);
-        NetworkSnakeState.addPlayerId(builder, pid);
         NetworkSnakeState.addParts(builder, vectorOffset);
         NetworkSnakeState.addHead(builder, headPointer);
         NetworkSnakeState.addIsDead(builder, isDead);
@@ -184,7 +183,12 @@ public class Snake {
             next = nextPointer(next);
         }
 
-        return null;
+        return tailPosition();
+    }
+
+
+    public Vector2 tailPosition() {
+        return new Vector2((parts[prevPointer(tailPointer)].getPosition()));
     }
 
 
@@ -202,14 +206,11 @@ public class Snake {
                 continue;
             }
 
-            float distanceToLine = Vector2.distanceToLine(point, currPoint, nextPoint);
             if (!Vector2.isPerpendicularToSegment(point, currPoint, nextPoint)) {
-                distanceToLine = Math.min(
-                        Vector2.distance(point, currPoint),
-                        Vector2.distance(point, nextPoint)
-                );
+                continue;
             }
 
+            float distanceToLine = Vector2.distanceToLine(point, currPoint, nextPoint);
             minDistance = Math.min(distanceToLine, minDistance);
         }
 

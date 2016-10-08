@@ -21,7 +21,6 @@ public class Food {
 
     public int serialize(FlatBufferBuilder builder) {
         NetworkFoodState.startNetworkFoodState(builder);
-        NetworkFoodState.addFoodId(builder, foodId);
         NetworkFoodState.addIsActive(builder, isActive);
         NetworkFoodState.addWeight(builder, weight);
         NetworkFoodState.addPosition(builder, Vec2.createVec2(builder, position.getX(), position.getY()));
