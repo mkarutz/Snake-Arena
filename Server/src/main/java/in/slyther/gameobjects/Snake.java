@@ -132,7 +132,6 @@ public class Snake {
         int nameOffset = builder.createString(name);
 
         NetworkSnakeState.startNetworkSnakeState(builder);
-        NetworkSnakeState.addPlayerId(builder, pid);
         NetworkSnakeState.addParts(builder, vectorOffset);
         NetworkSnakeState.addHead(builder, headPointer);
         NetworkSnakeState.addIsDead(builder, isDead);

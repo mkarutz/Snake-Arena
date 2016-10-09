@@ -16,11 +16,11 @@ public class SnakePart {
 
 
     public int serialize(FlatBufferBuilder builder) {
-        NetworkSnakePartState.startSnakePartState(builder);
+        NetworkSnakePartState.startNetworkSnakePartState(builder);
         NetworkSnakePartState.addPosition(builder, Vec2.createVec2(builder, position.getX(), position.getY()));
         NetworkSnakePartState.addIndex(builder, index);
 
-        return NetworkSnakePartState.endSnakePartState(builder);
+        return NetworkSnakePartState.endNetworkSnakePartState(builder);
     }
 
 

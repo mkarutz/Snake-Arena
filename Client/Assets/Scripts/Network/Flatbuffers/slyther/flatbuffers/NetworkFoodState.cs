@@ -11,14 +11,12 @@ public sealed class NetworkFoodState : Table {
   public static NetworkFoodState GetRootAsNetworkFoodState(ByteBuffer _bb, NetworkFoodState obj) { return (obj.__init(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
   public NetworkFoodState __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
-  public ushort FoodId { get { int o = __offset(4); return o != 0 ? bb.GetUshort(o + bb_pos) : (ushort)0; } }
   public slyther.flatbuffers.Vec2 Position { get { return GetPosition(new slyther.flatbuffers.Vec2()); } }
   public slyther.flatbuffers.Vec2 GetPosition(slyther.flatbuffers.Vec2 obj) { int o = __offset(6); return o != 0 ? obj.__init(o + bb_pos, bb) : null; }
   public byte Weight { get { int o = __offset(8); return o != 0 ? bb.Get(o + bb_pos) : (byte)0; } }
   public bool IsActive { get { int o = __offset(10); return o != 0 ? 0!=bb.Get(o + bb_pos) : (bool)false; } }
 
   public static void StartNetworkFoodState(FlatBufferBuilder builder) { builder.StartObject(4); }
-  public static void AddFoodId(FlatBufferBuilder builder, ushort foodId) { builder.AddUshort(0, foodId, 0); }
   public static void AddPosition(FlatBufferBuilder builder, Offset<slyther.flatbuffers.Vec2> positionOffset) { builder.AddStruct(1, positionOffset.Value, 0); }
   public static void AddWeight(FlatBufferBuilder builder, byte weight) { builder.AddByte(2, weight, 0); }
   public static void AddIsActive(FlatBufferBuilder builder, bool isActive) { builder.AddBool(3, isActive, false); }
