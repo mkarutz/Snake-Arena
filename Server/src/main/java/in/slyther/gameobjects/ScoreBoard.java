@@ -44,12 +44,7 @@ public class ScoreBoard {
         int[] entryOffsets = new int[Math.min(DISPLAY_TOP_N, entries.size())];
         int n = 0;
 
-
-        Iterator<ScoreBoardEntry> iterator = entries.iterator();
-        iterator = entries.iterator();
-        while (iterator.hasNext()) {
-            ScoreBoardEntry entry = iterator.next();
-
+        for (ScoreBoardEntry entry : entries) {
             entryOffsets[n++] = entry.serialize(builder);
 
             if (n == DISPLAY_TOP_N) {
