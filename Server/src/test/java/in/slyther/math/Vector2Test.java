@@ -48,4 +48,22 @@ public class Vector2Test {
 
         assertEquals(-Math.PI / 4, Vector2.angleBetween(from, to), 0.01f);
     }
+
+    @Test
+    public void testIsPerpendicularTo() {
+        Vector2 A = new Vector2(0, 0);
+        Vector2 B = new Vector2 (1, 1);
+        Vector2 C = new Vector2(0.5f, 1);
+
+        assertTrue(Vector2.isPerpendicularToSegment(C, A, B));
+
+        C.set(1, 0);
+        assertTrue(Vector2.isPerpendicularToSegment(C, A, B));
+
+        C.set(-1, -1);
+        assertTrue(!Vector2.isPerpendicularToSegment(C, A, B));
+
+        C.set(0, -1);
+        assertTrue(!Vector2.isPerpendicularToSegment(C, A, B));
+    }
 }

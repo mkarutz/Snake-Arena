@@ -85,11 +85,15 @@ public class Vector2 {
 
     public static boolean isPerpendicularToSegment(Vector2 p, Vector2 a, Vector2 b) {
         Vector2 aToB = Vector2.minus(b, a);
-        Vector2 aToP = Vector2.minus(a, p);
-        Vector2 bToP = Vector2.minus(b, p);
+        Vector2 aToP = Vector2.minus(p, a);
+        Vector2 pToB = Vector2.minus(b, p);
 
-        return Math.abs(angleBetween(aToB, bToP)) < Math.PI
-                && Math.abs(angleBetween(aToB, aToP)) < Math.PI;
+        return dot(aToB, pToB) > 0 && dot(aToB, aToP) > 0;
+    }
+
+
+    public static float dot(Vector2 a, Vector2 b) {
+        return a.x * b.x + a.y * b.y;
     }
 
 

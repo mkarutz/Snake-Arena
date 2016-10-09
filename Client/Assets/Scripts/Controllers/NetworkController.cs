@@ -82,7 +82,7 @@ public class NetworkController : MonoBehaviour {
 
     private void InitConnection()
     {
-        this.udpc = new UdpClient("localhost", 3000);
+		this.udpc = new UdpClient("10.12.35.208", 3000);
 		SendServerHello();
         ReceiveServerHello();
     }

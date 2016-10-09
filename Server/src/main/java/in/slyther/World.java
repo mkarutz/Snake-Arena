@@ -78,7 +78,19 @@ public class World {
         snake.move(desiredMove, dt);
         snakeSpatialMap.update(snake, snake.getBoundingBox());
 
+        if (snake.isTurbo()) {
+            dropTurboFood(snake, dt);
+        }
+
         checkCollisions(snake);
+    }
+
+
+    private void dropTurboFood(Snake snake, float dt) {
+        float snakeLength = snake.getLength();
+
+        Vector2 foodPos = snake.getPositionAtLength(snakeLength);
+        spawnFood(foodPos, 1);
     }
 
 
@@ -229,7 +241,7 @@ public class World {
      * @param food The foods to respawn.
      */
     private void respawnFood(Food food) {
-        spawnFood(food, Vector2.randomUniform(WORLD_RADIUS), food.getWeight());
+        spawnFood(food, Vector2.randomUniform(WORLD_RADIUS), 1 + random.nextInt(FOOD_MAX_WEIGHT));
     }
 
 
@@ -246,7 +258,6 @@ public class World {
     private void spawnFood(Vector2 pos, int weight) {
         Food food = getFreeFood();
 
-        assert(food != null);
         if (food == null) {
             return;
         }
