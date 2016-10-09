@@ -21,8 +21,11 @@ public class ScoreBoard {
         }
 
         entries.remove(entry);
+        entry.name = snake.getName();
         entry.setScore(snake.getScore());
         entries.add(entry);
+
+        System.out.println("Updated score for player " + entry.name);
     }
 
 
@@ -41,7 +44,12 @@ public class ScoreBoard {
         int[] entryOffsets = new int[Math.min(DISPLAY_TOP_N, entries.size())];
         int n = 0;
 
-        for (ScoreBoardEntry entry : entries) {
+
+        Iterator<ScoreBoardEntry> iterator = entries.iterator();
+        iterator = entries.iterator();
+        while (iterator.hasNext()) {
+            ScoreBoardEntry entry = iterator.next();
+
             entryOffsets[n++] = entry.serialize(builder);
 
             if (n == DISPLAY_TOP_N) {
@@ -60,7 +68,7 @@ public class ScoreBoard {
 
 
     private class ScoreBoardEntry implements Comparable<ScoreBoardEntry> {
-        private final String name;
+        private String name;
         private int score;
 
         public ScoreBoardEntry(String name, int score) {
@@ -70,11 +78,12 @@ public class ScoreBoard {
 
         @Override
         public int compareTo(ScoreBoardEntry o) {
-            return score - o.score;
+            return o.score - score;
         }
 
 
         public int serialize(FlatBufferBuilder builder) {
+            System.out.println("name = " + name);
             int playerNameOffset = builder.createString(name);
 
             ScoreboardEntry.startScoreboardEntry(builder);
@@ -87,6 +96,10 @@ public class ScoreBoard {
 
         public String getName() {
             return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
 
         public int getScore() {
