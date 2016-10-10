@@ -31,12 +31,18 @@ public class SnakeState : MonoBehaviour {
     void Awake()
 	{
         this.InitBackbone();
-        this.AddBackboneHeadPoint(new Vector2(0.0f, 0.0f));
-        this.AddBackboneHeadPoint(new Vector2(0.0f, 1.0f));
-        this.AddBackboneHeadPoint(new Vector2(0.0f, 2.0f));
+		this.SetRandomStartBackbone (Vector2.zero);
 
 		//Despawn();
     }
+
+	public void SetRandomStartBackbone(Vector2 offset)
+	{
+		Vector2 randDir = new Vector2 (Random.Range (-1000, 1000), Random.Range (-1000, 1000)).normalized;
+		this.AddBackboneHeadPoint(offset);
+		this.AddBackboneHeadPoint(randDir + offset);
+		this.AddBackboneHeadPoint(randDir * 2 + offset);
+	}
 
 	public void Despawn()
 	{

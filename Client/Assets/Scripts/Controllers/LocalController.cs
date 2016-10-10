@@ -4,112 +4,48 @@ using System.Collections.Generic;
 using System.Linq;
 
 public class LocalController : MonoBehaviour {
+	private int maxSnakes = GameConfig.MAX_LOCAL_SNAKES;
+	private int maxFoods = GameConfig.MAX_LOCAL_FOODS;
 
-    private class MockFoodState
-    {
-        public int id;
-        public Vector2 position;
-        public Color color;
-        public int weight;
-    }
-
-    private float cellSize = 25.0f; 
-
-    public int maxSnakes = 100;
-    public int maxFoods = 10000;
-    public int worldRadius = 500;
-
-    public GameState state;
-
-    public new CameraController camera;
-
-    private SnakeState playerSnake;
-
-    private SpatialHashMap<MockFoodState> worldFoodsX;
-    
-    // keeps account of the previous body of objects that were activated, so we can deactivate if necessary
-    private IEnumerable<MockFoodState> prevResult = new HashSet<MockFoodState>();
-
-    int activateInterval = 60;
-    int activateTimer = 0;
+	public GameWorld gameWorld;
+	public FoodState localFoodPrefab;
+	public SnakeState localSnakePrefab;
+	public SnakeState localAISnakePrefab;
 
 	// Use this for initialization
 	void Start () {
-        state.InitState(maxSnakes, maxFoods, worldRadius);
-
-        this.worldFoodsX = new SpatialHashMap<MockFoodState>(new Vector2(-(worldRadius),-(worldRadius)), new Vector2(worldRadius, worldRadius),cellSize);
-        for (int i = 0; i < maxFoods; i++)
-        {
-            float angle = Random.Range(0.0f, 360.0f);
-            float dist = Random.Range(0.0f, worldRadius);
-            //change
-            MockFoodState mFood = new MockFoodState();
-            mFood.id = i;
-            mFood.position = Quaternion.AngleAxis(angle, Vector3.back) * (Vector3.right * dist);
-            mFood.color = Random.ColorHSV(0.0f, 1.0f);
-            mFood.weight = (int)Random.Range(2.0f, 8.0f);
-            this.worldFoodsX.put(mFood,mFood.position);
-        }
-
-     //   this.playerSnake = state.ActivateSnake<LocalSnakeControllerInput>(0, "Player", 20, Vector2.zero, 0);
-
-        this.camera.snakeToTrack = this.playerSnake.GetComponent<SnakeState>();
-        
-        //state.ActivateSnake<LocalSnakeControllerAI>(1, "Enemy", 100, Vector2.zero, 1).GetComponent<SnakeState>();
-      //  state.ActivateSnake<LocalSnakeControllerAI>(2, "Enemy", 30000, Vector2.zero, 2).GetComponent<SnakeState>();
-      //  state.ActivateSnake<LocalSnakeControllerAI>(3, "Enemy", 300, Vector2.zero, 2).GetComponent<SnakeState>();
+		GenerateFoods ();
+		GenerateLocalSnake ();
+		GenerateAISnakes ();
     }
 
-    /*private void ManageFoodActivation()
-    {
-        //minX and maxY to set upper left corner of Rect 
-        // documemntation says upper left but seems to create rect from lower left
-        float cameraOrthSize = this.camera.GetComponent<Camera>().orthographicSize;
+	private void GenerateFoods()
+	{
+		for (int i = 0; i < maxFoods; i++)
+		{
+			FoodState food = Instantiate<FoodState>(this.localFoodPrefab);
+			food.transform.position = this.gameWorld.GenerateRandomWorldPoint(0.0f, this.gameWorld.worldRadius);
+			food.weight = (int)Random.Range(2.0f, 8.0f);
+		}
+	}
 
-        // the Rect size needs to be optimized
-        float minX = this.playerSnake.head.transform.position.x - cameraOrthSize*2;
-        float minY = this.playerSnake.head.transform.position.y - cameraOrthSize*2;
-        Rect playerNear = new Rect(minX,minY, cameraOrthSize * 4, cameraOrthSize * 4);
+	private void GenerateLocalSnake()
+	{
+		SnakeState playerSnake = Instantiate<SnakeState> (this.localSnakePrefab);
+		playerSnake.transform.position = this.gameWorld.GenerateRandomWorldPoint(0, this.gameWorld.worldRadius / 5.0f);
+	}
 
-        IEnumerable<MockFoodState> result = this.worldFoodsX.getNear(playerNear);
-        foreach (MockFoodState mFS in result)
-        {
-            if (!this.state.IsFoodActive(mFS.id))
-            {
-                //Debug.Log(this.worldFoods[i].position);
-                this.state.ActivateFood<LocalFoodController>(mFS.id, mFS.position,
-                    mFS.color, mFS.weight);
-            }
-        }
+	private void GenerateAISnakes()
+	{
+		for (int i = 0; i < maxSnakes - 1; i++)
+		{
+			SnakeState snake = Instantiate<SnakeState> (this.localAISnakePrefab);
+			snake.SetRandomStartBackbone(this.gameWorld.GenerateRandomWorldPoint (this.gameWorld.worldRadius / 4.0f, this.gameWorld.worldRadius));
+			snake.snakeSkinID = Random.Range(0, GameConfig.NUM_SNAKE_SKINS);
+		}
+	}
 
-        foreach (MockFoodState mFS in prevResult.Except(result))
-        {    
-            if (this.state.IsFoodActive(mFS.id))
-            {
-                this.state.DeactivateFood(mFS.id);
-            }
-        }
-        prevResult = result;
-    }
-    */
-
-    private void CollectFoodGarbage()
-    {
-
-    }
-	
 	// Update is called once per frame
 	void Update () {
-        if (activateTimer <= 0)
-        {
-            //ManageFoodActivation();
-            activateTimer = activateInterval;
-        }
-        activateTimer--;
-
-      //  if (Input.GetKeyDown(KeyCode.A))
-//            this.state.DeactivateSnake(0);
-      //  if (Input.GetKeyDown(KeyCode.B))
-      //      this.playerSnake = state.ActivateSnake<LocalSnakeControllerInput>(0, "Player", 20, Vector2.zero, 0);
     }
 }
