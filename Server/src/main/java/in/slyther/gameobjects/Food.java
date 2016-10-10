@@ -3,9 +3,11 @@ package in.slyther.gameobjects;
 import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.math.Vector2;
 import slyther.flatbuffers.NetworkFoodState;
+import slyther.flatbuffers.NetworkObjectState;
+import slyther.flatbuffers.NetworkObjectStateType;
 import slyther.flatbuffers.Vec2;
 
-public class Food {
+public class Food implements GameObject {
     private int foodId;
     private Vector2 position;
     private int weight;
@@ -19,12 +21,19 @@ public class Food {
         isActive = true;
     }
 
+
+    @Override
+    public byte classId() {
+        return NetworkObjectStateType.NetworkFoodState;
+    }
+
+
+    @Override
     public int serialize(FlatBufferBuilder builder) {
         NetworkFoodState.startNetworkFoodState(builder);
         NetworkFoodState.addIsActive(builder, isActive);
         NetworkFoodState.addWeight(builder, weight);
         NetworkFoodState.addPosition(builder, Vec2.createVec2(builder, position.getX(), position.getY()));
-
         return NetworkFoodState.endNetworkFoodState(builder);
     }
 

@@ -3,15 +3,13 @@ package in.slyther.gameobjects;
 import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.math.Rect;
 import in.slyther.math.Vector2;
+import slyther.flatbuffers.NetworkObjectStateType;
 import slyther.flatbuffers.NetworkSnakeState;
-
-import java.util.Vector;
-
 
 /**
  *
  */
-public class Snake {
+public class Snake implements GameObject {
     private static final float PI = (float) Math.PI;
     public static final int GROWTH_CAP = 40000;
     public static final float MIN_LENGTH = 1.0f;
@@ -19,7 +17,8 @@ public class Snake {
     public static final int MIN_TURBO_SCORE = 100;
 
     public static final float GROWTH_RATE = 1.0f / 100.0f;
-    public static final float MOVE_SPEED = 1.5f;
+    public static final float MOVE_SPEED = 1.7f;
+    public static final float TURBO_BOOST_FACTOR = 3.0f;
     public static final float TURN_RADIUS_FACTOR = 1.5f;
     public static final int MAX_PARTS = 1000;
     public static final float EAT_DISTANCE_RATIO = 1.0f;
@@ -57,6 +56,38 @@ public class Snake {
         respawn(Vector2.zero(), getScore());
 
         setDead(true);
+    }
+
+
+    @Override
+    public byte classId() {
+        return NetworkObjectStateType.NetworkSnakeState;
+    }
+
+
+    @Override
+    public int serialize(FlatBufferBuilder builder) {
+        int[] partsOffsets = new int[MAX_PARTS];
+        int n = 0;
+
+        for (int i = headPointer; i != tailPointer; i = nextPointer(i)) {
+            partsOffsets[n++] = parts[i].serialize(builder);
+        }
+
+        int vectorOffset = NetworkSnakeState.createPartsVector(builder, partsOffsets, n);
+        int nameOffset = builder.createString(name);
+
+        NetworkSnakeState.startNetworkSnakeState(builder);
+        NetworkSnakeState.addParts(builder, vectorOffset);
+        NetworkSnakeState.addHead(builder, headPointer);
+        NetworkSnakeState.addIsDead(builder, isDead);
+        NetworkSnakeState.addIsTurbo(builder, isTurbo());
+        NetworkSnakeState.addName(builder, nameOffset);
+        NetworkSnakeState.addScore(builder, score);
+        NetworkSnakeState.addTail(builder, tailPointer);
+        NetworkSnakeState.addSkin(builder, skin);
+
+        return NetworkSnakeState.endNetworkSnakeState(builder);
     }
 
 
@@ -112,36 +143,6 @@ public class Snake {
         }
 
         updateBoundingBox();
-    }
-
-
-    /**
-     * Serialize this snake for replication over the network.
-     * @param builder FlatBufferBuilder.
-     * @return The offset of the flatbuffer.
-     */
-    public int serialize(FlatBufferBuilder builder) {
-        int[] partsOffsets = new int[MAX_PARTS];
-        int n = 0;
-
-        for (int i = headPointer; i != tailPointer; i = nextPointer(i)) {
-            partsOffsets[n++] = parts[i].serialize(builder);
-        }
-
-        int vectorOffset = NetworkSnakeState.createPartsVector(builder, partsOffsets, n);
-        int nameOffset = builder.createString(name);
-
-        NetworkSnakeState.startNetworkSnakeState(builder);
-        NetworkSnakeState.addParts(builder, vectorOffset);
-        NetworkSnakeState.addHead(builder, headPointer);
-        NetworkSnakeState.addIsDead(builder, isDead);
-        NetworkSnakeState.addIsTurbo(builder, isTurbo);
-        NetworkSnakeState.addName(builder, nameOffset);
-        NetworkSnakeState.addScore(builder, score);
-        NetworkSnakeState.addTail(builder, tailPointer);
-        NetworkSnakeState.addSkin(builder, skin);
-
-        return NetworkSnakeState.endNetworkSnakeState(builder);
     }
 
 
@@ -293,7 +294,6 @@ public class Snake {
         }
 
         if (desiredMove.magnitude() > 0.0f) {
-            System.out.println("MAX TURN = " + turnSpeed() * dt);
             direction.rotateTowards(desiredMove, turnSpeed() * dt);
         }
 
@@ -380,7 +380,7 @@ public class Snake {
 
 
     private float turboMoveSpeed() {
-        return 2.0f * normalMoveSpeed();
+        return TURBO_BOOST_FACTOR * normalMoveSpeed();
     }
 
 

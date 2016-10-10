@@ -8,7 +8,7 @@ public class ClientMessageConstructor {
 
     private FlatBufferBuilder fbBuilder = new FlatBufferBuilder(1);
 
-    public byte[] ConstructClientHello(ClientMessageType type,byte clientId, string playerName)
+    public byte[] ConstructClientHello(ClientMessageType type, ushort clientId, string playerName)
     {
         fbBuilder.Clear();
 
@@ -31,7 +31,7 @@ public class ClientMessageConstructor {
          
     }
 
-    public byte[] ConstructClientInputState(ClientMessageType type, short clientId, uint tick, Vector3 desiredMove, bool isTurbo)
+    public byte[] ConstructClientInputState(ClientMessageType type, ushort clientId, uint tick, Vector3 desiredMove, bool isTurbo)
     {
         fbBuilder.Clear();
 
@@ -44,7 +44,7 @@ public class ClientMessageConstructor {
 
         ClientMessage.StartClientMessage(fbBuilder);
         //var clientIdOffset = clientId;
-		ClientMessage.AddClientId(fbBuilder, (byte) clientId);
+		ClientMessage.AddClientId(fbBuilder, clientId);
         ClientMessage.AddMsgType(fbBuilder, type);
         ClientMessage.AddMsg(fbBuilder, clientInputStateOffset.Value);
         Offset<ClientMessage> clientMessageOffset = ClientMessage.EndClientMessage(fbBuilder);
@@ -54,7 +54,7 @@ public class ClientMessageConstructor {
         return fbBuilder.SizedByteArray();
     }
 
-    public byte[] ConstructClientGoodbye(ClientMessageType type, byte clientId)
+    public byte[] ConstructClientGoodbye(ClientMessageType type, ushort clientId)
     {
         fbBuilder.Clear();
 
@@ -73,7 +73,7 @@ public class ClientMessageConstructor {
         return fbBuilder.SizedByteArray();
     }
 
-    public byte[] ConstructTickAck(ClientMessageType type, byte clientId,uint tick)
+    public byte[] ConstructTickAck(ClientMessageType type, ushort clientId, uint tick)
     {
         fbBuilder.Clear();
 

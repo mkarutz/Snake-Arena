@@ -11,23 +11,23 @@ public sealed class ClientMessage : Table {
   public static ClientMessage GetRootAsClientMessage(ByteBuffer _bb, ClientMessage obj) { return (obj.__init(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
   public ClientMessage __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
-  public byte ClientId { get { int o = __offset(4); return o != 0 ? bb.Get(o + bb_pos) : (byte)0; } }
+  public ushort ClientId { get { int o = __offset(4); return o != 0 ? bb.GetUshort(o + bb_pos) : (ushort)0; } }
   public ClientMessageType MsgType { get { int o = __offset(6); return o != 0 ? (ClientMessageType)bb.Get(o + bb_pos) : ClientMessageType.NONE; } }
   public TTable GetMsg<TTable>(TTable obj) where TTable : Table { int o = __offset(8); return o != 0 ? __union(obj, o) : null; }
 
   public static Offset<ClientMessage> CreateClientMessage(FlatBufferBuilder builder,
-      byte clientId = 0,
+      ushort clientId = 0,
       ClientMessageType msg_type = ClientMessageType.NONE,
       int msgOffset = 0) {
     builder.StartObject(3);
     ClientMessage.AddMsg(builder, msgOffset);
-    ClientMessage.AddMsgType(builder, msg_type);
     ClientMessage.AddClientId(builder, clientId);
+    ClientMessage.AddMsgType(builder, msg_type);
     return ClientMessage.EndClientMessage(builder);
   }
 
   public static void StartClientMessage(FlatBufferBuilder builder) { builder.StartObject(3); }
-  public static void AddClientId(FlatBufferBuilder builder, byte clientId) { builder.AddByte(0, clientId, 0); }
+  public static void AddClientId(FlatBufferBuilder builder, ushort clientId) { builder.AddUshort(0, clientId, 0); }
   public static void AddMsgType(FlatBufferBuilder builder, ClientMessageType msgType) { builder.AddByte(1, (byte)msgType, 0); }
   public static void AddMsg(FlatBufferBuilder builder, int msgOffset) { builder.AddOffset(2, msgOffset, 0); }
   public static Offset<ClientMessage> EndClientMessage(FlatBufferBuilder builder) {

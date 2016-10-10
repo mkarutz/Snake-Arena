@@ -23,6 +23,7 @@ public class NetworkManager {
     private static final int MAX_PACKET = 2400;
     private static final int MAX_PACKETS_PER_TICK = 200;
 
+    private final LinkingContext linkingContext;
     private final Server server;
     private final World world;
 
@@ -32,11 +33,11 @@ public class NetworkManager {
     private final Deque<ReceivedPacket> packetQueue = new ArrayDeque<>(MAX_PACKETS_PER_TICK);
     private final Map<SocketAddress, ClientProxy> socketAddressClientProxyMap = new HashMap<>();
 
+    // Pre-allocated Flatbuffer objects for (de)serialization
     private final ClientMessage clientMessage = new ClientMessage();
     private final ClientHello clientHello = new ClientHello();
     private final ClientGoodbye clientGoodbye = new ClientGoodbye();
     private final ClientInputState clientInputState = new ClientInputState();
-
     private final ServerMessage serverMessage = new ServerMessage();
     private final ServerHello serverHello = new ServerHello();
     private final ServerConfig serverConfig = new ServerConfig();
@@ -47,8 +48,9 @@ public class NetworkManager {
      * @param world The game world.
      * @param udpPort The port for UDP communication with game clients.
      */
-    public NetworkManager(Server server, World world, int udpPort) {
+    public NetworkManager(Server server, LinkingContext linkingContext, World world, int udpPort) {
         this.server = server;
+        this.linkingContext = linkingContext;
         this.world = world;
         this.udpPort = udpPort;
     }
@@ -74,22 +76,6 @@ public class NetworkManager {
     public void handleIncomingPackets(int tick) {
         readPacketsToQueue();
         processQueuedPackets(tick);
-    }
-
-
-    public void checkTimeouts(int tick) {
-        Iterator<Map.Entry<SocketAddress, ClientProxy>> it = socketAddressClientProxyMap.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<SocketAddress, ClientProxy> entry = it.next();
-
-            ClientProxy clientProxy = entry.getValue();
-            if (tick - clientProxy.getLastInputTick() > TIMEOUT / server.getTimeStep()) {
-                System.out.println("Player (" + clientProxy.getSnake().getName() + ") timed out");
-
-                world.killSnake(clientProxy.getSnake());
-                it.remove();
-            }
-        }
     }
 
 
@@ -185,11 +171,12 @@ public class NetworkManager {
     private ClientProxy getClientProxy(SocketAddress socketAddress, String playerName) {
         final Snake playerSnake = world.spawnSnake();
 
-        System.out.println("Spawned new snake " + playerSnake.getPid());
+        int playerNetworkId = linkingContext.getNetworkId(playerSnake, true);
+        System.out.println("Spawned new snake " + playerNetworkId);
 
         playerSnake.setName(playerName);
 
-        return new ClientProxy(socketAddress, playerSnake);
+        return new ClientProxy(socketAddress, playerNetworkId, playerSnake);
     }
 
 
@@ -201,7 +188,7 @@ public class NetworkManager {
         FlatBufferBuilder builder = new FlatBufferBuilder(1);
 
         ServerHello.startServerHello(builder);
-        ServerHello.addClientId(builder, clientProxy.getSnake().getPid());
+        ServerHello.addClientId(builder, clientProxy.getClientId());
         int offsetServerHello = ServerHello.endServerHello(builder);
 
         ServerMessage.startServerMessage(builder);
@@ -230,8 +217,6 @@ public class NetworkManager {
         final ClientMessage msg = ClientMessage.getRootAsClientMessage(packet.getByteBuffer(), clientMessage);
         final int msgType = msg.msgType();
 
-        System.out.println("Processing message of type: " + msgType);
-
         if (msg.clientId() != clientProxy.getClientId()) {
             return;
         }
@@ -243,7 +228,7 @@ public class NetworkManager {
                 break;
             case ClientMessageType.ClientGoodbye:
                 ClientGoodbye goodbye = (ClientGoodbye) msg.msg(clientGoodbye);
-                processGoodbyeMessage(msg.clientId(), goodbye);
+                processGoodbyeMessage(clientProxy, goodbye);
                 break;
         }
     }
@@ -258,8 +243,7 @@ public class NetworkManager {
      * @param inputState The input state received.
      */
     private void processInputStateMessage(ClientProxy clientProxy, ClientInputState inputState) {
-        final int clientId = clientProxy.getClientId();
-        System.out.println("Received input from " + clientId);
+        final int clientId = linkingContext.getNetworkId(clientProxy.getSnake(), true);
 
         int ticksSinceLastInput = clientProxy.getLastInputTick() != -1
                 ? server.getTick() - clientProxy.getLastInputTick()
@@ -278,8 +262,9 @@ public class NetworkManager {
      * Process Goodbye message form client.
      * @param goodbye The Goodbye message.
      */
-    private void processGoodbyeMessage(int clientId, ClientGoodbye goodbye) {
-        System.out.println("Received goodbye from " + clientId);
+    private void processGoodbyeMessage(ClientProxy clientProxy, ClientGoodbye goodbye) {
+        System.out.println("Client disconnected (" + clientProxy.getPlayerName() + ")");
+        disconnectClient(clientProxy);
     }
 
 
@@ -290,6 +275,29 @@ public class NetworkManager {
         for (ClientProxy clientProxy : socketAddressClientProxyMap.values()) {
             sendWorldState(tick, clientProxy);
         }
+    }
+
+    private Set<ClientProxy> clientsToDisconnect = new HashSet<>();
+    public void checkTimeouts(int tick) {
+        clientsToDisconnect.clear();
+
+        for (ClientProxy clientProxy : socketAddressClientProxyMap.values()) {
+            final int ticksSinceLastInputPacket = tick - clientProxy.getLastInputTick();
+            if (ticksSinceLastInputPacket > TIMEOUT / server.getTimeStep()) {
+                System.out.println("Player (" + clientProxy.getPlayerName() + ") timed out");
+                clientsToDisconnect.add(clientProxy);
+            }
+        }
+
+        for (ClientProxy clientProxy : clientsToDisconnect) {
+            disconnectClient(clientProxy);
+        }
+    }
+    
+    
+    private void disconnectClient(ClientProxy clientProxy) {
+        world.killSnake(clientProxy.getSnake());
+        socketAddressClientProxyMap.remove(clientProxy.getSocketAddress());
     }
 
 

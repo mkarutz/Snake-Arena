@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class CameraController : MonoBehaviour {
-	public const float VIEWPORT_SCALE = 10.0f;
+	public const float VIEWPORT_SCALE = 15.0f;
 
 	//public NetworkController networkController;
 	public SnakeState snakeToTrack = null;
@@ -12,9 +12,32 @@ public class CameraController : MonoBehaviour {
 
 	void Update () 
 	{
-        snakeToTrack = GameObject.FindGameObjectWithTag("Player").GetComponent<SnakeState>();
-           //networkController.GetLocalPlayer().GetComponent<SnakeState>();
+		FollowSnake();
+		UpdateCameraSize();
+	}
+
+
+	void FollowSnake()
+	{
+		snakeToTrack = GameObject.FindGameObjectWithTag("Player").GetComponent<SnakeState>();
+		//networkController.GetLocalPlayer().GetComponent<SnakeState>();
 		transform.position = Vector3.Lerp(this.transform.position, snakeToTrack.transform.position, LerpAmount) + Vector3.back;
-		camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, snakeToTrack.GetSnakeThickness() * VIEWPORT_SCALE, LerpAmount);
+	}
+
+
+	void UpdateCameraSize()
+	{
+		camera.orthographicSize = Mathf.Lerp(camera.orthographicSize, ViewPortHeight(), LerpAmount);
+	}
+
+
+	float ViewPortHeight()
+	{
+		float maxViewportDimension = snakeToTrack.GetSnakeThickness() * VIEWPORT_SCALE;
+		float aspectRatio = 1.0f * Screen.width / Screen.height;
+		if (aspectRatio > 1.0f) {
+			return maxViewportDimension / aspectRatio;
+		}
+		return maxViewportDimension;
 	}
 }

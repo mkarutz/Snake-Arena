@@ -2,12 +2,15 @@ package in.slyther;
 
 import com.google.flatbuffers.FlatBufferBuilder;
 import in.slyther.gameobjects.Food;
+import in.slyther.gameobjects.GameObject;
 import in.slyther.gameobjects.ScoreBoard;
 import in.slyther.gameobjects.Snake;
+import in.slyther.math.Rect;
 import in.slyther.math.Vector2;
 import in.slyther.math.collisions.SpatialHashMap;
 import in.slyther.math.collisions.SpatialMap;
 import in.slyther.network.ClientProxy;
+import in.slyther.network.LinkingContext;
 import slyther.flatbuffers.*;
 
 import java.util.ArrayDeque;
@@ -16,15 +19,15 @@ import java.util.Random;
 
 
 public class World {
-    private static final float WORLD_RADIUS = 20;
+    private static final float WORLD_RADIUS = 50;
     private static final int STARTING_SCORE = 100;
     public static final int MAX_PLAYERS = 100;
-    public static final int MAX_FOOD = 1000;
+    public static final int MAX_FOOD = 10000;
     private static final int FOOD_MAX_WEIGHT = 5;
-    private static final int SCOREBOARD_NETWORK_ID = MAX_PLAYERS + MAX_FOOD;
 
     // Server context
     private final Server server;
+    private final LinkingContext linkingContext;
 
     // Game objects
     private final Snake[] snakes = new Snake[MAX_PLAYERS];
@@ -52,8 +55,9 @@ public class World {
      * World constructor.
      * @param server Server context.
      */
-    public World(Server server) {
+    public World(Server server, LinkingContext linkingContext) {
         this.server = server;
+        this.linkingContext = linkingContext;
     }
 
 
@@ -73,7 +77,7 @@ public class World {
 
 
     public void handleInput(int snakeId, boolean isTurbo, Vector2 desiredMove, float dt) {
-        final Snake snake = snakes[snakeId];
+        final Snake snake = (Snake) linkingContext.getGameObject(snakeId);
 
         if (snake.isDead()) {
             return;
@@ -108,6 +112,7 @@ public class World {
 
 
     private final Vector2 origin = Vector2.zero();
+
     private void checkWorldEdgeCollision(Snake snake) {
         if (Vector2.distance(snake.getHeadPosition(), origin) > WORLD_RADIUS) {
             killSnake(snake);
@@ -116,6 +121,7 @@ public class World {
 
 
     private boolean shouldRespawnNextFood = false;
+
     private void checkFoodCollisions(Snake snake) {
         for (Food food : foodSpatialMap.getNear(snake.getBoundingBox())) {
             if (!food.isActive()) {
@@ -190,49 +196,49 @@ public class World {
         int[] objectOffsets = new int[MAX_PLAYERS + MAX_FOOD];
         int n = 0;
 
+        Rect viewport = clientProxy.getViewportZone();
+
         // Get snakes near the viewport
-        for (Snake snake : snakeSpatialMap.getNear(clientProxy.getViewportZone())) {
-            if (snake.isDead()) {
+        for (Snake snake : snakeSpatialMap.getNear(viewport)) {
+            if (!viewport.intersects(snake.getBoundingBox())) {
                 continue;
             }
 
-            int snakeStateOffset = snake.serialize(builder);
-            NetworkObjectState.startNetworkObjectState(builder);
-            NetworkObjectState.addNetworkId(builder, snake.getPid());
-            NetworkObjectState.addStateType(builder, NetworkObjectStateType.NetworkSnakeState);
-            NetworkObjectState.addState(builder, snakeStateOffset);
-            objectOffsets[n++] = NetworkObjectState.endNetworkObjectState(builder);
+            if (!snake.isDead()) {
+                objectOffsets[n++] = serializeObject(builder, snake);
+            }
         }
 
         // Get the foods near the viewport
-        for (Food food : foodSpatialMap.getNear(clientProxy.getViewportZone())) {
-            if (!food.isActive()) {
+        for (Food food : foodSpatialMap.getNear(viewport)) {
+            if (!viewport.collidesWith(food.getPosition())) {
                 continue;
             }
 
-            int foodStateOffset = food.serialize(builder);
-            NetworkObjectState.startNetworkObjectState(builder);
-            NetworkObjectState.addNetworkId(builder, food.getFoodId() + MAX_PLAYERS);
-            NetworkObjectState.addStateType(builder, NetworkObjectStateType.NetworkFoodState);
-            NetworkObjectState.addState(builder, foodStateOffset);
-            objectOffsets[n++] = NetworkObjectState.endNetworkObjectState(builder);
+            if (food.isActive()) {
+                objectOffsets[n++] = serializeObject(builder, food);
+            }
         }
 
-        // Serialize score board
-        int scoreBoardOffset = scoreBoard.serialize(builder);
+        // Serialize scoreboard
+        objectOffsets[n++] = serializeObject(builder, scoreBoard);
 
+        int objectsVectorOffset = ServerWorldState.createObjectStatesVector(builder, objectOffsets, n);
+        ServerWorldState.startServerWorldState(builder);
+        ServerWorldState.addObjectStates(builder, objectsVectorOffset);
+        ServerWorldState.addTick(builder, tick);
+
+        return ServerWorldState.endServerWorldState(builder);
+    }
+
+
+    private int serializeObject(FlatBufferBuilder builder, GameObject go) {
+        int offset = go.serialize(builder);
         NetworkObjectState.startNetworkObjectState(builder);
-        NetworkObjectState.addNetworkId(builder, SCOREBOARD_NETWORK_ID);
-        NetworkObjectState.addStateType(builder, NetworkObjectStateType.NetworkScoreBoardState);
-        NetworkObjectState.addState(builder, scoreBoardOffset);
-        objectOffsets[n++] = NetworkObjectState.endNetworkObjectState(builder);
-
-        int objectsVectorOffset = NetworkWorldState.createObjectStatesVector(builder, objectOffsets, n);
-        NetworkWorldState.startServerWorldState(builder);
-        NetworkWorldState.addObjectStates(builder, objectsVectorOffset);
-        NetworkWorldState.addTick(builder, tick);
-
-        return NetworkWorldState.endServerWorldState(builder);
+        NetworkObjectState.addNetworkId(builder, linkingContext.getNetworkId(go, true));
+        NetworkObjectState.addStateType(builder, go.classId());
+        NetworkObjectState.addState(builder, offset);
+        return NetworkObjectState.endNetworkObjectState(builder);
     }
 
 
@@ -252,7 +258,8 @@ public class World {
      */
     private void respawnSnake(Snake snake) {
         snake.setScore(STARTING_SCORE);
-        snake.respawn(Vector2.randomUniform(WORLD_RADIUS), STARTING_SCORE);
+        snake.respawn(Vector2.randomUniform(0.75f * WORLD_RADIUS), STARTING_SCORE);
+
         updateSpatialSnakeMap(snake);
         scoreBoard.updateScore(snake);
     }

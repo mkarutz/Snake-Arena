@@ -6,7 +6,7 @@ namespace slyther.flatbuffers;
 union ClientMessageType { ClientHello, ClientInputState, ClientGoodbye, TickAck }
 
 table ClientMessage {
-    clientId:ubyte;
+    clientId:ushort;
     msg:ClientMessageType;
 }
 

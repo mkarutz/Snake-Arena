@@ -10,7 +10,7 @@ table ServerMessage {
 }
 
 table ServerHello {
-    clientId:ubyte;
+    clientId:ushort;
     config:ServerConfig;
 }
 

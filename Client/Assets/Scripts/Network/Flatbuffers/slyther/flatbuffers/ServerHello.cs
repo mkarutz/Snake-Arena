@@ -11,12 +11,12 @@ public sealed class ServerHello : Table {
   public static ServerHello GetRootAsServerHello(ByteBuffer _bb, ServerHello obj) { return (obj.__init(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
   public ServerHello __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
-  public byte ClientId { get { int o = __offset(4); return o != 0 ? bb.Get(o + bb_pos) : (byte)0; } }
+  public ushort ClientId { get { int o = __offset(4); return o != 0 ? bb.GetUshort(o + bb_pos) : (ushort)0; } }
   public ServerConfig Config { get { return GetConfig(new ServerConfig()); } }
   public ServerConfig GetConfig(ServerConfig obj) { int o = __offset(6); return o != 0 ? obj.__init(__indirect(o + bb_pos), bb) : null; }
 
   public static Offset<ServerHello> CreateServerHello(FlatBufferBuilder builder,
-      byte clientId = 0,
+      ushort clientId = 0,
       Offset<ServerConfig> configOffset = default(Offset<ServerConfig>)) {
     builder.StartObject(2);
     ServerHello.AddConfig(builder, configOffset);
@@ -25,7 +25,7 @@ public sealed class ServerHello : Table {
   }
 
   public static void StartServerHello(FlatBufferBuilder builder) { builder.StartObject(2); }
-  public static void AddClientId(FlatBufferBuilder builder, byte clientId) { builder.AddByte(0, clientId, 0); }
+  public static void AddClientId(FlatBufferBuilder builder, ushort clientId) { builder.AddUshort(0, clientId, 0); }
   public static void AddConfig(FlatBufferBuilder builder, Offset<ServerConfig> configOffset) { builder.AddOffset(1, configOffset.Value, 0); }
   public static Offset<ServerHello> EndServerHello(FlatBufferBuilder builder) {
     int o = builder.EndObject();

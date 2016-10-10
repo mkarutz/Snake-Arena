@@ -49,7 +49,7 @@ public class NetworkController : MonoBehaviour {
 		Vector3 desiredMove = inputManager.TargetDirection();
 		bool isTurbo = inputManager.IsTurbo();
 
-		var message = clientMessageConstructor.ConstructClientInputState(ClientMessageType.ClientInputState, (short) playerID, 0, desiredMove.normalized, isTurbo);
+		var message = clientMessageConstructor.ConstructClientInputState(ClientMessageType.ClientInputState, (ushort) playerID, 0, desiredMove.normalized, isTurbo);
 		udpc.Send(message, message.Length);
 	}
 
@@ -92,7 +92,7 @@ public class NetworkController : MonoBehaviour {
 
     private void InitConnection()
     {
-        this.udpc = new UdpClient("10.12.35.208", 3000);
+        this.udpc = new UdpClient("localhost", 3000);
 		SendServerHello();
         ReceiveServerHello();
     }
@@ -111,6 +111,7 @@ public class NetworkController : MonoBehaviour {
         ByteBuffer byteBuf = new ByteBuffer(buf);
         ServerMessage sm = ServerMessage.GetRootAsServerMessage(byteBuf);
         this.playerID = sm.GetMsg(new ServerHello()).ClientId;
+		Debug.Log("Received player ID: " + playerID);
     }
 		
 

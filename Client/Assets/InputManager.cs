@@ -8,7 +8,6 @@ public class InputManager : MonoBehaviour {
 	void Update () {
 		Vector3 lookVec = (Input.mousePosition - new Vector3(Screen.width, Screen.height, 0.0f) * 0.5f);
 		targetDirection = lookVec;
-
 		isTurbo = Input.anyKey;
 	}
 

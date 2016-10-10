@@ -29,6 +29,14 @@ public class Rect {
     }
 
 
+    public boolean intersects(Rect other) {
+        return other.getMax().getX() >= min.getX()
+                && other.getMin().getX() <= max.getX()
+                && other.getMax().getY() >= min.getY()
+                && other.getMin().getY() <= max.getY();
+    }
+
+
     public Rect() {
         this(Vector2.zero(), new Vector2(1.0f, 1.0f));
     }

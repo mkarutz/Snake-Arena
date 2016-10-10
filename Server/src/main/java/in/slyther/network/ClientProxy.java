@@ -9,6 +9,7 @@ public class ClientProxy {
     private static final float VIEWPORT_SCALE = 30.0f;
 
     private SocketAddress socketAddress;
+    private int clientId;
     private Snake snake;
     private Rect viewPortZone = new Rect();
     private int lastInputTick = -1;
@@ -18,8 +19,9 @@ public class ClientProxy {
      * @param socketAddress
      * @param snake
      */
-    public ClientProxy(SocketAddress socketAddress, Snake snake) {
+    public ClientProxy(SocketAddress socketAddress, int clientId, Snake snake) {
         this.socketAddress = socketAddress;
+        this.clientId = clientId;
         this.snake = snake;
     }
 
@@ -29,7 +31,12 @@ public class ClientProxy {
      * @return The client ID.
      */
     public int getClientId() {
-        return snake.getPid();
+        return clientId;
+    }
+
+
+    public String getPlayerName() {
+        return snake.getName();
     }
 
 
@@ -74,15 +81,12 @@ public class ClientProxy {
         viewPortZone.setHeight(viewPortSize());
         viewPortZone.center(snake.getHeadPosition().getX(), snake.getHeadPosition().getY());
 
-        System.out.println("Player position: " + snake.getHeadPosition());
-        System.out.println("Client viewport: { " + viewPortZone.getMin() + ", " + viewPortZone.getMax() + " }");
-
         return viewPortZone;
     }
 
 
     private float viewPortSize() {
-        return snake.getThickness() * VIEWPORT_SCALE;
+        return snake.getThickness() * VIEWPORT_SCALE * 1.2f;
     }
 
 

@@ -1,5 +1,6 @@
 package in.slyther;
 
+import in.slyther.network.LinkingContext;
 import in.slyther.network.NetworkManager;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ public class Server extends Thread {
     private static final int DEFAULT_TICK_RATE = 20;
 
     private final int timeStep;
+    private final LinkingContext linkingContext = new LinkingContext();
     private final NetworkManager networkManager;
     private final World world;
 
@@ -23,8 +25,8 @@ public class Server extends Thread {
      */
     private Server(Builder builder) {
         this.timeStep = 1000 / builder.tickRate;
-        this.world = new World(this);
-        this.networkManager = new NetworkManager(this, world, builder.udpPort);
+        this.world = new World(this, linkingContext);
+        this.networkManager = new NetworkManager(this, linkingContext, world, builder.udpPort);
     }
 
 

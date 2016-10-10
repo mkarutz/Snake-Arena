@@ -13,7 +13,7 @@ public final class ServerHello extends Table {
   public static ServerHello getRootAsServerHello(ByteBuffer _bb, ServerHello obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__init(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
   public ServerHello __init(int _i, ByteBuffer _bb) { bb_pos = _i; bb = _bb; return this; }
 
-  public int clientId() { int o = __offset(4); return o != 0 ? bb.get(o + bb_pos) & 0xFF : 0; }
+  public int clientId() { int o = __offset(4); return o != 0 ? bb.getShort(o + bb_pos) & 0xFFFF : 0; }
   public ServerConfig config() { return config(new ServerConfig()); }
   public ServerConfig config(ServerConfig obj) { int o = __offset(6); return o != 0 ? obj.__init(__indirect(o + bb_pos), bb) : null; }
 
@@ -27,7 +27,7 @@ public final class ServerHello extends Table {
   }
 
   public static void startServerHello(FlatBufferBuilder builder) { builder.startObject(2); }
-  public static void addClientId(FlatBufferBuilder builder, int clientId) { builder.addByte(0, (byte)clientId, 0); }
+  public static void addClientId(FlatBufferBuilder builder, int clientId) { builder.addShort(0, (short)clientId, 0); }
   public static void addConfig(FlatBufferBuilder builder, int configOffset) { builder.addOffset(1, configOffset, 0); }
   public static int endServerHello(FlatBufferBuilder builder) {
     int o = builder.endObject();
