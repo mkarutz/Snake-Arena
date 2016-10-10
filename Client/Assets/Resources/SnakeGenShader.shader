@@ -148,7 +148,7 @@
 			fixed4 frag(vertOut v) : SV_Target
 			{
 				float4 col = tex2D(_MainTex, v.uv);
-				col += sin((-v.uv.y * 3.0f) + _SnakeGlowOffset) * 0.5f * _SnakeGlowEnabled;
+				col += (sin((-v.uv.y * 2.0f) + _SnakeGlowOffset) * 0.3f + 0.5f) * _SnakeGlowEnabled;
 				return col;
 			}
 
