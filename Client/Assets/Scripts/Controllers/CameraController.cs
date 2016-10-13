@@ -33,6 +33,9 @@ public class CameraController : MonoBehaviour {
 
 	float ViewPortHeight()
 	{
+		if (camera.targetTexture != null)
+			return snakeToTrack.GetSnakeThickness() * VIEWPORT_SCALE;
+		
 		float maxViewportDimension = snakeToTrack.GetSnakeThickness() * VIEWPORT_SCALE;
 		float aspectRatio = 1.0f * Screen.width / Screen.height;
 		if (aspectRatio > 1.0f) {
