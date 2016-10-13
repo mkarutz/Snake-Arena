@@ -21,6 +21,7 @@ public class SpatialHashMap<T> : SpatialMap<T>
         int nBucketX = (int)Math.Ceiling((max.x - min.x)/cellSize);
         int nBucketY = (int)Math.Ceiling((max.y - min.y) / cellSize);
 
+        Debug.Log(max + " " + min);
         buckets = new HashSet<T>[nBucketX * nBucketY];
         for(int i = 0; i < (nBucketX * nBucketY); i++)
         {
@@ -98,6 +99,7 @@ public class SpatialHashMap<T> : SpatialMap<T>
         remove(obj);
         foreach(int i in GetRelevantBuckets(bound))
         {
+            //Debug.Log(i);
             insert(obj, i);
         }
         //insert(obj, bound.xMax, bound.yMax);
@@ -151,7 +153,8 @@ public class SpatialHashMap<T> : SpatialMap<T>
         {
             for (int j = minYIndex; j <= maxYIndex; j++)
             {
-                relevantBuckets.Add(i + j * ((int)Math.Ceiling((max.x - min.x) / cellSize)));
+                //Debug.Log(i + (j * (int)Math.Ceiling((max.x - min.x) / cellSize)));
+                relevantBuckets.Add(i + (j * (int)Math.Ceiling((max.x - min.x) / cellSize)));
             }
 
         }

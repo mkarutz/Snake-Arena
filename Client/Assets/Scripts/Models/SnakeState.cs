@@ -27,14 +27,15 @@ public class SnakeState : MonoBehaviour {
 
 	public float LerpAmount = 0.5f;
 
-
     void Awake()
-	{
+	{   
         this.InitBackbone();
 		this.SetRandomStartBackbone (Vector2.zero);
 
 		//Despawn();
     }
+
+
 
 	public void SetRandomStartBackbone(Vector2 offset)
 	{
@@ -58,8 +59,15 @@ public class SnakeState : MonoBehaviour {
     {
 		//InterpolateHeadPosition();
 		CenterPositionOnHead();
+        UpdateCollider();
+
     }
 
+    void UpdateCollider()
+    {
+        CircleCollider2D collider = this.gameObject.GetComponent<CircleCollider2D>();
+        collider.radius = this.GetSnakeThickness();
+    }
 
 	void CenterPositionOnHead()
 	{
@@ -148,6 +156,101 @@ public class SnakeState : MonoBehaviour {
         return b;
     }
 
+    public Rect GetSnakeRect()
+    {
+        Bounds localBound = this.LocalBounds();
+        float height = localBound.size.y;
+        float width = localBound.size.x;
+        Debug.Log(localBound.min);
+        Debug.Log(localBound.max);
+        Rect rect = new Rect(localBound.min.x, localBound.min.y, width, height);
+        return rect;
+    }
+
+    public Vector2 GetHeadPosition()
+    {
+        return this.backbone[this.backboneStartIdx];
+    }
+
+//    public int GetHeadIdx()
+//    {
+//        return this.backboneStartIdx;
+//    }
+
+    public Vector2 GetTailPosition()
+    {
+        return (this.CalcBackboneParametizedPosition(this.GetSnakeLength()));
+    }
+
+    public int GetNextIdx(int curr)
+    {
+        return ((curr +1) % MAX_BACKBONE_POINTS);
+    }
+   
+
+//    public bool isRunInto(SnakeState other)
+//    {
+//        if (other == this)
+//        {
+//            return false;
+//        }
+
+//        if (!other.GetSnakeRect().Contains(this.backbone[this.backboneStartIdx]))
+//        {
+//            return false;
+//        }
+//        float distanceToOther = other.distanceFrom(this.backbone[this.backboneStartIdx]);
+//        return distanceToOther < other.GetSnakeThickness() / 2.0f;
+//    }
+
+//    public float distanceFrom(Vector2 point)
+//    {
+//        float minDistance = float.MaxValue;
+
+//        int curr = this.GetHeadIdx();
+//        int next = GetNextIdx(this.GetHeadIdx());
+
+//        int tailPointer = this.GetTailIdx();
+//        for (; next != tailPointer; curr = next, next = GetNextIdx(next))
+//        {
+//            Vector2 currPoint = this.backbone[curr];
+//            Vector2 nextPoint = this.backbone[next];
+
+//            if (Vector2.Distance(currPoint, nextPoint) < 10e-7)
+//            {
+//                continue;
+//            }
+
+//            if (!isPerpendicularToSegment(point, currPoint, nextPoint))
+//            {
+//                continue;
+//            }
+
+//            float distanceToLine = GetDistanceToLine(point, currPoint, nextPoint);
+//            minDistance = Mathf.Min(distanceToLine, minDistance);
+//        }
+
+//        return minDistance;
+//    }
+
+    //should be moved to math section
+    public static float GetDistanceToLine(Vector2 point, Vector2 a, Vector2 b)
+    {
+        float dx = b.x - a.x;
+        float dy = b.y - a.y;
+        float area2 = Mathf.Abs(dy * point.x - dx * point.y + b.x * a.y - b.y * a.x);
+        float dist = (float)Mathf.Sqrt(dy * dy + dx * dx);
+        return area2 / dist;
+    }
+
+    public static bool isPerpendicularToSegment(Vector2 p, Vector2 a, Vector2 b)
+    {
+        Vector2 aToB = b - a;
+        Vector2 aToP = p - a;
+        Vector2 pToB = b - p;
+
+        return Vector2.Dot(aToB, pToB) > 0 && Vector2.Dot(aToB, aToP) > 0;
+    }
     private void TrimBackbone()
     {
         if (this.backboneLength <= 10)
@@ -293,4 +396,15 @@ public class SnakeState : MonoBehaviour {
     {
         return MIN_LENGTH + GROWTH_RATE * GROWTH_CAP;
     }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.gameObject.tag == "Food")
+        {
+            FoodState food = other.gameObject.GetComponent<FoodState>();
+            this.score += food.weight;
+            food.Despawn();
+        }
+    }
+
 }

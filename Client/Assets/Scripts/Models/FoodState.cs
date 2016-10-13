@@ -8,10 +8,10 @@ public class FoodState : MonoBehaviour
     public int weight;
     public bool collected = false;
 
-	void Start()
+    void Start()
 	{
 		spriteRenderer.material.SetColor("_TintColor", Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f, 0.6f, 0.6f));
-	}
+    }
 
 	void Update()
 	{

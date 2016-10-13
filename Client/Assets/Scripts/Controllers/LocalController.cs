@@ -12,8 +12,14 @@ public class LocalController : MonoBehaviour {
 	public SnakeState localSnakePrefab;
 	public SnakeState localAISnakePrefab;
 
+    private SnakeState[] snakePool;
+    private SpatialHashMap<SnakeState> snakeMap;
+    private float cellSize =5.0f;
+
 	// Use this for initialization
 	void Start () {
+        this.snakePool = new SnakeState[maxSnakes];
+        this.snakeMap = new SpatialHashMap<SnakeState>(new Vector2(-gameWorld.worldRadius,-gameWorld.worldRadius),new Vector2(gameWorld.worldRadius,gameWorld.worldRadius),cellSize);
 		GenerateFoods ();
 		GenerateLocalSnake ();
 		GenerateAISnakes ();
@@ -33,7 +39,9 @@ public class LocalController : MonoBehaviour {
 	{
 		SnakeState playerSnake = Instantiate<SnakeState> (this.localSnakePrefab);
 		playerSnake.transform.position = this.gameWorld.GenerateRandomWorldPoint(0, this.gameWorld.worldRadius / 5.0f);
-	}
+        this.snakeMap.put(playerSnake,playerSnake.GetSnakeRect());
+        this.snakePool[0] = playerSnake;
+    }
 
 	private void GenerateAISnakes()
 	{
@@ -42,10 +50,48 @@ public class LocalController : MonoBehaviour {
 			SnakeState snake = Instantiate<SnakeState> (this.localAISnakePrefab);
 			snake.SetRandomStartBackbone(this.gameWorld.GenerateRandomWorldPoint (this.gameWorld.worldRadius / 4.0f, this.gameWorld.worldRadius));
 			snake.snakeSkinID = Random.Range(0, GameConfig.NUM_SNAKE_SKINS);
+            this.snakeMap.put(snake, snake.GetSnakeRect());
+            this.snakePool[i + 1] = snake;
 		}
 	}
 
+    private void UpdateSnakeBounds()
+    {
+        foreach(SnakeState snake in this.snakePool)
+        {
+           
+            this.snakeMap.update(snake, snake.GetSnakeRect());
+        }
+    }
+
+//    private void checkSnakeCollisions()
+//    {
+//        for(int i = 0;i < maxSnakes; i++)
+//        {
+//            foreach (SnakeState other in snakeMap.getNear(snakePool[i].GetHeadPosition()))
+//            {
+//                if(other.enabled == false)
+//                {
+//                    continue;
+//                }
+//                if(other == snakePool[i])
+//                {
+                    
+//                    continue;
+//                }
+                
+//                if (snakePool[i].isRunInto(other))
+//                {
+//                    snakePool[i].Despawn();
+//                }
+//            }
+//        }
+        
+ //   }
 	// Update is called once per frame
 	void Update () {
+        //checkSnakeCollisions();
+        UpdateSnakeBounds();
+        
     }
 }
