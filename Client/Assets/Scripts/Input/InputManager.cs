@@ -25,7 +25,7 @@ public class InputManager : MonoBehaviour {
             {
                 Vector3 lookWorldSpacePos = lookRay.GetPoint(dist);
                 Vector2 lookVec = lookWorldSpacePos - this.playerSnake.transform.position;
-                targetDirection = lookVec * 100;
+                targetDirection = lookVec * 1000;
             }
         }
         else
