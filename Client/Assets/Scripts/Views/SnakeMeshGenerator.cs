@@ -133,6 +133,6 @@ public class SnakeMeshGenerator : MonoBehaviour {
         this.snakeSkin = Resources.Load<Texture>("SnakeSkin" + this.snake.snakeSkinID);
         this.meshRenderer.material.mainTexture = snakeSkin;
     
-        this.meshFilter.mesh.bounds = snake.LocalBounds(); 
+        this.meshFilter.mesh.bounds = snake.LocalBounds();
     }
 }

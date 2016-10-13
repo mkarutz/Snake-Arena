@@ -161,8 +161,8 @@ public class SnakeState : MonoBehaviour {
         Bounds localBound = this.LocalBounds();
         float height = localBound.size.y;
         float width = localBound.size.x;
-        Debug.Log(localBound.min);
-        Debug.Log(localBound.max);
+        //Debug.Log(localBound.min);
+        //Debug.Log(localBound.max);
         Rect rect = new Rect(localBound.min.x, localBound.min.y, width, height);
         return rect;
     }
@@ -395,6 +395,11 @@ public class SnakeState : MonoBehaviour {
     public float MaxSnakeLength()
     {
         return MIN_LENGTH + GROWTH_RATE * GROWTH_CAP;
+    }
+
+    public float SnakeFogDistance()
+    {
+        return this.GetSnakeThickness() * GameConfig.SNAKE_FOG_MULTIPLIER;
     }
 
     void OnTriggerEnter2D(Collider2D other)

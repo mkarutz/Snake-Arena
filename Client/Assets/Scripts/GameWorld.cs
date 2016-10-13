@@ -4,10 +4,16 @@ using System.Collections;
 public class GameWorld : MonoBehaviour {
 
     public float worldRadius = GameConfig.WORLD_RADIUS;
+    private Plane worldPlane;
+
+    void Start()
+    {
+        this.worldPlane = new Plane(Vector3.back, Vector3.zero);
+    }
 
     void Update()
     {
-        this.transform.localScale = new Vector3(1.0f, 1.0f, 0.001f) * worldRadius * 2.0f;
+        this.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f) * worldRadius * 2.0f;
     }
 
 	public Vector2 GenerateRandomWorldPoint()
@@ -22,4 +28,9 @@ public class GameWorld : MonoBehaviour {
 		Vector2 pos = Quaternion.AngleAxis(angle, Vector3.back) * (Vector3.right * dist);
 		return pos;
 	}
+
+    public Plane GetWorldPlane()
+    {
+        return this.worldPlane;
+    }
 }

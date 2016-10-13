@@ -132,7 +132,7 @@
 
 				// Calculate world-space position
 				localPos.xy = pos + (norm * _SnakeRadius * parity * fct);
-				localPos.z = distance; // Increase z to achieve ortho depth effect
+				localPos.z = distance * 0.00001f; // Increase z to achieve ortho depth effect
 
 				// Calculate texture coordinate
 				float2 uv = float2(texh, distance / (_SnakeRadius * 2.0f));

@@ -20,7 +20,6 @@ public class CameraController : MonoBehaviour {
 	void FollowSnake()
 	{
 		snakeToTrack = GameObject.FindGameObjectWithTag("Player").GetComponent<SnakeState>();
-		//networkController.GetLocalPlayer().GetComponent<SnakeState>();
 		transform.position = Vector3.Lerp(this.transform.position, snakeToTrack.transform.position, LerpAmount) + Vector3.back;
 	}
 
@@ -33,10 +32,7 @@ public class CameraController : MonoBehaviour {
 
 	float ViewPortHeight()
 	{
-		if (camera.targetTexture != null)
-			return snakeToTrack.GetSnakeThickness() * VIEWPORT_SCALE;
-		
-		float maxViewportDimension = snakeToTrack.GetSnakeThickness() * VIEWPORT_SCALE;
+		float maxViewportDimension = snakeToTrack.SnakeFogDistance();
 		float aspectRatio = 1.0f * Screen.width / Screen.height;
 		if (aspectRatio > 1.0f) {
 			return maxViewportDimension / aspectRatio;
