@@ -305,7 +305,6 @@ public class SnakeState : MonoBehaviour {
         
 		NetworkSnakePartState snakePartState = new NetworkSnakePartState();
 
-		Debug.Log("num parts = " + state.PartsLength);
         for (int i = 0; i < state.PartsLength; i++)
         {
             state.GetParts(snakePartState, i);
