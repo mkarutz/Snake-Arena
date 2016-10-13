@@ -25,6 +25,8 @@ public class World {
     public static final int MAX_FOOD = 10000;
     private static final int FOOD_MAX_WEIGHT = 5;
 
+    private static final int FOOD_DROP_WEIGHT = FOOD_MAX_WEIGHT;
+
     // Server context
     private final Server server;
     private final LinkingContext linkingContext;
@@ -176,7 +178,7 @@ public class World {
 
     private void dropFood(Snake snake) {
         int totalFoodToDrop = snake.getScore() / 2;
-        for ( ; totalFoodToDrop > 0; totalFoodToDrop -= 10) {
+        for ( ; totalFoodToDrop > 0; totalFoodToDrop -= FOOD_DROP_WEIGHT) {
             float randomLength = (float) Math.random() * snake.getLength();
             Vector2 pos = snake.getPositionAtLength(randomLength);
 
@@ -187,7 +189,7 @@ public class World {
             pos.translate((float) Math.random() * snake.getThickness() / 2,
                     (float) Math.random() * snake.getThickness() / 2);
 
-            spawnFood(pos, 10);
+            spawnFood(pos, FOOD_DROP_WEIGHT);
         }
     }
 
