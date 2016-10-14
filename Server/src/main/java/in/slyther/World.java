@@ -130,7 +130,7 @@ public class World {
                 continue;
             }
 
-            if (snake.isCollidedWith(food.getPosition())) {
+            if (snake.canReachFoodAt(food.getPosition())) {
                 snake.addScore(food.getWeight());
                 food.setActive(false);
                 freeFoodIdsPool.add(food.getFoodId());

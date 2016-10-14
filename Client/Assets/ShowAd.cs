@@ -39,7 +39,11 @@ public class ShowAd : MonoBehaviour
 
 	public void ShowAdvertisement()
 	{
-		StartCoroutine(Show());
+		if (PlayerProfile.Instance().AdsDisabled) {
+			SceneManager.LoadSceneAsync("MainMenu");
+		} else {
+			StartCoroutine(Show());
+		}
 	}
 
 
@@ -53,6 +57,7 @@ public class ShowAd : MonoBehaviour
 		ShowRewardedAd();
 	}
 
+
 	public void ShowRewardedAd()
 	{
 		if (Advertisement.IsReady("rewardedVideo"))
@@ -62,6 +67,7 @@ public class ShowAd : MonoBehaviour
 		}
 	}
 
+
 	private void HandleShowResult(ShowResult result)
 	{
 		switch (result)
@@ -69,7 +75,7 @@ public class ShowAd : MonoBehaviour
 		case ShowResult.Finished:
 			Debug.Log("The ad was successfully shown.");
 
-			SceneManager.LoadScene("MainMenu");
+			SceneManager.LoadSceneAsync("MainMenu");
 			break;
 		case ShowResult.Skipped:
 			Debug.Log("The ad was skipped before reaching the end.");
