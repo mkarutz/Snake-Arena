@@ -5,6 +5,12 @@ using slyther.flatbuffers;
 public class ScoreBoardNetworkGameObject : INetworkGameObject {
     public ScoreBoardState scoreBoardState;
 
+    void Start ()
+    {
+        if (!this.scoreBoardState)
+            this.scoreBoardState = GameObject.FindGameObjectWithTag("ScoreBoard").GetComponent<ScoreBoardState>();
+    }
+
 	public override void Replicate(NetworkObjectState state)
 	{
         NetworkScoreBoardState networkScoreboardState = new NetworkScoreBoardState();

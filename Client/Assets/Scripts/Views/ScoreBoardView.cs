@@ -17,7 +17,10 @@ public class ScoreBoardView : MonoBehaviour {
         {
             this.playerScoreTextElems[i] = Instantiate<PlayerScoreEntryView>(playerScoreTextPrefab);
             this.playerScoreTextElems[i].transform.parent = this.transform;
-            this.playerScoreTextElems[i].GetComponent<RectTransform>().anchoredPosition = Vector2.down * i * verticalSpacing;
+            this.playerScoreTextElems[i].transform.localPosition = Vector3.zero;
+            this.playerScoreTextElems[i].GetComponent<RectTransform>().anchoredPosition = Vector3.down * i * verticalSpacing;
+            this.playerScoreTextElems[i].transform.localScale = Vector3.one;
+            this.playerScoreTextElems[i].transform.localRotation = Quaternion.identity;
         }
 	}
 	
