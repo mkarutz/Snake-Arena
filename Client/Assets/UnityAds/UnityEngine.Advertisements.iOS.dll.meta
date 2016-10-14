@@ -47,11 +47,15 @@ PluginImporter:
       enabled: 0
       settings:
         CPU: AnyCPU
+    WindowsStoreApps:
+      enabled: 0
+      settings:
+        CPU: AnyCPU
     iOS:
       enabled: 1
       settings:
-        CompileFlags:
+        CompileFlags: 
         FrameworkDependencies: AdSupport;CoreTelephony;StoreKit;
-  userData:
-  assetBundleName:
-  assetBundleVariant:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

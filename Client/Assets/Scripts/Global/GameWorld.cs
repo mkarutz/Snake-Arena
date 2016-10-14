@@ -3,7 +3,7 @@ using System.Collections;
 
 public class GameWorld : MonoBehaviour {
 
-    public float worldRadius = GameConfig.WORLD_RADIUS;
+    public float worldRadius;
     private Plane worldPlane;
 
     void Start()

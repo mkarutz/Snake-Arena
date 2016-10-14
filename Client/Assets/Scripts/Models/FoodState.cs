@@ -7,6 +7,9 @@ public class FoodState : MonoBehaviour
 	public SpriteRenderer spriteRenderer;
     public int weight;
     public bool collected = false;
+    public float scaleFactor = 0.0f;
+
+    public SnakeState collectingSnake;
 
     void Start()
 	{
@@ -15,7 +18,7 @@ public class FoodState : MonoBehaviour
 
 	void Update()
 	{
-		this.transform.localScale = Vector3.one * 0.1f * weight;
+		this.transform.localScale = Vector3.one * 0.1f * weight * scaleFactor;
 	}
 
 	public void Despawn()
@@ -29,7 +32,14 @@ public class FoodState : MonoBehaviour
 		gameObject.SetActive(true);
 	}
 
-	public void ReplicateState(NetworkFoodState state)
+    public int CollectFood(SnakeState collectingSnake)
+    {
+        this.collectingSnake = collectingSnake;
+        this.collected = true;
+        return this.weight;
+    }
+
+    public void ReplicateState(NetworkFoodState state)
 	{
 		this.weight = state.Weight;
 		this.transform.position = new Vector2(state.Position.X, state.Position.Y);

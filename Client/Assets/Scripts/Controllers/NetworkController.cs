@@ -12,6 +12,7 @@ public class NetworkController : MonoBehaviour {
 	public LinkingContext linkingContext;
 	public ReplicationManager replicationManager;
 	public InputManager inputManager;
+    public GameWorld gameWorld;
 
     public int playerID = -1;
 
@@ -127,6 +128,7 @@ public class NetworkController : MonoBehaviour {
         ServerMessage sm = ServerMessage.GetRootAsServerMessage(byteBuf);
         this.playerID = sm.GetMsg(new ServerHello()).ClientId;
 		Debug.Log("Received player ID: " + playerID);
+        this.gameWorld.worldRadius = GameConfig.WORLD_RADIUS_REMOTE; // Replace with radius sent from server eventually
     }
 		
 

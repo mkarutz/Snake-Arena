@@ -3,12 +3,11 @@ using System.Collections;
 using slyther.flatbuffers;
 
 public class ScoreBoardNetworkGameObject : INetworkGameObject {
-    public ScoreBoardState scoreBoardState;
+    private ScoreBoardState scoreBoardState;
 
     void Start ()
     {
-        if (!this.scoreBoardState)
-            this.scoreBoardState = GameObject.FindGameObjectWithTag("ScoreBoard").GetComponent<ScoreBoardState>();
+        this.scoreBoardState = GameObject.FindGameObjectWithTag("ScoreBoard").GetComponent<ScoreBoardState>();
     }
 
 	public override void Replicate(NetworkObjectState state)
@@ -21,6 +20,11 @@ public class ScoreBoardNetworkGameObject : INetworkGameObject {
         {
             networkScoreboardState.GetEntries(scoreBoardEntry, i);
             scoreBoardState.SetEntry(i, scoreBoardEntry.PlayerName, scoreBoardEntry.Score);
+        }
+
+        for (int i = networkScoreboardState.EntriesLength; i < scoreBoardState.maxScoreboardPlayers; i++)
+        {
+            scoreBoardState.SetEntry(i, "-", 0);
         }
 	}
 

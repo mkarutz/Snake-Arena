@@ -2,6 +2,17 @@ fileFormatVersion: 2
 guid: ecb70c48014d7481b9e8cd2adc66074b
 PluginImporter:
   serializedVersion: 1
+  iconMap: {}
+  executionOrder: {}
+  isPreloaded: 0
   platformData:
+    Editor:
+      enabled: 0
+      settings:
+        DefaultValueInitialized: true
     iOS:
       enabled: 1
+      settings: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -20,7 +20,8 @@ public class LocalController : MonoBehaviour {
 	void Start () {
         this.snakePool = new SnakeState[maxSnakes];
         this.snakeMap = new SpatialHashMap<SnakeState>(new Vector2(-gameWorld.worldRadius,-gameWorld.worldRadius),new Vector2(gameWorld.worldRadius,gameWorld.worldRadius),cellSize);
-		GenerateFoods ();
+        this.gameWorld.worldRadius = GameConfig.WORLD_RADIUS_LOCAL;
+        GenerateFoods ();
 		GenerateLocalSnake ();
 		GenerateAISnakes ();
     }
