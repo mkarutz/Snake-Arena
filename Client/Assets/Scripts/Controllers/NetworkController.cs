@@ -7,6 +7,8 @@ using slyther.flatbuffers;
 using System.Collections.Generic;
 
 public class NetworkController : MonoBehaviour {
+	private const int UPDATE_RATE = 30;
+
 	public LinkingContext linkingContext;
 	public ReplicationManager replicationManager;
 	public InputManager inputManager;
@@ -30,11 +32,12 @@ public class NetworkController : MonoBehaviour {
 	{
         ReadPacketsToQueue();
         ProcessQueuedMessages();
-		SendInputPacket();
+		MaybeSendInputPacket();
 
         // Needs to be a better place to put this...
         TagLocalPlayer();
     }
+
 
     void TagLocalPlayer()
     {
@@ -42,6 +45,18 @@ public class NetworkController : MonoBehaviour {
         if (player)
             player.tag = "Player";
     }
+
+
+	float inputPacketCooldownTimer = 0.0f;
+
+	void MaybeSendInputPacket()
+	{
+		inputPacketCooldownTimer -= Time.deltaTime;
+		if (inputPacketCooldownTimer < 0.0f) {
+			SendInputPacket();
+			inputPacketCooldownTimer = 1.0f / UPDATE_RATE;
+		}
+	}
 
 
 	void SendInputPacket()
@@ -92,7 +107,7 @@ public class NetworkController : MonoBehaviour {
 
     private void InitConnection()
     {
-		this.udpc = new UdpClient("10.12.209.184", 3000);
+		this.udpc = new UdpClient("10.12.55.234", 3000);
 		SendServerHello();
         ReceiveServerHello();
     }
@@ -100,7 +115,7 @@ public class NetworkController : MonoBehaviour {
 
 	private void SendServerHello()
 	{
-		var message = clientMessageConstructor.ConstructClientHello(ClientMessageType.ClientHello, 0, "foo");
+		var message = clientMessageConstructor.ConstructClientHello(ClientMessageType.ClientHello, 0, PlayerProfile.Instance().Nickname);
 		udpc.Send(message, message.Length);
 	}
 

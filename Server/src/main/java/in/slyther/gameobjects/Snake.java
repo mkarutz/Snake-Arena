@@ -16,8 +16,9 @@ public class Snake implements GameObject {
     public static final float MIN_THICKNESS = 0.2f;
     public static final int MIN_TURBO_SCORE = 100;
 
+    public static final float TAIL_SLACK = 5.0f;
     public static final float GROWTH_RATE = 1.0f / 100.0f;
-    public static final float MOVE_SPEED = 1.7f;
+    public static final float MOVE_SPEED = 1.9f;
     public static final float TURBO_BOOST_FACTOR = 3.0f;
     public static final float TURN_RADIUS_FACTOR = 1.5f;
     public static final int MAX_PARTS = 1000;
@@ -343,7 +344,7 @@ public class Snake implements GameObject {
         int next = nextPointer(headPointer);
 
         while (next != tailPointer) {
-            if (i > 2 && partDistance > length) {
+            if (i > 2 && partDistance > length + TAIL_SLACK) {
                 tailPointer = next;
                 return;
             }
@@ -390,7 +391,7 @@ public class Snake implements GameObject {
 
 
     private float turnSpeed() {
-        return (2.0f * PI * MOVE_SPEED) / (TURN_RADIUS_FACTOR * PI * getThickness());
+        return (2.0f * PI * moveSpeed()) / (TURN_RADIUS_FACTOR * PI * getThickness());
     }
 
 
