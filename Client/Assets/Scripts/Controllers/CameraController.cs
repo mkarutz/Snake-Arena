@@ -19,8 +19,12 @@ public class CameraController : MonoBehaviour {
 
 	void FollowSnake()
 	{
-		snakeToTrack = GameObject.FindGameObjectWithTag("Player").GetComponent<SnakeState>();
-		transform.position = Vector3.Lerp(this.transform.position, snakeToTrack.transform.position, LerpAmount) + Vector3.back;
+        GameObject snake = GameObject.FindGameObjectWithTag("Player");
+        if (snake)
+        {
+            snakeToTrack = snake.GetComponent<SnakeState>();
+            transform.position = Vector3.Lerp(this.transform.position, snakeToTrack.transform.position, LerpAmount) + Vector3.back;
+        }
 	}
 
 

@@ -14,9 +14,10 @@ public class RadarSnakeController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        this.playerSnake = GameObject.FindGameObjectWithTag("Player").GetComponent<SnakeState>();
-        if (this.playerSnake)
+        GameObject snake = GameObject.FindGameObjectWithTag("Player");
+        if (snake)
         {
+            this.playerSnake = snake.GetComponent<SnakeState>();
             Vector2 normalizedPos = playerSnake.transform.position / gameWorld.worldRadius;
 
             RectTransform transform = this.GetComponent<RectTransform>();
