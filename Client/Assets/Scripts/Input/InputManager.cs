@@ -10,7 +10,9 @@ public class InputManager : MonoBehaviour {
 
     void Start ()
     {
-        this.playerSnake = GameObject.FindGameObjectWithTag("Player").GetComponent<SnakeState>();
+        GameObject snake = GameObject.FindGameObjectWithTag("Player");
+        if (snake)
+            this.playerSnake = snake.GetComponent<SnakeState>();
         this.gameWorld = GameObject.FindGameObjectWithTag("World").GetComponent<GameWorld>();
     }
 

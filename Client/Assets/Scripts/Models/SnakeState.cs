@@ -52,7 +52,8 @@ public class SnakeState : MonoBehaviour {
     void UpdateCollider()
     {
         CircleCollider2D collider = this.gameObject.GetComponent<CircleCollider2D>();
-        collider.radius = this.GetSnakeThickness();
+        if (collider)
+            collider.radius = this.GetSnakeThickness();
     }
 
 	void CenterPositionOnHead()

@@ -8,7 +8,7 @@ public class CameraController : MonoBehaviour {
 	public SnakeState snakeToTrack = null;
     public new Camera camera;
 	public float LerpAmount = 0.1f;
-
+    public float maxViewportDimension;
 
 	void Update () 
 	{
@@ -25,6 +25,8 @@ public class CameraController : MonoBehaviour {
             snakeToTrack = snake.GetComponent<SnakeState>();
             transform.position = Vector3.Lerp(this.transform.position, snakeToTrack.transform.position, LerpAmount) + Vector3.back;
         }
+        else
+            snakeToTrack = null;
 	}
 
 
@@ -36,7 +38,8 @@ public class CameraController : MonoBehaviour {
 
 	float ViewPortHeight()
 	{
-		float maxViewportDimension = snakeToTrack.SnakeFogDistance();
+        if (snakeToTrack)
+		    this.maxViewportDimension = snakeToTrack.SnakeFogDistance();
 		float aspectRatio = 1.0f * Screen.width / Screen.height;
 		if (aspectRatio > 1.0f) {
 			return maxViewportDimension / aspectRatio;
