@@ -406,8 +406,7 @@ public class SnakeState : MonoBehaviour {
         if(other.gameObject.tag == "Food")
         {
             FoodState food = other.gameObject.GetComponent<FoodState>();
-            this.score += food.weight;
-            food.Despawn();
+            this.score += food.CollectFood(this);
         }
     }
 
