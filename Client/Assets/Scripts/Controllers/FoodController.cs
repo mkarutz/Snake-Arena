@@ -27,8 +27,9 @@ public class FoodController : MonoBehaviour {
             this.scaleFactorUnsmoothed -= this.foodCollectionSpeed * Time.deltaTime;
 
             // Lerp towards collecting snake
-            this.transform.position = 
-              Vector2.Lerp(this.transform.position, this.foodState.collectingSnake.transform.position, 1.0f - this.scaleFactorUnsmoothed);
+            if (this.foodState.collectingSnake)
+                this.transform.position = 
+                    Vector2.Lerp(this.transform.position, this.foodState.collectingSnake.transform.position, 1.0f - this.scaleFactorUnsmoothed);
 
             this.foodState.scaleFactor = CollectLerpFunction(this.scaleFactorUnsmoothed);
         }
