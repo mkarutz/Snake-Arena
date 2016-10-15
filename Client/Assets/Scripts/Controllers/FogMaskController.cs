@@ -4,7 +4,6 @@ using System.Collections;
 public class FogMaskController : MonoBehaviour {
 
     private SnakeState playerSnake;
-
 	
 	// Update is called once per frame
 	void Update () {
