@@ -25,7 +25,7 @@ ExportedObj/
 *.exe
 *.dll
 *.mdb
-
+!**/Assets/**/*.dll
 
 # Unity3D generated meta files
 #*.meta #REMOVED
