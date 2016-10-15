@@ -147,22 +147,47 @@ public class Snake implements GameObject {
     }
 
 
-    public boolean isCollidedWith(Vector2 point) {
+    public boolean canReachFoodAt(Vector2 point) {
         return Vector2.distance(getHeadPosition(), point) < getEatDistance();
     }
 
 
     public boolean isRunInto(Snake other) {
-        if (other == this) {
+        return other != this && other.intersects(getHeadPosition());
+    }
+
+
+    public boolean intersects(Vector2 point) {
+        if (!boundingBox.collidesWith(point)) {
             return false;
         }
 
-        if (!other.boundingBox.collidesWith(getHeadPosition())) {
-            return false;
+        int curr = headPointer;
+        int next = nextPointer(headPointer);
+        float accLength = 0.0f;
+
+        for ( ; next != tailPointer; curr = next, next = nextPointer(next)) {
+            Vector2 currPoint = parts[curr].getPosition();
+            Vector2 nextPoint = parts[next].getPosition();
+
+            final float segmentLength = Vector2.distance(currPoint, nextPoint);
+            accLength += segmentLength;
+
+            if (Vector2.distance(currPoint, nextPoint) < 10e-7) {
+                continue;
+            }
+
+            if (!Vector2.isPerpendicularToSegment(point, currPoint, nextPoint)) {
+                continue;
+            }
+
+            float distanceToLine = Vector2.distanceToLine(point, currPoint, nextPoint);
+            if (distanceToLine < thicknessAtLength(accLength)) {
+                return true;
+            }
         }
 
-        float distanceToOther = other.distanceFrom(getHeadPosition());
-        return distanceToOther < other.getThickness() / 2.0f;
+        return false;
     }
 
 
@@ -217,6 +242,23 @@ public class Snake implements GameObject {
         }
 
         return minDistance;
+    }
+
+    public static final float TAIL_TAPER_PERCENTAGE = 0.1f;
+
+    public float thicknessAtLength(float length) {
+        if (length > getLength()) {
+            return -1;
+        }
+
+        if (length < (1.0f - TAIL_TAPER_PERCENTAGE) * getLength()) {
+            return getThickness();
+        }
+
+        final float distanceFromTail = getLength() - length;
+        final float taperLength = getLength() * TAIL_TAPER_PERCENTAGE;
+
+        return getThickness() * distanceFromTail / taperLength;
     }
 
 
@@ -391,7 +433,7 @@ public class Snake implements GameObject {
 
 
     private float turnSpeed() {
-        return (2.0f * PI * moveSpeed()) / (TURN_RADIUS_FACTOR * PI * getThickness());
+        return (2.0f * PI * MOVE_SPEED) / (TURN_RADIUS_FACTOR * PI * getThickness());
     }
 
 
