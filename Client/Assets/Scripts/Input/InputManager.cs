@@ -10,9 +10,7 @@ public class InputManager : MonoBehaviour {
 
     void Start ()
     {
-        GameObject snake = GameObject.FindGameObjectWithTag("Player");
-        if (snake)
-            this.playerSnake = snake.GetComponent<SnakeState>();
+        FindPlayer();
         this.gameWorld = GameObject.FindGameObjectWithTag("World").GetComponent<GameWorld>();
     }
 
@@ -27,16 +25,23 @@ public class InputManager : MonoBehaviour {
             {
                 Vector3 lookWorldSpacePos = lookRay.GetPoint(dist);
                 Vector2 lookVec = lookWorldSpacePos - this.playerSnake.transform.position;
-                targetDirection = lookVec * 1000;
+                targetDirection = lookVec.normalized;
             }
         }
         else
         {
             // Standard input
-            Vector3 lookVec = (Input.mousePosition - new Vector3(Screen.width, Screen.height, 0.0f) * 0.5f);
+            Vector3 lookVec = (Input.mousePosition - new Vector3(Screen.width, Screen.height, 0.0f) * 0.5f).normalized;
             targetDirection = lookVec;
         }
         isTurbo = Input.anyKey;
+    }
+
+    void FindPlayer()
+    {
+        GameObject snake = GameObject.FindGameObjectWithTag("Player");
+        if (snake)
+            this.playerSnake = snake.GetComponent<SnakeState>();
     }
 
 	public Vector2 TargetDirection() {

@@ -94,35 +94,39 @@ public class SnakeState : MonoBehaviour {
 		transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, maxRotate() * dt);
 	}
 
+    public void MoveInDirection(Vector2 desiredMoveDirection, float dt)
+    {
+        if (desiredMoveDirection.sqrMagnitude > float.Epsilon)
+        {
+            TurnTowards(desiredMoveDirection, dt);
+        }
+
+        // Translate snake forward
+        transform.Translate(Vector3.forward * MOVE_SPEED * dt);
+
+        if (GetBackboneLength() <= 2)
+        {
+            Debug.LogError("Not enough backbone points defined.");
+            return;
+        }
+
+        // Check if we need to add a new backbone point
+        Vector2 headVec = GetBackbonePoint(1) - (Vector2)transform.position;
+        Vector2 neckVec = GetBackbonePoint(2) - GetBackbonePoint(1);
+
+        Vector2 a = Vector3.Project(headVec, neckVec);
+        if (headVec.sqrMagnitude - a.sqrMagnitude > MAX_HEAD_OFFSET * MAX_HEAD_OFFSET)
+        {
+            AddBackboneHeadPoint(transform.position);
+        }
+
+        UpdateBackboneHeadPoint(transform.position);
+    }
 
 	public void Move(Vector2 desiredMovePosition, float dt) 
 	{
 		Vector2 desiredMoveDirection = desiredMovePosition - (Vector2) transform.position;
-		if (desiredMoveDirection.sqrMagnitude > float.Epsilon)
-		{
-			TurnTowards(desiredMoveDirection, dt);
-		}
-			
-		// Translate snake forward
-		transform.Translate(Vector3.forward * MOVE_SPEED * dt);
-
-		if (GetBackboneLength() <= 2)
-		{
-			Debug.LogError("Not enough backbone points defined.");
-			return;
-		}
-
-		// Check if we need to add a new backbone point
-		Vector2 headVec = GetBackbonePoint(1) - (Vector2) transform.position;
-		Vector2 neckVec = GetBackbonePoint(2) - GetBackbonePoint(1);
-
-		Vector2 a = Vector3.Project(headVec, neckVec);
-		if (headVec.sqrMagnitude - a.sqrMagnitude > MAX_HEAD_OFFSET * MAX_HEAD_OFFSET)
-		{
-			AddBackboneHeadPoint(transform.position);
-		}
-
-		UpdateBackboneHeadPoint(transform.position);
+        MoveInDirection(desiredMoveDirection, dt);
 	}
 
     public bool IsRunInto(SnakeState other)
