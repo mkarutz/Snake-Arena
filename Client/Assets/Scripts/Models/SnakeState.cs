@@ -46,7 +46,6 @@ public class SnakeState : MonoBehaviour {
 		//InterpolateHeadPosition();
 		CenterPositionOnHead();
         UpdateCollider();
-
     }
 
     void UpdateCollider()
@@ -365,6 +364,11 @@ public class SnakeState : MonoBehaviour {
     public float MaxSnakeLength()
     {
         return MIN_LENGTH + GROWTH_RATE * GROWTH_CAP;
+    }
+
+    public float MaxSnakeThickness()
+    {
+        return MIN_THICKNESS + GROWTH_RATE * Mathf.Sqrt(GROWTH_CAP);
     }
 
     public float SnakeFogDistance()

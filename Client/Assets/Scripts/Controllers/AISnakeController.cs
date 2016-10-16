@@ -51,5 +51,15 @@ public class AISnakeController : MonoBehaviour {
 		}
 
 		snake.Move(targetPoint, Time.deltaTime);
+
+        EatInvisibleFoodRandomly();
 	}
+
+    private void EatInvisibleFoodRandomly()
+    {
+        if (Random.Range(0, 200) == 0)
+        {
+            this.snake.score += Random.Range(2, 10);
+        }
+    }
 }
