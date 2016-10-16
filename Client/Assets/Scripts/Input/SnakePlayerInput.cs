@@ -6,6 +6,6 @@ public class SnakePlayerInput : MonoBehaviour {
 	public SnakeState snakeState;
 
 	void Update () {
-		snakeState.Move(inputManager.TargetDirection(), Time.deltaTime);
+		snakeState.MoveInDirection(inputManager.TargetDirection(), Time.deltaTime);
 	}
 }

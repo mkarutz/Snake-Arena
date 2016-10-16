@@ -39,7 +39,7 @@ public class VRCameraController : MonoBehaviour {
         {
             Vector3 farPoint = this.snakeToTrack.transform.position + this.snakeToTrack.SnakeFogDistance() * Vector3.up;
             Vector3 nearPoint = this.targetPosition;
-            Camera.main.farClipPlane = (nearPoint - farPoint).magnitude * 1.05f;
+            Camera.main.farClipPlane = (nearPoint - farPoint).magnitude * 1.1f;
         }
     }
 }
