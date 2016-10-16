@@ -43,7 +43,7 @@ public class SnakeState : MonoBehaviour {
 
     void Update()
     {
-		//InterpolateHeadPosition();
+		InterpolateHeadPosition();
 		CenterPositionOnHead();
         UpdateCollider();
 
@@ -61,10 +61,11 @@ public class SnakeState : MonoBehaviour {
 	}
 
 
-	Vector3 targetHeadPosition = Vector2.zero;
+	Vector2 targetHeadPosition = Vector2.zero;
 	private void InterpolateHeadPosition()
 	{
-		backbone[backboneStartIdx] = Vector2.Lerp(backbone[backboneStartIdx], targetHeadPosition, LerpAmount);
+		//backbone[backboneStartIdx] = Vector2.Lerp(backbone[backboneStartIdx], targetHeadPosition, LerpAmount);
+		backbone[backboneStartIdx] += (targetHeadPosition - backbone[backboneStartIdx]) * LerpAmount;
 	}
 
 
@@ -260,7 +261,7 @@ public class SnakeState : MonoBehaviour {
 
     public void ReplicateState(NetworkSnakeState state)
     {
-        this.backboneStartIdx = state.Head;
+		ReplicateHeadPointer(state.Head);
         
         if (state.Tail <= state.Head)
         {
@@ -278,17 +279,26 @@ public class SnakeState : MonoBehaviour {
         for (int i = 0; i < state.PartsLength; i++)
         {
             state.GetParts(snakePartState, i);
-			//if (snakePartState.Index == backboneStartIdx) {
+			if (snakePartState.Index == backboneStartIdx) {
 				// We want to Lerp the head towards the new position
-			//	targetHeadPosition = new Vector2(snakePartState.Position.X, snakePartState.Position.Y);
-			//} else {
+				targetHeadPosition = new Vector2(snakePartState.Position.X, snakePartState.Position.Y);
+			} else {
 				this.backbone[snakePartState.Index] = new Vector2(snakePartState.Position.X, snakePartState.Position.Y);
-			//}
+			}
         }
 
 		score = (int) state.Score;
 		gameObject.SetActive(!state.IsDead);
     }
+
+
+	private void ReplicateHeadPointer(int headPointer)
+	{
+		int oldHeadPointer = backboneStartIdx;
+		backbone[headPointer] = backbone[oldHeadPointer];
+		backboneStartIdx = headPointer;
+	}
+
 
     public void UpdateBackboneHeadPoint(Vector2 point)
     {

@@ -71,9 +71,11 @@ public class Snake implements GameObject {
         int[] partsOffsets = new int[MAX_PARTS];
         int n = 0;
 
-        for (int i = headPointer; i != tailPointer; i = nextPointer(i)) {
-            partsOffsets[n++] = parts[i].serialize(builder);
-        }
+//        for (int i = headPointer; i != tailPointer; i = nextPointer(i)) {
+//            partsOffsets[n++] = parts[i].serialize(builder);
+//        }
+
+        partsOffsets[n++] = parts[headPointer].serialize(builder);
 
         int vectorOffset = NetworkSnakeState.createPartsVector(builder, partsOffsets, n);
         int nameOffset = builder.createString(name);

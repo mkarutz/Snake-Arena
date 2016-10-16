@@ -13,4 +13,9 @@ public class DisableAdsSyncPlayerProfile : MonoBehaviour
 			button.DisableButton();
 		}
 	}
+
+	public void OnClick()
+	{
+		PlayerProfile.Instance().AdsDisabled = true;
+	}
 }

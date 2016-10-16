@@ -7,7 +7,7 @@ import slyther.flatbuffers.ScoreboardEntry;
 
 import java.util.*;
 
-public class ScoreBoard implements GameObject{
+public class ScoreBoard implements GameObject {
     private static final int DISPLAY_TOP_N = 10;
 
     private final SortedSet<ScoreBoardEntry> entries = new TreeSet<>();

@@ -5,12 +5,18 @@ public class EnableAdsButtonSyncPlayerProfile : MonoBehaviour
 {
 	public EnableDisableButton button;
 
-	void Update () 
+	void Update() 
 	{
 		if (PlayerProfile.Instance().AdsDisabled) {
 			button.EnableButton();
 		} else {
 			button.DisableButton();
 		}
+	}
+
+
+	public void OnClick()
+	{
+		PlayerProfile.Instance().AdsDisabled = false;
 	}
 }
