@@ -20,6 +20,8 @@ public class SnakeState : MonoBehaviour {
 
 	public static float MOVE_SPEED = 3.0f;
 	public static float MAX_HEAD_OFFSET = 0.02f;
+
+    public bool hardPosition = true;
     
     private Vector2[] backbone;
     private int backboneStartIdx;
@@ -44,7 +46,8 @@ public class SnakeState : MonoBehaviour {
 
     void Update()
     {
-		CenterPositionOnHead();
+        if (hardPosition)
+		    CenterPositionOnHead();
         UpdateCollider();
     }
 
@@ -329,6 +332,11 @@ public class SnakeState : MonoBehaviour {
     public int GetRawBackboneStartIdx()
     {
         return this.backboneStartIdx;
+    }
+
+    public void SetBackbonePoint(int idx, Vector2 point)
+    {
+        this.backbone[(backboneStartIdx + idx) % MAX_BACKBONE_POINTS] = point;
     }
 
     public Vector2 GetBackbonePoint(int idx)
