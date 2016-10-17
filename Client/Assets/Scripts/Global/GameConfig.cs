@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class GameConfig : MonoBehaviour {
-	public static int MAX_LOCAL_SNAKES = 10;
+	public static int MAX_LOCAL_SNAKES = 13;
 	public static int MAX_LOCAL_FOODS = 1000;
     public static float WORLD_RADIUS_REMOTE = 50.0f;
     public static float WORLD_RADIUS_LOCAL = 25.0f;

@@ -34,6 +34,15 @@ public class LocalScoreBoardController : MonoBehaviour {
         snakes[enemies.Length] = player.GetComponent<SnakeState>();
         Array.Sort(snakes, this.snakeScoreComparer);
 
+        int playerRank = -1;
+        int j = 1;
+        foreach (SnakeState snake in snakes)
+        {
+            if (snake.gameObject == player)
+                playerRank = j;
+            j++;
+        }
+
         for (int i = 0; i < this.scoreBoardState.maxScoreboardPlayers; i++)
         {
             if (i < snakes.Length)
@@ -45,5 +54,7 @@ public class LocalScoreBoardController : MonoBehaviour {
                 this.scoreBoardState.SetEntry(i, "-", 0);
             }
         }
+
+        this.scoreBoardState.SetPlayerRank(playerRank);
 	}
 }
