@@ -40,8 +40,9 @@ public class NetworkController : MonoBehaviour {
 		}
 
 		CheckTimeout();
-        ReadPacketsToQueue();
-        ProcessQueuedMessages();
+
+		ReadPacketsToQueue();
+		ProcessQueuedMessages();
 		MaybeSendInputPacket();
 
         // Needs to be a better place to put this...

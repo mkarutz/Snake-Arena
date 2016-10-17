@@ -20,7 +20,7 @@ public class Snake implements GameObject {
     public static final float GROWTH_RATE = 1.0f / 100.0f;
     public static final float MOVE_SPEED = 1.9f;
     public static final float TURBO_BOOST_FACTOR = 3.0f;
-    public static final float TURN_RADIUS_FACTOR = 1.5f;
+    public static final float TURN_RADIUS_FACTOR = 2.5f;
     public static final int MAX_PARTS = 1000;
     public static final float EAT_DISTANCE_RATIO = 1.0f;
     public static final float BURN_SPEED = 75;

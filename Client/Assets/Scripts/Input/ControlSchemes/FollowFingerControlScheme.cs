@@ -3,10 +3,14 @@ using System.Collections;
 
 public class FollowFingerControlScheme : ControlScheme
 {
+	public DoubleTapInput doubleTapInput;
+
+
 	public override bool IsTurbo()
 	{
-		return Input.anyKey;
+		return doubleTapInput.DoubleTapIsHeld();
 	}
+
 
 	public override Vector2 TargetDirection()
 	{

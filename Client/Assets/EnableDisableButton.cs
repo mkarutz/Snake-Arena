@@ -27,7 +27,7 @@ public class EnableDisableButton : MonoBehaviour
 	public void DisableButton() 
 	{
 		button.interactable = false;
-		buttonBackground.color = backgroundColor * 1.2f;
-		buttonText.color = textColor * 1.2f;
+		buttonBackground.color = backgroundColor / 1.5f;
+		buttonText.color = textColor / 1.5f;
 	}
 }

@@ -89,7 +89,7 @@ namespace beffio.OneMinuteGUI
 			return;
 		}
 
-		target.SetActive(true);
+		target.SetActive(direction);
 
 		Canvas canvasComponent = target.GetComponent<Canvas>();
 		if (canvasComponent != null)
@@ -107,7 +107,8 @@ namespace beffio.OneMinuteGUI
 
 	private void Awake()
 	{
-		m_navigationHistory = new List<GameObject>{m_initialScreen};
+			m_navigationHistory = new List<GameObject>();
+			GoToMenu(m_initialScreen);
 	}
 }
 }
