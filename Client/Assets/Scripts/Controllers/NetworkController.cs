@@ -156,7 +156,7 @@ public class NetworkController : MonoBehaviour {
     private void InitConnection()
     {
 		try {
-			this.udpc = new UdpClient("localhost", 3000);
+			this.udpc = new UdpClient("10.12.37.3", 3000);
 			SendServerHello();
 			ReceiveServerHello();
 			Connect();
