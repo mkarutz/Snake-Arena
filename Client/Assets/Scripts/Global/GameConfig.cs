@@ -10,4 +10,8 @@ public class GameConfig : MonoBehaviour {
 	public static int NUM_SNAKE_SKINS = 3;
     public static float SNAKE_FOG_MULTIPLIER = 15.0f;
     public static float EAT_DISTANCE_RATIO = 1.0f;
+    public static float TURBO_ON_SNAKE_SPEED_FACTOR = 2.0f;
+    public static float TURBO_OFF_SNAKE_SPEED_FACTOR = 1.0f;
+    public static int FOOD_WEIGHT_DROP_TURBO = 1;
+    public static int SNAKE_GROWTH_CAP = 40000;
 }

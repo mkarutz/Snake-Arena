@@ -46,8 +46,7 @@ public class PlayerProfile : MonoBehaviour
 			Destroy(gameObject);
 			return true;
 		}
-
-		PlayerProfile.instance = this;
+        PlayerProfile.instance = this;
 		DontDestroyOnLoad(gameObject);
 		return false;
 	}

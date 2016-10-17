@@ -6,6 +6,7 @@ public class SnakePlayerInput : MonoBehaviour {
 	public SnakeState snakeState;
 
 	void Update () {
-		snakeState.MoveInDirection(inputManager.TargetDirection(), Time.deltaTime);
+		snakeState.Move(inputManager.TargetDirection(), Time.deltaTime);
+        snakeState.SetTurboLocal(inputManager.IsTurbo());
 	}
 }

@@ -14,6 +14,8 @@ public class SnakeMeshGenerator : MonoBehaviour {
     public float snakeLength;
     public float snakeTailStartLength;
 
+    public bool modelMatrixEnabled = false;
+
     private Texture2D backboneEncTex;
     private int backboneEncTexDim;
 
@@ -37,7 +39,10 @@ public class SnakeMeshGenerator : MonoBehaviour {
         CalcParameters();
 
         this.meshFilter.mesh = this.generateBackboneMesh();
-        this.meshRenderer.material.shader = Shader.Find("Unlit/SnakeGenShader");
+        if (modelMatrixEnabled)
+            this.meshRenderer.material.shader = Shader.Find("Unlit/SnakeGenShaderM");
+        else
+            this.meshRenderer.material.shader = Shader.Find("Unlit/SnakeGenShader");
 
         // Tex dimension is nearest power of two of the square root of the maximum number of backbone points
         this.backboneEncTexDim = (int)Mathf.Pow(2, ((int)Mathf.Log(Mathf.Sqrt((float)SnakeState.MAX_BACKBONE_POINTS) + 1.0f, 2.0f) + 1));
