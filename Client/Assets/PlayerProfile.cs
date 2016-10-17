@@ -15,6 +15,8 @@ public class PlayerProfile : MonoBehaviour
 	private int skin = 0;
 	private bool adsDisabled = false;
 	private int inputScheme = 0;
+	private int lastScore = 0;
+	private int bestScore = 0;
 
 	private static PlayerProfile instance = null;
 
@@ -37,6 +39,13 @@ public class PlayerProfile : MonoBehaviour
 	void OnApplicationQuit()
 	{
 		SaveToFile();
+	}
+
+
+	public void AddScore(int score)
+	{
+		lastScore = score;
+		bestScore = score > bestScore ? score : bestScore;
 	}
 
 
@@ -76,7 +85,9 @@ public class PlayerProfile : MonoBehaviour
 		nickname = poco.Nickname;
 		skin = poco.skin;
 		adsDisabled = poco.adsDisabled;
-		inputScheme = 1;
+		inputScheme = poco.inputScheme;
+		lastScore = poco.lastScore;
+		bestScore = poco.bestScore;
 	}
 
 
@@ -144,6 +155,26 @@ public class PlayerProfile : MonoBehaviour
 			SaveToFile();
 		}
 	}
+
+	public int BestScore {
+		get {
+			return this.bestScore;
+		}
+		set {
+			this.bestScore = value;
+			SaveToFile();
+		}
+	}
+
+	public int LastScore {
+		get {
+			return this.lastScore;
+		}
+		set {
+			this.lastScore = value;
+			SaveToFile();
+		}
+	}
 }
 
 
@@ -155,6 +186,8 @@ class PlayerProfilePOCO
 	public int skin = 0;
 	public bool adsDisabled = false;
 	public int inputScheme = 0;
+	public int bestScore = 0;
+	public int lastScore = 0;
 
 	public PlayerProfilePOCO(PlayerProfile profile)
 	{
@@ -163,5 +196,7 @@ class PlayerProfilePOCO
 		skin = profile.Skin;
 		adsDisabled = profile.AdsDisabled;
 		inputScheme = profile.ControlScheme;
+		bestScore = profile.BestScore;
+		lastScore = profile.LastScore;
 	}
 }

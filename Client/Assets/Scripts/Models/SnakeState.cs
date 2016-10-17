@@ -52,6 +52,20 @@ public class SnakeState : MonoBehaviour {
     }
 
 
+	void OnDestroy()
+	{
+		UpdatePlayerHighScore();
+	}
+
+
+	private void UpdatePlayerHighScore()
+	{
+		if ("Player".Equals(gameObject.tag)) {
+			PlayerProfile.Instance().AddScore(score);
+		}
+	}
+
+
     void UpdateCollider()
     {
         CircleCollider2D collider = this.gameObject.GetComponent<CircleCollider2D>();

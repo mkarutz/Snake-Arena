@@ -21,7 +21,7 @@ public class DirectionArrowController : MonoBehaviour {
             SnakeState playerSnake = player.GetComponent<SnakeState>();
             this.transform.localScale = playerSnake.GetSnakeThickness() * Vector3.one * 2.0f;
             this.transform.parent = player.transform;
-            this.distance = inputManager.TargetDirection().magnitude * 0.01f;
+            this.distance = inputManager.TargetDirection().magnitude * 0.007f;
             this.transform.localPosition = new Vector3(0.0f, heightOffPlane, distance);
         }
 	}
