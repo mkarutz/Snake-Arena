@@ -33,7 +33,7 @@ public class SnakeMeshGenerator : MonoBehaviour {
 
 	// Use this for initialization
 	void Awake () {
-        this.backboneVertsLength = (int)(this.snake.MaxSnakeLength() * this.snakeVertexDensity) + 1;
+        this.backboneVertsLength = (int)(this.snake.MaxSnakeLength() * this.snakeVertexDensity / this.snake.MaxSnakeThickness()) + 1;
         CalcParameters();
 
         this.meshFilter.mesh = this.generateBackboneMesh();

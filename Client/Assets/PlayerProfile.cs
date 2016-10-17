@@ -3,6 +3,7 @@ using System.Collections;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System;
+using UnityEngine.SceneManagement;
 
 public class PlayerProfile : MonoBehaviour 
 {
@@ -12,6 +13,8 @@ public class PlayerProfile : MonoBehaviour
 	private int coins = 50;
 	private string nickname = "";
 	private int skin = 0;
+	private bool adsDisabled = false;
+	private int inputScheme = 0;
 
 	private static PlayerProfile instance = null;
 
@@ -73,6 +76,8 @@ public class PlayerProfile : MonoBehaviour
 		coins = poco.coins;
 		nickname = poco.Nickname;
 		skin = poco.skin;
+		adsDisabled = poco.adsDisabled;
+		inputScheme = poco.inputScheme;
 	}
 
 
@@ -120,6 +125,26 @@ public class PlayerProfile : MonoBehaviour
 			SaveToFile();
 		}
 	}
+
+	public bool AdsDisabled {
+		get {
+			return this.adsDisabled;
+		}
+		set {
+			this.adsDisabled = value;
+			SaveToFile();
+		}
+	}
+
+	public int ControlScheme {
+		get {
+			return this.inputScheme;
+		}
+		set {
+			this.inputScheme = value;
+			SaveToFile();
+		}
+	}
 }
 
 
@@ -129,11 +154,15 @@ class PlayerProfilePOCO
 	public int coins = 50;
 	public string Nickname = "";
 	public int skin = 0;
+	public bool adsDisabled = false;
+	public int inputScheme = 0;
 
 	public PlayerProfilePOCO(PlayerProfile profile)
 	{
 		coins = profile.Coins;
 		Nickname = profile.Nickname;
 		skin = profile.Skin;
+		adsDisabled = profile.AdsDisabled;
+		inputScheme = profile.ControlScheme;
 	}
 }

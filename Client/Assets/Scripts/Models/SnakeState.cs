@@ -43,16 +43,16 @@ public class SnakeState : MonoBehaviour {
 
     void Update()
     {
-		//InterpolateHeadPosition();
+		InterpolateHeadPosition();
 		CenterPositionOnHead();
         UpdateCollider();
-
     }
 
     void UpdateCollider()
     {
         CircleCollider2D collider = this.gameObject.GetComponent<CircleCollider2D>();
-        collider.radius = this.GetSnakeThickness();
+        if (collider)
+            collider.radius = this.GetSnakeThickness();
     }
 
 	void CenterPositionOnHead()
@@ -61,10 +61,11 @@ public class SnakeState : MonoBehaviour {
 	}
 
 
-	Vector3 targetHeadPosition = Vector2.zero;
+	Vector2 targetHeadPosition = Vector2.zero;
 	private void InterpolateHeadPosition()
 	{
-		backbone[backboneStartIdx] = Vector2.Lerp(backbone[backboneStartIdx], targetHeadPosition, LerpAmount);
+		//backbone[backboneStartIdx] = Vector2.Lerp(backbone[backboneStartIdx], targetHeadPosition, LerpAmount);
+		backbone[backboneStartIdx] += (targetHeadPosition - backbone[backboneStartIdx]) * LerpAmount;
 	}
 
 
@@ -94,35 +95,42 @@ public class SnakeState : MonoBehaviour {
 		transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, maxRotate() * dt);
 	}
 
+    public void MoveInDirection(Vector2 desiredMoveDirection, float dt)
+    {
+        if (desiredMoveDirection.sqrMagnitude > float.Epsilon)
+        {
+            TurnTowards(desiredMoveDirection, dt);
+        }
+
+        // Translate snake forward
+        transform.Translate(Vector3.forward * MOVE_SPEED * dt);
+
+        if (GetBackboneLength() <= 2)
+        {
+            Debug.LogError("Not enough backbone points defined.");
+            return;
+        }
+
+        // Check if we need to add a new backbone point
+        Vector2 headVec = GetBackbonePoint(1) - (Vector2)transform.position;
+        Vector2 neckVec = GetBackbonePoint(2) - GetBackbonePoint(1);
+
+        Vector2 a = Vector3.Project(headVec, neckVec);
+        if (headVec.sqrMagnitude - a.sqrMagnitude > MAX_HEAD_OFFSET * MAX_HEAD_OFFSET)
+        {
+            AddBackboneHeadPoint(transform.position);
+        }
+
+        UpdateBackboneHeadPoint(transform.position);
+    }
 
 	public void Move(Vector2 desiredMovePosition, float dt) 
 	{
 		Vector2 desiredMoveDirection = desiredMovePosition - (Vector2) transform.position;
-		if (desiredMoveDirection.sqrMagnitude > float.Epsilon)
-		{
-			TurnTowards(desiredMoveDirection, dt);
-		}
-
-		// Translate snake forward
-		transform.Translate(Vector3.forward * MOVE_SPEED * this.speedFactor * dt);
-
-		if (GetBackboneLength() <= 2)
-		{
-			Debug.LogError("Not enough backbone points defined.");
-			return;
-		}
-
-		// Check if we need to add a new backbone point
-		Vector2 headVec = GetBackbonePoint(1) - (Vector2) transform.position;
-		Vector2 neckVec = GetBackbonePoint(2) - GetBackbonePoint(1);
-
-		Vector2 a = Vector3.Project(headVec, neckVec);
-		if (headVec.sqrMagnitude - a.sqrMagnitude > MAX_HEAD_OFFSET * MAX_HEAD_OFFSET)
-		{
-			AddBackboneHeadPoint(transform.position);
-		}
-
 		UpdateBackboneHeadPoint(transform.position);
+
+        MoveInDirection(desiredMoveDirection, dt);
+
 	}
 
     public bool IsRunInto(SnakeState other)
@@ -295,7 +303,7 @@ public class SnakeState : MonoBehaviour {
 
     public void ReplicateState(NetworkSnakeState state)
     {
-        this.backboneStartIdx = state.Head;
+		ReplicateHeadPointer(state.Head);
         
         if (state.Tail <= state.Head)
         {
@@ -313,16 +321,25 @@ public class SnakeState : MonoBehaviour {
         for (int i = 0; i < state.PartsLength; i++)
         {
             state.GetParts(snakePartState, i);
-			//if (snakePartState.Index == backboneStartIdx) {
+			if (snakePartState.Index == backboneStartIdx) {
 				// We want to Lerp the head towards the new position
-			//	targetHeadPosition = new Vector2(snakePartState.Position.X, snakePartState.Position.Y);
-			//} else {
+				targetHeadPosition = new Vector2(snakePartState.Position.X, snakePartState.Position.Y);
+			} else {
 				this.backbone[snakePartState.Index] = new Vector2(snakePartState.Position.X, snakePartState.Position.Y);
-			//}
+			}
         }
         score = (int) state.Score;
 		gameObject.SetActive(!state.IsDead);
     }
+
+
+	private void ReplicateHeadPointer(int headPointer)
+	{
+		int oldHeadPointer = backboneStartIdx;
+		backbone[headPointer] = backbone[oldHeadPointer];
+		backboneStartIdx = headPointer;
+	}
+
 
     public void UpdateBackboneHeadPoint(Vector2 point)
     {
@@ -398,6 +415,11 @@ public class SnakeState : MonoBehaviour {
     public float MaxSnakeLength()
     {
         return MIN_LENGTH + GROWTH_RATE * GROWTH_CAP;
+    }
+
+    public float MaxSnakeThickness()
+    {
+        return MIN_THICKNESS + GROWTH_RATE * Mathf.Sqrt(GROWTH_CAP);
     }
 
     public float SnakeFogDistance()

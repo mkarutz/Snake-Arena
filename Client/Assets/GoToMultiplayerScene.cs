@@ -6,6 +6,6 @@ public class GoToMultiplayerScene : MonoBehaviour
 {
 	public void OnClick()
 	{
-		SceneManager.LoadScene("Multiplayer");
+		SceneManager.LoadScene("InGameMultiplayer");
 	}
 }

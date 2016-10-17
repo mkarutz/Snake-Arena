@@ -5,9 +5,12 @@ using System.Net.Sockets;
 using FlatBuffers;
 using slyther.flatbuffers;
 using System.Collections.Generic;
+using System;
+using UnityEngine.SceneManagement;
 
 public class NetworkController : MonoBehaviour {
 	private const int UPDATE_RATE = 30;
+	private const float TIME_OUT = 5.0f;
 
 	public LinkingContext linkingContext;
 	public ReplicationManager replicationManager;
@@ -15,6 +18,7 @@ public class NetworkController : MonoBehaviour {
     public GameWorld gameWorld;
 
     public int playerID = -1;
+	bool isConnected = false;
 
     public ClientMessageConstructor clientMessageConstructor = new ClientMessageConstructor();
 
@@ -32,6 +36,11 @@ public class NetworkController : MonoBehaviour {
     void Update()
 	{
 
+		if (!IsConnected()) {
+			return;
+		}
+
+		CheckTimeout();
         ReadPacketsToQueue();
         ProcessQueuedMessages();
 
@@ -51,14 +60,17 @@ public class NetworkController : MonoBehaviour {
     }
 
 
-	float inputPacketCooldownTimer = 0.0f;
+	/// <summary>
+	/// The time since last sent input packet.
+	/// </summary>
+	float timeSinceLastSentInputPacket = 0.0f;
 
 	void MaybeSendInputPacket()
 	{
-		inputPacketCooldownTimer -= Time.deltaTime;
-		if (inputPacketCooldownTimer < 0.0f) {
+		timeSinceLastSentInputPacket += Time.deltaTime;
+		if (timeSinceLastSentInputPacket > 1.0f / UPDATE_RATE) {
 			SendInputPacket();
-			inputPacketCooldownTimer = 1.0f / UPDATE_RATE;
+			timeSinceLastSentInputPacket = 0.0f;
 		}
 	}
 
@@ -73,6 +85,38 @@ public class NetworkController : MonoBehaviour {
 	}
 
 
+	/// <summary>
+	/// The time since last received packet.
+	/// </summary>
+	private float timeSinceLastReceivedPacket = 0.0f;
+
+	void CheckTimeout()
+	{
+		timeSinceLastReceivedPacket += Time.deltaTime;
+		if (timeSinceLastReceivedPacket > TIME_OUT) {
+			Disconnect();
+		}
+	}
+
+
+	void Connect()
+	{
+		isConnected = true;
+	}
+
+
+	public void Disconnect()
+	{
+		isConnected = false;
+	}
+
+
+	public bool IsConnected()
+	{
+		return isConnected;
+	}
+
+
     void ReadPacketsToQueue()
     {
         while (udpc.Available > 0)
@@ -82,6 +126,8 @@ public class NetworkController : MonoBehaviour {
             ByteBuffer byteBuf = new ByteBuffer(buf);
             ServerMessage sm = ServerMessage.GetRootAsServerMessage(byteBuf);
             messageQueue.Enqueue(sm);
+
+			timeSinceLastReceivedPacket = 0.0f;
         }
     }
 
@@ -112,9 +158,14 @@ public class NetworkController : MonoBehaviour {
 
     private void InitConnection()
     {
-		this.udpc = new UdpClient("localhost", 3000);
-		SendServerHello();
-        ReceiveServerHello();
+		try {
+			this.udpc = new UdpClient("10.12.37.3", 3000);
+			SendServerHello();
+			ReceiveServerHello();
+			Connect();
+		} catch (Exception e) {
+			SceneManager.LoadScene("MainMenu");
+		}
     }
 
 

@@ -250,6 +250,10 @@ public class NetworkManager {
                 : 1;
         float dt = ticksSinceLastInput * server.getTimeStep() / 1000.0f;
 
+        if (dt <= 0) {
+            return;
+        }
+
         input = inputState.desiredMove(input);
         desiredMove.set(input.x(), input.y());
         world.handleInput(clientId, inputState.isTurbo(), desiredMove, dt);
