@@ -168,7 +168,7 @@ public class NetworkController : MonoBehaviour {
     private void InitConnection()
     {
 		try {
-			this.udpc = new UdpClient("localhost", 3000);
+			this.udpc = new UdpClient(GameConfig.REMOTE_HOST_NAME, GameConfig.REMOTE_HOST_PORT);
 			SendServerHello();
 			ReceiveServerHello();
 			Connect();

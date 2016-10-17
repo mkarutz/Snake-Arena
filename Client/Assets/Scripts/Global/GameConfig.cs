@@ -2,7 +2,12 @@
 using System.Collections;
 
 public class GameConfig : MonoBehaviour {
-	public static int MAX_LOCAL_SNAKES = 13;
+    // Remote server host configuration
+    public static string REMOTE_HOST_NAME = "localhost";
+    public static int REMOTE_HOST_PORT = 3000;
+
+    // Game parameters (currently reflect server parameters)
+	public static int MAX_LOCAL_SNAKES = 15;
 	public static int MAX_LOCAL_FOODS = 1000;
     public static float WORLD_RADIUS_REMOTE = 50.0f;
     public static float WORLD_RADIUS_LOCAL = 25.0f;

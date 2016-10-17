@@ -7,7 +7,7 @@ public class JoystickControlScheme : ControlScheme
 
 	private bool fingerIsDown = false;
 	private Vector2 fingerDownPosition = Vector2.zero;
-	private Vector2 targetDirection = Vector2.zero;
+	private Vector2 targetDirection = Vector2.up;
 
 
 	void Update()
