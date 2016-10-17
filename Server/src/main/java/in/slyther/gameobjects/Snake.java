@@ -79,7 +79,8 @@ public class Snake implements GameObject {
 
         int vectorOffset = NetworkSnakeState.createPartsVector(builder, partsOffsets, n);
         int nameOffset = builder.createString(name);
-
+        String skinId = Integer.toString(skin);
+        int skinOffset = builder.createString(skinId);
         NetworkSnakeState.startNetworkSnakeState(builder);
         NetworkSnakeState.addParts(builder, vectorOffset);
         NetworkSnakeState.addHead(builder, headPointer);
@@ -88,7 +89,7 @@ public class Snake implements GameObject {
         NetworkSnakeState.addName(builder, nameOffset);
         NetworkSnakeState.addScore(builder, score);
         NetworkSnakeState.addTail(builder, tailPointer);
-        NetworkSnakeState.addSkin(builder, skin);
+        NetworkSnakeState.addSkin(builder, skinOffset);
 
         return NetworkSnakeState.endNetworkSnakeState(builder);
     }
@@ -491,6 +492,14 @@ public class Snake implements GameObject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getSkin() {
+        return skin;
+    }
+
+    public void setSkin(int skin) {
+        this.skin = skin;
     }
 
     public int getScore() {

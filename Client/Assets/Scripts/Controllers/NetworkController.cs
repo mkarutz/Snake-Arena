@@ -168,7 +168,7 @@ public class NetworkController : MonoBehaviour {
     private void InitConnection()
     {
 		try {
-			this.udpc = new UdpClient("10.12.37.3", 3000);
+			this.udpc = new UdpClient("localhost", 3000);
 			SendServerHello();
 			ReceiveServerHello();
 			Connect();
@@ -180,7 +180,7 @@ public class NetworkController : MonoBehaviour {
 
 	private void SendServerHello()
 	{
-		var message = clientMessageConstructor.ConstructClientHello(ClientMessageType.ClientHello, 0, PlayerProfile.Instance().Nickname);
+		var message = clientMessageConstructor.ConstructClientHello(ClientMessageType.ClientHello, (ushort)PlayerProfile.Instance().Skin, PlayerProfile.Instance().Nickname);
 		udpc.Send(message, message.Length);
 	}
 

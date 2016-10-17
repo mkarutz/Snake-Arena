@@ -331,7 +331,8 @@ public class SnakeState : MonoBehaviour {
     public void ReplicateState(NetworkSnakeState state)
     {
 		ReplicateHeadPointer(state.Head);
-        
+
+        this.snakeSkinID = int.Parse(state.Skin);
         if (state.Tail <= state.Head)
         {
             this.backboneLength = state.Tail + MAX_BACKBONE_POINTS - state.Head;

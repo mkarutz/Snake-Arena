@@ -142,7 +142,9 @@ public class NetworkManager {
 
         msg.msg(clientHello);
         String playerName = clientHello.playerName();
-        connectNewPlayer(packet.getFromAddress(), playerName);
+        int skinId = msg.clientId();
+        System.out.print("####################################"+skinId);
+        connectNewPlayer(packet.getFromAddress(), playerName, skinId);
     }
 
 
@@ -151,8 +153,8 @@ public class NetworkManager {
      * @param socketAddress The socket address of the new client.
      * @param playerName The client's player name.
      */
-    private void connectNewPlayer(SocketAddress socketAddress, String playerName) {
-        final ClientProxy clientProxy = getClientProxy(socketAddress, playerName);
+    private void connectNewPlayer(SocketAddress socketAddress, String playerName, int skinId) {
+        final ClientProxy clientProxy = getClientProxy(socketAddress, playerName, skinId);
         clientProxy.setLastInputTick(server.getTick());
 
         System.out.println("New player: " + playerName + " (" + socketAddress + ")");
@@ -168,14 +170,14 @@ public class NetworkManager {
      * @param playerName The name of the new client.
      * @return The ClientProxy.
      */
-    private ClientProxy getClientProxy(SocketAddress socketAddress, String playerName) {
+    private ClientProxy getClientProxy(SocketAddress socketAddress, String playerName, int skinId) {
         final Snake playerSnake = world.spawnSnake();
 
         int playerNetworkId = linkingContext.getNetworkId(playerSnake, true);
         System.out.println("Spawned new snake " + playerNetworkId);
 
         playerSnake.setName(playerName);
-
+        playerSnake.setSkin(skinId);
         return new ClientProxy(socketAddress, playerNetworkId, playerSnake);
     }
 
