@@ -80,6 +80,11 @@ public class InputManager : MonoBehaviour {
 			Vector2 lookVec = lookWorldSpacePos - this.playerSnake.transform.position;
 			targetDirection = lookVec * 1000;
 		}
+
+        if (Input.anyKeyDown)
+            isTurbo = true;
+        else
+            isTurbo = false;
 	}
 
 

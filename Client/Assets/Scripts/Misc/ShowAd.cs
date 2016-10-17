@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Advertisements;
+using UnityEngine.VR;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
@@ -51,7 +52,7 @@ public class ShowAd : MonoBehaviour
 
 	public void ShowAdvertisement()
 	{
-		if (PlayerProfile.Instance().AdsDisabled) {
+		if (PlayerProfile.Instance().AdsDisabled || VRSettings.enabled) {
 			SceneManager.LoadScene("MainMenu");
 		} else {
 			StartCoroutine(Show());
