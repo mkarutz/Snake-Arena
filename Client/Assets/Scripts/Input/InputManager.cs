@@ -24,12 +24,11 @@ public class InputManager : MonoBehaviour {
 	void Update () 
 	{
 		GetReferences();
-		UpdateInput();
-		//        if (VRSettings.enabled) {
-		//			UpdateVRInput();
-		//        } else {
-		//			UpdateInput();
-		//        }
+        if (VRSettings.enabled) {
+			UpdateVRInput();
+        } else {
+			UpdateInput();
+        }
 	}
 
 

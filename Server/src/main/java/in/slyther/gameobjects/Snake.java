@@ -71,11 +71,11 @@ public class Snake implements GameObject {
         int[] partsOffsets = new int[MAX_PARTS];
         int n = 0;
 
-//        for (int i = headPointer; i != tailPointer; i = nextPointer(i)) {
-//            partsOffsets[n++] = parts[i].serialize(builder);
-//        }
+        for (int i = headPointer; i != tailPointer; i = nextPointer(i)) {
+            partsOffsets[n++] = parts[i].serialize(builder);
+        }
 
-        partsOffsets[n++] = parts[headPointer].serialize(builder);
+        //partsOffsets[n++] = parts[headPointer].serialize(builder);
 
         int vectorOffset = NetworkSnakeState.createPartsVector(builder, partsOffsets, n);
         int nameOffset = builder.createString(name);
@@ -184,7 +184,7 @@ public class Snake implements GameObject {
             }
 
             float distanceToLine = Vector2.distanceToLine(point, currPoint, nextPoint);
-            if (distanceToLine < thicknessAtLength(accLength)) {
+            if (distanceToLine < thicknessAtLength(accLength) / 2.0f) {
                 return true;
             }
         }
