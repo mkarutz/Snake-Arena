@@ -76,7 +76,7 @@ public class PlayerProfile : MonoBehaviour
 		nickname = poco.Nickname;
 		skin = poco.skin;
 		adsDisabled = poco.adsDisabled;
-		inputScheme = poco.inputScheme;
+		inputScheme = 1;
 	}
 
 
