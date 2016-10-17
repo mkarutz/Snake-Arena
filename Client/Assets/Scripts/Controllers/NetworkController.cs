@@ -31,9 +31,12 @@ public class NetworkController : MonoBehaviour {
 
     void Update()
 	{
+
         ReadPacketsToQueue();
         ProcessQueuedMessages();
-		MaybeSendInputPacket();
+
+        MaybeSendInputPacket();
+
 
         // Needs to be a better place to put this...
         TagLocalPlayer();
@@ -101,6 +104,7 @@ public class NetworkController : MonoBehaviour {
             case ServerMessageType.ServerWorldState:
                 ServerWorldState serverWorldState = msg.GetMsg(new ServerWorldState());
                 this.ReplicateState(serverWorldState);
+
                 break;
         }
     }
@@ -108,7 +112,7 @@ public class NetworkController : MonoBehaviour {
 
     private void InitConnection()
     {
-		this.udpc = new UdpClient("10.12.55.234", 3000);
+		this.udpc = new UdpClient("localhost", 3000);
 		SendServerHello();
         ReceiveServerHello();
     }

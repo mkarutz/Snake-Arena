@@ -15,5 +15,6 @@ public class LocalSnakeController : MonoBehaviour {
 
         this.snake.Move(this.snake.transform.position + lookVec.normalized, Time.deltaTime);
         
+        
     }
 }

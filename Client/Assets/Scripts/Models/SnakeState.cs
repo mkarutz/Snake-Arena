@@ -5,7 +5,7 @@ using System.Linq;
 using slyther.flatbuffers;
 
 public class SnakeState : MonoBehaviour {
-    public float speedFactor;
+    public float speedFactor = 1.0f;
     public bool isTurbo;
 
     public int snakeSkinID;
@@ -13,7 +13,7 @@ public class SnakeState : MonoBehaviour {
     public string name;
 
     public static int MAX_BACKBONE_POINTS = 1000;
-    public static int GROWTH_CAP = 40000;
+    public static int GROWTH_CAP = GameConfig.SNAKE_GROWTH_CAP;
     public static float MIN_LENGTH = 1.0f;
     public static float MIN_THICKNESS = 0.2f;
     public static float GROWTH_RATE = 1.0f / 100.0f;
@@ -102,9 +102,9 @@ public class SnakeState : MonoBehaviour {
 		{
 			TurnTowards(desiredMoveDirection, dt);
 		}
-			
+
 		// Translate snake forward
-		transform.Translate(Vector3.forward * MOVE_SPEED * dt);
+		transform.Translate(Vector3.forward * MOVE_SPEED * this.speedFactor * dt);
 
 		if (GetBackboneLength() <= 2)
 		{
@@ -189,6 +189,41 @@ public class SnakeState : MonoBehaviour {
         return minDistance;
     }
 
+
+    private void DropFoodAtTail()
+    {
+        FoodState food = this.gameObject.GetComponent<LocalSnakeBody>().foodPrefab;
+        GameObject.Instantiate<FoodState>(food);
+        food.transform.position = this.CalcBackboneParametizedPosition(this.GetSnakeLength());
+        food.weight = GameConfig.FOOD_WEIGHT_DROP_TURBO;
+        this.score -= food.weight*2;
+
+    }
+
+    public void SetTurboLocal(bool isTurbo)
+    {
+
+        if (this.GetSnakeLength() > MIN_LENGTH + 1)
+        {
+            this.isTurbo = isTurbo;
+            if (this.isTurbo)
+            {
+                this.speedFactor = GameConfig.TURBO_ON_SNAKE_SPEED_FACTOR;
+                DropFoodAtTail();
+            }
+            else
+            {
+                this.speedFactor = GameConfig.TURBO_OFF_SNAKE_SPEED_FACTOR;
+            }
+        }
+        else
+        {
+            this.isTurbo = false;
+            this.speedFactor = GameConfig.TURBO_OFF_SNAKE_SPEED_FACTOR;
+        }
+        
+       
+    }
 
     public Bounds LocalBounds()
     {
@@ -285,8 +320,7 @@ public class SnakeState : MonoBehaviour {
 				this.backbone[snakePartState.Index] = new Vector2(snakePartState.Position.X, snakePartState.Position.Y);
 			//}
         }
-
-		score = (int) state.Score;
+        score = (int) state.Score;
 		gameObject.SetActive(!state.IsDead);
     }
 

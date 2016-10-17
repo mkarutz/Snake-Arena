@@ -38,5 +38,7 @@ public class FoodState : MonoBehaviour
 	{
 		this.weight = state.Weight;
 		this.transform.position = new Vector2(state.Position.X, state.Position.Y);
-	}
+
+        
+    }
 }

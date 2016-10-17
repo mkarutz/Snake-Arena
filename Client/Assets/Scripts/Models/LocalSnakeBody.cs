@@ -31,11 +31,13 @@ public class LocalSnakeBody : MonoBehaviour {
     private void CreateSnakeBodyCollider()
     {
         this.snakeBody = new GameObject();
+  
         this.snakeBody.tag = "SnakeBody";
         this.snakeBody.transform.position = this.snakeState.GetHeadPosition();
         this.snakeBody.AddComponent<SnakeStateReference>().snakeState = this.snakeState;
         this.snakeBodyCollider = this.snakeBody.AddComponent<BoxCollider2D>();
         this.snakeBodyCollider.isTrigger = true;
+        Debug.Log("asd");
     }
 
     private void UpdateSnakeBodyCollider()
@@ -70,6 +72,7 @@ public class LocalSnakeBody : MonoBehaviour {
         b.Encapsulate(tail);
         return b;
     }
+      
 
     public void DropFood()
     {

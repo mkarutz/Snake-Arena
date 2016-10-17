@@ -48,8 +48,8 @@ public class ReplicationManager : MonoBehaviour {
 			go = objectCreationRegistry.CreateGameObject(classId);
 			linkingContext.AddGameObject(go, networkId);
 		}
-
-		go.Replicate(state);
+        
+        go.Replicate(state);
 
 		return go;
 	}
