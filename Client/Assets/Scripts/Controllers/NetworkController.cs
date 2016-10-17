@@ -80,9 +80,21 @@ public class NetworkController : MonoBehaviour {
 		Vector3 desiredMove = inputManager.TargetDirection();
 		bool isTurbo = inputManager.IsTurbo();
 
-		var message = clientMessageConstructor.ConstructClientInputState(ClientMessageType.ClientInputState, (ushort) playerID, 0, desiredMove.normalized, isTurbo);
+        AtrociousRotateFunctionToKeepToDeadline(); // todo: get rid of it
+
+        var message = clientMessageConstructor.ConstructClientInputState(ClientMessageType.ClientInputState, (ushort) playerID, 0, desiredMove.normalized, isTurbo);
 		udpc.Send(message, message.Length);
 	}
+
+    void AtrociousRotateFunctionToKeepToDeadline()
+    {
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player)
+        {
+            SnakeState playerSnake = player.GetComponent<SnakeState>();
+            playerSnake.TurnTowards(inputManager.TargetDirection(), Time.deltaTime);
+        }
+    }
 
 
 	/// <summary>
@@ -159,7 +171,7 @@ public class NetworkController : MonoBehaviour {
     private void InitConnection()
     {
 		try {
-			this.udpc = new UdpClient("localhost", 3000);
+			this.udpc = new UdpClient("10.12.37.3", 3000);
 			SendServerHello();
 			ReceiveServerHello();
 			Connect();

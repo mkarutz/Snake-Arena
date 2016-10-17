@@ -76,7 +76,7 @@ public class SnakeState : MonoBehaviour {
 
 	private float maxRotate()
 	{
-		return (360 * MOVE_SPEED) / (4.0f * Mathf.PI * GetSnakeThickness());
+		return (360 * MOVE_SPEED) / (GameConfig.TURN_RADIUS_FACTOR * Mathf.PI * GetSnakeThickness());
 	}
 
 
@@ -86,7 +86,7 @@ public class SnakeState : MonoBehaviour {
 	}
 
 
-	private void TurnTowards(Vector2 desiredMoveDirection, float dt) 
+	public void TurnTowards(Vector2 desiredMoveDirection, float dt) 
 	{
 		Quaternion desiredRotation = DirectionVectorToQuaterion(desiredMoveDirection);
 		transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, maxRotate() * dt);
