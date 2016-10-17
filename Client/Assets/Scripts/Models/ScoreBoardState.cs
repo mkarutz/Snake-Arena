@@ -10,12 +10,18 @@ public class ScoreBoardState : MonoBehaviour {
     }
 
     public int maxScoreboardPlayers = GameConfig.MAX_SCOREBOARD_PLAYERS;
+    public int playerRank = -1;
     public PlayerScoreEntry[] playerScores;
 
     public void SetEntry(int pos, string playerName, int playerScore)
     {
         playerScores[pos].playerName = playerName;
         playerScores[pos].playerScore = playerScore;
+    }
+
+    public void SetPlayerRank(int rank)
+    {
+        playerRank = rank;
     }
 
 	// Use this for initialization

@@ -49,6 +49,11 @@ public class SnakeState : MonoBehaviour {
         if (hardPosition)
 		    CenterPositionOnHead();
         UpdateCollider();
+
+        if (this.gameObject.tag == "Player")
+        {
+            this.snakeSkinID = PlayerProfile.Instance().Skin;
+        }
     }
 
 

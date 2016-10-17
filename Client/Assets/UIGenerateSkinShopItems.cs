@@ -30,6 +30,7 @@ public class UIGenerateSkinShopItems : MonoBehaviour {
     {
         GameObject item = Instantiate<GameObject>(shopItemPrefab);
         item.GetComponentInChildren<SnakeState>().snakeSkinID = snakeSkinID;
+        item.GetComponentInChildren<SelectSkinButton>().skinID = snakeSkinID;
         RectTransform itemRectTransform = item.GetComponent<RectTransform>();
         itemRectTransform.SetParent(this.GetComponent<RectTransform>(), false);
         itemRectTransform.anchoredPosition = new Vector3(0.0f, yOffset, 0.0f);
