@@ -37,7 +37,6 @@ public class LocalSnakeBody : MonoBehaviour {
         this.snakeBody.AddComponent<SnakeStateReference>().snakeState = this.snakeState;
         this.snakeBodyCollider = this.snakeBody.AddComponent<BoxCollider2D>();
         this.snakeBodyCollider.isTrigger = true;
-        Debug.Log("asd");
     }
 
     private void UpdateSnakeBodyCollider()

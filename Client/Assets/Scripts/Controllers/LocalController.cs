@@ -36,6 +36,7 @@ public class LocalController : MonoBehaviour {
 	{
 		SnakeState playerSnake = Instantiate<SnakeState> (this.localSnakePrefab);
 		playerSnake.transform.position = this.gameWorld.GenerateRandomWorldPoint(0, this.gameWorld.worldRadius / 5.0f);
+        playerSnake.name = PlayerProfile.Instance().Nickname;
     }
 
 	private void GenerateAISnakes()
