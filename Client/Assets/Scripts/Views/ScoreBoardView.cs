@@ -10,8 +10,13 @@ public class ScoreBoardView : MonoBehaviour {
     public PlayerScoreEntryView playerScoreTextPrefab;
     public PlayerScoreEntryView[] playerScoreTextElems;
 
+    private int playerScore;
+    private string playerName;
+
 	// Use this for initialization
 	void Start () {
+        this.playerScore = 0;
+        this.playerName = "~";
         this.playerScoreTextElems = new PlayerScoreEntryView[state.maxScoreboardPlayers + 1];
 	    for (int i = 0; i < state.maxScoreboardPlayers + 1; i++)
         {
@@ -34,11 +39,11 @@ public class ScoreBoardView : MonoBehaviour {
 	void Update () {
         int rank = 0;
         int totalPlayers = 0;
-        string playerName = "~";
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player)
         {
             playerName = player.GetComponent<SnakeState>().name;
+            playerScore = player.GetComponent<SnakeState>().score;
         }
         int nTaggedEnemies = GameObject.FindGameObjectsWithTag("SnakeBody").Length;
         if (nTaggedEnemies > 9)
@@ -58,7 +63,7 @@ public class ScoreBoardView : MonoBehaviour {
         if (this.state.playerRank != -1)
             rank = this.state.playerRank;
         // Rank row
-        this.playerScoreTextElems[this.state.maxScoreboardPlayers].playerNameText.text = "YOUR RANK";
+        this.playerScoreTextElems[this.state.maxScoreboardPlayers].playerNameText.text = "YOUR RANK (Score: " + this.playerScore + ")";
         this.playerScoreTextElems[this.state.maxScoreboardPlayers].playerScoreText.text = rank.ToString() + " / " + totalPlayers;
     }
 }

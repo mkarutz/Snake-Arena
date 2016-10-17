@@ -16,6 +16,10 @@ public class DirectionArrowController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (PlayerProfile.Instance().ControlScheme == 2)
+        {
+            Destroy(this.gameObject);
+        }
         if (player)
         {
             SnakeState playerSnake = player.GetComponent<SnakeState>();
