@@ -5,17 +5,29 @@ using UnityEngine.SceneManagement;
 
 public class ShowAd : MonoBehaviour 
 {
+    private int showAdCountdown;
+
 	public void Start()
 	{
 		if (!Advertisement.isInitialized) {
 			Advertisement.Initialize("1167791", true);
 		}
+        showAdCountdown = -1;
 	}
 
 
 	public void Update()
 	{
 		ShowAdIfGameOver();
+        if (showAdCountdown == 0)
+        {
+            ShowAdvertisement();
+            showAdCountdown = -1;
+        }
+        else if (showAdCountdown > 0)
+        {
+            showAdCountdown--;
+        }
 	}
 
 
@@ -31,7 +43,7 @@ public class ShowAd : MonoBehaviour
 		}
 
 		if (playerHasSpawned && !adHasBeenShown && localPlayer == null) {
-			ShowAdvertisement();
+            showAdCountdown = 60;
 			adHasBeenShown = true;
 		}
 	}
@@ -40,7 +52,7 @@ public class ShowAd : MonoBehaviour
 	public void ShowAdvertisement()
 	{
 		if (PlayerProfile.Instance().AdsDisabled) {
-			SceneManager.LoadSceneAsync("MainMenu");
+			SceneManager.LoadScene("MainMenu");
 		} else {
 			StartCoroutine(Show());
 		}

@@ -11,7 +11,7 @@ public class SnakePlayerInput : MonoBehaviour {
     }
 
 	void Update () {
-		snakeState.Move(inputManager.TargetDirection(), Time.deltaTime);
+		snakeState.MoveInDirection(inputManager.TargetDirection(), Time.deltaTime);
         snakeState.SetTurboLocal(inputManager.IsTurbo());
 	}
 }

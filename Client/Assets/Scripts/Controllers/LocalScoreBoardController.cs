@@ -25,6 +25,8 @@ public class LocalScoreBoardController : MonoBehaviour {
     void Update () {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Snake");
+        if (!player)
+            return;
 
         SnakeState[] snakes = new SnakeState[enemies.Length + 1];
         for (int i = 0; i < enemies.Length; i++)

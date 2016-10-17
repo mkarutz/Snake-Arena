@@ -24,7 +24,8 @@ public class LocalSnakeBody : MonoBehaviour {
     void OnDestroy()
     {
         // Drop food
-        this.DropFood();
+        if (GameObject.FindGameObjectWithTag("Player") || this.gameObject.tag == "Player")
+            this.DropFood();
         Destroy(this.snakeBody.gameObject);
     }
 

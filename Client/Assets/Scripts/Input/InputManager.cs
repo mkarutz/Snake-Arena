@@ -34,6 +34,8 @@ public class InputManager : MonoBehaviour {
 
 	void GetReferences()
 	{
+        if (!GameObject.FindGameObjectWithTag("Player"))
+            return;
 		this.playerSnake = GameObject.FindGameObjectWithTag("Player").GetComponent<SnakeState>();
 		this.gameWorld = GameObject.FindGameObjectWithTag("World").GetComponent<GameWorld>();
 	}
