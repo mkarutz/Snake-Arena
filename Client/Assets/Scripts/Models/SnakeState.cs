@@ -25,13 +25,13 @@ public class SnakeState : MonoBehaviour {
     private int backboneStartIdx;
     private int backboneLength;
 
-	public float LerpAmount = 0.5f;
 
     void Awake()
 	{   
         this.InitBackbone();
 		this.SetRandomStartBackbone (Vector2.zero);
     }
+
 
 	public void SetRandomStartBackbone(Vector2 offset)
 	{
@@ -41,12 +41,13 @@ public class SnakeState : MonoBehaviour {
 		this.AddBackboneHeadPoint(randDir * 2 + offset);
 	}
 
+
     void Update()
     {
-		InterpolateHeadPosition();
 		CenterPositionOnHead();
         UpdateCollider();
     }
+
 
     void UpdateCollider()
     {
@@ -55,17 +56,10 @@ public class SnakeState : MonoBehaviour {
             collider.radius = this.GetSnakeThickness();
     }
 
+
 	void CenterPositionOnHead()
 	{
 		transform.position = backbone[backboneStartIdx];
-	}
-
-
-	Vector2 targetHeadPosition = Vector2.zero;
-	private void InterpolateHeadPosition()
-	{
-		//backbone[backboneStartIdx] = Vector2.Lerp(backbone[backboneStartIdx], targetHeadPosition, LerpAmount);
-		backbone[backboneStartIdx] += (targetHeadPosition - backbone[backboneStartIdx]) * LerpAmount;
 	}
 
 
@@ -94,6 +88,7 @@ public class SnakeState : MonoBehaviour {
 		Quaternion desiredRotation = DirectionVectorToQuaterion(desiredMoveDirection);
 		transform.rotation = Quaternion.RotateTowards(transform.rotation, desiredRotation, maxRotate() * dt);
 	}
+
 
     public void MoveInDirection(Vector2 desiredMoveDirection, float dt)
     {
@@ -124,11 +119,13 @@ public class SnakeState : MonoBehaviour {
         UpdateBackboneHeadPoint(transform.position);
     }
 
+
 	public void Move(Vector2 desiredMovePosition, float dt) 
 	{
 		Vector2 desiredMoveDirection = desiredMovePosition - (Vector2) transform.position;
         MoveInDirection(desiredMoveDirection, dt);
 	}
+
 
     public bool IsRunInto(SnakeState other)
     {
@@ -141,6 +138,7 @@ public class SnakeState : MonoBehaviour {
         return distanceToOther < other.GetSnakeThickness() / 2.0f;
     }
 
+
     //should be moved to math section
     public static float GetDistanceToLine(Vector2 point, Vector2 a, Vector2 b)
     {
@@ -151,6 +149,7 @@ public class SnakeState : MonoBehaviour {
         return area2 / dist;
     }
 
+
     public static bool IsPerpendicularToSegment(Vector2 p, Vector2 a, Vector2 b)
     {
         Vector2 aToB = b - a;
@@ -159,7 +158,7 @@ public class SnakeState : MonoBehaviour {
 
         return Vector2.Dot(aToB, pToB) > 0 && Vector2.Dot(aToB, aToP) > 0;
     }
-    // end to move
+
 
     public float DistanceFrom(Vector2 point)
     {
@@ -211,20 +210,24 @@ public class SnakeState : MonoBehaviour {
         return b;
     }
 
+
     public Vector2 GetHeadPosition()
     {
         return this.backbone[this.backboneStartIdx];
     }
+
     
     public Vector2 GetTailPosition()
     {
         return (this.CalcBackboneParametizedPosition(this.GetSnakeLength()));
     }
 
+
     public int GetNextIdx(int curr)
     {
         return ((curr +1) % MAX_BACKBONE_POINTS);
     }
+
 
     private void TrimBackbone()
     {
@@ -248,6 +251,7 @@ public class SnakeState : MonoBehaviour {
         this.backboneLength = Mathf.Min(i + 3, this.backboneLength);
     }
 
+
     public void AddBackboneHeadPoint(Vector2 point)
     {
         if (backboneLength >= MAX_BACKBONE_POINTS - 1)
@@ -262,6 +266,9 @@ public class SnakeState : MonoBehaviour {
         
         TrimBackbone();
     }
+
+
+	public ClientsideInterpolation interpolater;
 
     public void ReplicateState(NetworkSnakeState state)
     {
@@ -285,7 +292,7 @@ public class SnakeState : MonoBehaviour {
             state.GetParts(snakePartState, i);
 			if (snakePartState.Index == backboneStartIdx) {
 				// We want to Lerp the head towards the new position
-				targetHeadPosition = new Vector2(snakePartState.Position.X, snakePartState.Position.Y);
+				interpolater.targetHeadPosition = new Vector2(snakePartState.Position.X, snakePartState.Position.Y);
 			} else {
 				this.backbone[snakePartState.Index] = new Vector2(snakePartState.Position.X, snakePartState.Position.Y);
 			}
