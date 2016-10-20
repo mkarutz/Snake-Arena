@@ -8,6 +8,8 @@ public class ScoreBoardFactory : INetworkGameObjectFactory
 
 	public override INetworkGameObject CreateGameObject()
 	{
-		return GameObject.Instantiate(scoreBoardPrefab);
+        INetworkGameObject g = GameObject.Instantiate(scoreBoardPrefab);
+        g.gameObject.SetActive(false);
+        return g;
 	}
 }

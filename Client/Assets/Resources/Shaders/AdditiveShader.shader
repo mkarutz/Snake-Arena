@@ -40,11 +40,16 @@ Shader "Mobile/Particles/Additive" {
 	{
 		v2f o;
 		o.position = mul(UNITY_MATRIX_MVP, v.position);
+		o.color = v.color;//HUEtoRGB(o.position.z);
+		//o.position.z = 0.0f;
 		o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
-		o.color = v.color;
+		//o.color = HUEtoRGB(random(mul(unity_ObjectToWorld, v.position).xy));
+		
+
 		UNITY_TRANSFER_FOG(o, o.vertex);
 		return o;
 	}
+
 
 	fixed4 frag(v2f i) : SV_Target
 	{

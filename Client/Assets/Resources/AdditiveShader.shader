@@ -4,7 +4,7 @@
 // - no AlphaTest
 // - no ColorMask
 
-Shader "Mobile/Particles/Additive"
+Shader "Mobile/Particles/Additive2"
 {
 	Properties
 	{
