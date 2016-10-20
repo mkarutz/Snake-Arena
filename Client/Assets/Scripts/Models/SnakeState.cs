@@ -332,6 +332,7 @@ public class SnakeState : MonoBehaviour {
     {
 		ReplicateHeadPointer(state.Head);
 
+        this.name = state.Name;
         this.snakeSkinID = int.Parse(state.Skin);
         if (state.Tail <= state.Head)
         {
