@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class VRCameraController : MonoBehaviour {
-    public const float SCALE_FACTOR = 10.0f;
+    public const float SCALE_FACTOR = 20.0f;
     public SnakeState snakeToTrack = null;
     public float LerpAmount = 0.1f;
     private GameWorld gameWorld;
@@ -26,7 +26,7 @@ public class VRCameraController : MonoBehaviour {
         {
             snakeToTrack = snake.GetComponent<SnakeState>();
             this.targetPosition = snakeToTrack.transform.position;
-            this.targetPosition += Vector3.back * SCALE_FACTOR;
+            this.targetPosition += Vector3.back * SCALE_FACTOR * snakeToTrack.GetSnakeThickness();
             transform.position = Vector3.Lerp(this.transform.position, targetPosition, LerpAmount);
         }
         else
