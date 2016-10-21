@@ -6,6 +6,6 @@ public class GoToSinglePlayerScene : MonoBehaviour
 {
     public void LoadSinglePlayerScene()
     {
-        SceneManager.LoadScene("InGameSingleplayer");
+		SceneManager.LoadSceneAsync("InGameSingleplayer");
     }
 }
