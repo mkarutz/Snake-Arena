@@ -81,7 +81,7 @@ public class InputManager : MonoBehaviour {
 			targetDirection = lookVec * 1000;
 		}
 
-        if (Input.anyKeyDown)
+        if (Input.anyKey)
             isTurbo = true;
         else
             isTurbo = false;
