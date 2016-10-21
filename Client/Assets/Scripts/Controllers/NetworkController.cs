@@ -18,6 +18,7 @@ public class NetworkController : MonoBehaviour {
     public GameWorld gameWorld;
 	public GameObject lostConnectionDialogue;
 	public GameObject connectionFailedDialogue;
+	public GameObject loadingScreen;
 
     public int playerID = -1;
 	bool isConnected = false;
@@ -37,10 +38,6 @@ public class NetworkController : MonoBehaviour {
 
     void Update()
 	{
-		if (!IsConnected()) {
-			return;
-		}
-
 		CheckTimeout();
 
 		ReadPacketsToQueue();
@@ -77,6 +74,10 @@ public class NetworkController : MonoBehaviour {
 
 	void SendInputPacket()
 	{
+		if (!IsConnected()) {
+			return;
+		}
+
 		Vector3 desiredMove = inputManager.TargetDirection();
 		bool isTurbo = inputManager.IsTurbo();
 
@@ -85,6 +86,7 @@ public class NetworkController : MonoBehaviour {
         var message = clientMessageConstructor.ConstructClientInputState(ClientMessageType.ClientInputState, (ushort) playerID, 0, desiredMove.normalized, isTurbo);
 		udpc.Send(message, message.Length);
 	}
+
 
     void AtrociousRotateFunctionToKeepToDeadline()
     {
@@ -113,12 +115,20 @@ public class NetworkController : MonoBehaviour {
 
 	void Connect()
 	{
+		loadingScreen.SetActive(false);
 		isConnected = true;
 	}
 
 
 	public void Disconnect()
 	{
+		loadingScreen.SetActive(false);
+
+		if (!IsConnected()) {
+			connectionFailedDialogue.SetActive(true);
+			return;
+		}
+
 		isConnected = false;
 		lostConnectionDialogue.SetActive(true);
 	}
@@ -164,12 +174,25 @@ public class NetworkController : MonoBehaviour {
         ServerMessageType msgType = msg.MsgType;
         switch (msgType)
         {
-            case ServerMessageType.ServerWorldState:
-                ServerWorldState serverWorldState = msg.GetMsg(new ServerWorldState());
-                this.ReplicateState(serverWorldState);
-                break;
+		case ServerMessageType.ServerHello:
+			ServerHello serverHello = msg.GetMsg(new ServerHello());
+			ProcessServerHello(serverHello);
+			break;
+		case ServerMessageType.ServerWorldState:
+            ServerWorldState serverWorldState = msg.GetMsg(new ServerWorldState());
+            ReplicateState(serverWorldState);
+            break;
         }
     }
+
+
+	void ProcessServerHello(ServerHello serverHello)
+	{
+		this.playerID = serverHello.ClientId;
+		Debug.Log("Received player ID: " + playerID);
+		this.gameWorld.worldRadius = GameConfig.WORLD_RADIUS_REMOTE;
+		Connect();
+	}
 
 
     private void InitConnection()
@@ -177,8 +200,6 @@ public class NetworkController : MonoBehaviour {
 		try {
 			this.udpc = new UdpClient(GameConfig.REMOTE_HOST_NAME, GameConfig.REMOTE_HOST_PORT);
 			SendServerHello();
-			ReceiveServerHello();
-			Connect();
 		} catch (Exception e) {
 			connectionFailedDialogue.SetActive(true);
 		}
@@ -190,21 +211,14 @@ public class NetworkController : MonoBehaviour {
 		var message = clientMessageConstructor.ConstructClientHello(ClientMessageType.ClientHello, (ushort)PlayerProfile.Instance().Skin, PlayerProfile.Instance().Nickname);
 		udpc.Send(message, message.Length);
 	}
-
-
-    public void ReceiveServerHello()
-    {
-        byte[] buf = udpc.Receive(ref serverEndPoint);
-        ByteBuffer byteBuf = new ByteBuffer(buf);
-        ServerMessage sm = ServerMessage.GetRootAsServerMessage(byteBuf);
-        this.playerID = sm.GetMsg(new ServerHello()).ClientId;
-		Debug.Log("Received player ID: " + playerID);
-        this.gameWorld.worldRadius = GameConfig.WORLD_RADIUS_REMOTE; // Replace with radius sent from server eventually
-    }
 		
 
     public void ReplicateState(ServerWorldState state)
     {
+		if (!IsConnected()) {
+			return;
+		}
+
 		replicationManager.ReceiveReplicatedGameObjects(state);
     }
 
