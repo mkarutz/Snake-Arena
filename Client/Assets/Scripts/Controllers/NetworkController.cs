@@ -16,6 +16,8 @@ public class NetworkController : MonoBehaviour {
 	public ReplicationManager replicationManager;
 	public InputManager inputManager;
     public GameWorld gameWorld;
+	public GameObject lostConnectionDialogue;
+	public GameObject connectionFailedDialogue;
 
     public int playerID = -1;
 	bool isConnected = false;
@@ -118,6 +120,7 @@ public class NetworkController : MonoBehaviour {
 	public void Disconnect()
 	{
 		isConnected = false;
+		lostConnectionDialogue.SetActive(true);
 	}
 
 
@@ -129,16 +132,20 @@ public class NetworkController : MonoBehaviour {
 
     void ReadPacketsToQueue()
     {
-        while (udpc.Available > 0)
-        {
-            byte[] buf = udpc.Receive(ref serverEndPoint);
+		try {
+			while (udpc.Available > 0)
+			{
+				byte[] buf = udpc.Receive(ref serverEndPoint);
 
-            ByteBuffer byteBuf = new ByteBuffer(buf);
-            ServerMessage sm = ServerMessage.GetRootAsServerMessage(byteBuf);
-            messageQueue.Enqueue(sm);
+				ByteBuffer byteBuf = new ByteBuffer(buf);
+				ServerMessage sm = ServerMessage.GetRootAsServerMessage(byteBuf);
+				messageQueue.Enqueue(sm);
 
-			timeSinceLastReceivedPacket = 0.0f;
-        }
+				timeSinceLastReceivedPacket = 0.0f;
+			}
+		} catch (Exception e) {
+			lostConnectionDialogue.SetActive(true);
+		}
     }
 
 
@@ -173,7 +180,7 @@ public class NetworkController : MonoBehaviour {
 			ReceiveServerHello();
 			Connect();
 		} catch (Exception e) {
-			SceneManager.LoadScene("MainMenu");
+			connectionFailedDialogue.SetActive(true);
 		}
     }
 

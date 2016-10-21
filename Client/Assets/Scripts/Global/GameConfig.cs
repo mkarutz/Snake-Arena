@@ -3,7 +3,7 @@ using System.Collections;
 
 public class GameConfig : MonoBehaviour {
     // Remote server host configuration
-    public static string REMOTE_HOST_NAME = "localhost";
+    public static string REMOTE_HOST_NAME = "10.12.157.135";
     public static int REMOTE_HOST_PORT = 3000;
 
     // Game parameters (currently reflect server parameters)
