@@ -21,7 +21,7 @@ public class ScoreBoardView : MonoBehaviour {
 	    for (int i = 0; i < state.maxScoreboardPlayers + 1; i++)
         {
             this.playerScoreTextElems[i] = Instantiate<PlayerScoreEntryView>(playerScoreTextPrefab);
-            this.playerScoreTextElems[i].transform.parent = this.transform;
+            this.playerScoreTextElems[i].transform.SetParent(this.transform, false);
             this.playerScoreTextElems[i].transform.localPosition = Vector3.zero;
             this.playerScoreTextElems[i].GetComponent<RectTransform>().anchoredPosition = Vector3.down * ((i + 1) * verticalSpacing + 10.0f);
             this.playerScoreTextElems[i].transform.localScale = Vector3.one;

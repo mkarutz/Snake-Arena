@@ -29,7 +29,7 @@ public class NetworkController : MonoBehaviour {
     private Queue<ServerMessage> messageQueue = new Queue<ServerMessage>();
 
 
-    void Start()
+    void Awake()
 	{
         InitConnection();
     }
@@ -54,9 +54,9 @@ public class NetworkController : MonoBehaviour {
 
     void TagLocalPlayer()
     {
-        GameObject player = this.GetLocalPlayer().gameObject;
-        if (player)
-            player.tag = "Player";
+        INetworkGameObject player = this.GetLocalPlayer();
+        if (player != null)
+            player.gameObject.tag = "Player";
     }
 
 
