@@ -29,7 +29,7 @@ public class NetworkController : MonoBehaviour {
     private Queue<ServerMessage> messageQueue = new Queue<ServerMessage>();
 
 
-    void Start()
+    void Awake()
 	{
         InitConnection();
     }
