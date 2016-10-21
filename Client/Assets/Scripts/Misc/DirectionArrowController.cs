@@ -8,6 +8,7 @@ public class DirectionArrowController : MonoBehaviour {
     public float heightOffPlane = 0.5f;
 
     private float distance;
+    private float alpha;
 
 	// Use this for initialization
 	void Start () {
@@ -16,6 +17,7 @@ public class DirectionArrowController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        alpha -= 0.05f;
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (PlayerProfile.Instance().ControlScheme == 2)
         {
@@ -38,6 +40,9 @@ public class DirectionArrowController : MonoBehaviour {
             {
                 this.gameObject.SetActive(Input.touchCount > 0);
             }*/
+            if (Input.anyKey)
+                alpha = 1.0f;
         }
+        this.GetComponent<MeshRenderer>().material.color = new Color(1,1,1,alpha);
 	}
 }

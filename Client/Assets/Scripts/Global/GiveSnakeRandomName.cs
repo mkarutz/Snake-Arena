@@ -5,7 +5,7 @@ using System;
 
 public class GiveSnakeRandomName : MonoBehaviour {
 
-    public string[] adjectives =
+    public static string[] adjectives =
     {
         "average",
 "big",
@@ -1476,7 +1476,7 @@ public class GiveSnakeRandomName : MonoBehaviour {
     };
 
 
-    public string[] nouns =
+    public static string[] nouns =
     {
         "aardvark",
 "abacus",
@@ -5885,9 +5885,9 @@ public class GiveSnakeRandomName : MonoBehaviour {
         snake.name = GenerateRandomName();
 	}
 	
-	private string GenerateRandomName()
+	public static string GenerateRandomName()
     {
-        return this.adjectives[UnityEngine.Random.Range(0, this.adjectives.Length)] + " " +
-            this.nouns[UnityEngine.Random.Range(0, this.nouns.Length)];
+        return adjectives[UnityEngine.Random.Range(0, adjectives.Length)] + " " +
+            nouns[UnityEngine.Random.Range(0, nouns.Length)];
     }
 }

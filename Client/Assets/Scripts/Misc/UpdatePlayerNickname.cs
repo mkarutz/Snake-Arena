@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.VR;
 
 public class UpdatePlayerNickname : MonoBehaviour 
 {
@@ -9,6 +10,10 @@ public class UpdatePlayerNickname : MonoBehaviour
 	public void Start()
 	{
 		nicknameField.text = PlayerProfile.Instance().Nickname;
+        if (VRSettings.enabled)
+        {
+            nicknameField.text = GiveSnakeRandomName.GenerateRandomName();
+        }
 	}
 
 	public void OnEndEdit()
