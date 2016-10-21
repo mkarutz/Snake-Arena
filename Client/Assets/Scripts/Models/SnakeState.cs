@@ -18,7 +18,7 @@ public class SnakeState : MonoBehaviour {
     public static float MIN_THICKNESS = 0.2f;
     public static float GROWTH_RATE = 1.0f / 100.0f;
 
-	public static float MOVE_SPEED = 3.0f;
+	public static float MOVE_SPEED = 1.9f;
 	public static float MAX_HEAD_OFFSET = 0.02f;
 
     public bool hardPosition = true;

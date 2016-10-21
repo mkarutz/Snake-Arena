@@ -92,7 +92,7 @@ public class NetworkController : MonoBehaviour {
         if (player)
         {
             SnakeState playerSnake = player.GetComponent<SnakeState>();
-            playerSnake.TurnTowards(inputManager.TargetDirection(), Time.deltaTime);
+            playerSnake.TurnTowards(inputManager.TargetDirection(), Time.deltaTime * 6);
         }
     }
 
